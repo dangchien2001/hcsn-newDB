@@ -1,0 +1,74 @@
+.toast-container {
+    position: fixed;
+    bottom: 50px;
+    right: 0;
+    height: 56px;
+    background-color: #FFFFFF;
+    border-radius: 4px;
+    box-shadow: 0px 4px 40px rgba(0, 0, 0, 0.078);
+    display: flex;
+    align-items: center;
+    padding: 0 18px;
+    width: 400px;
+}
+
+.toast-container-icon {   
+    
+    margin-top: 18px;
+    margin-bottom: 18px;
+}
+
+.toast-container-icon-success {
+    background: url('../../assets/icons/Sprites.64af8f61.svg') no-repeat -482px -146px;
+	width: 20px;
+	height: 20px;
+}
+
+.toast-container-icon-error {
+    background: url('../../assets/icons/Sprites.64af8f61.svg') no-repeat -538px -146px;
+	width: 20px;
+	height: 20px;
+}
+
+.toast-container-icon-warning {
+    background: url('../../assets/icons/Sprites.64af8f61.svg') no-repeat -593px -145px;
+	width: 22px;
+	height: 23px;
+}
+
+.toast-container-title {
+    margin-left: 10px;
+    font-family: Roboto Bold;
+}
+
+.toast-container-title-success {
+    color: #50B83C;
+}
+
+.toast-container-title-error {
+    color: #DE3618;
+}
+
+.toast-container-title-warning {
+    color: #F49342;
+}
+
+.toast-container-return {
+    font-family: Roboto Medium;
+    text-decoration: underline;
+    cursor: pointer;
+    margin-right: 16px;
+    margin-left: 92px;
+}
+
+.toast-container-cancel {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -291px -247px;
+	width: 10px;
+	height: 10px;
+    margin-right: 16px;
+    cursor: pointer;
+}
+
+.toast-container-content {
+    margin-left: 20px;
+}

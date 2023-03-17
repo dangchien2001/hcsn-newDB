@@ -1,0 +1,408 @@
+.input-container {
+    width: 100%;
+}
+
+.label {
+    font-family: Roboto Medium;
+    margin-bottom: 8px;
+    font-size: 13px;
+}
+
+.input {
+    height: 36px;
+    width: 100%;
+    border-radius: 4px;
+    border: 1px solid #afafaf;
+    outline: none;
+    padding: 0px 12px;
+}
+
+.input::placeholder {
+    color: #9E9E9E;
+    font-family: Roboto Italic;
+}
+
+.input:hover,
+.input-combobox:hover,
+.number-input-container-input:hover,
+.datetime-picker-container:hover {
+    border: 1px solid #1aa4c8;
+}
+
+.input:disabled {
+    background-color: #EBEBEB;
+}
+
+.error {
+    border:1px solid #E61D1D;
+}
+
+.warning {
+    margin-top: 6px;
+    font-size: 12px;
+    color: #E61D1D;
+}
+
+/*style cho combobox*/
+
+.combobox-container {
+    width: 100%;
+    position: relative;
+}
+
+.error-combobox {
+    height: 36px;
+    width: 100%;
+    border-radius: 4px;
+    border: 1px solid #E61D1D;
+    outline: none;
+    padding: 0px 12px;
+}
+
+.input-combobox {
+    height: 36px;
+    width: 100%;
+    border-radius: 4px;
+    border: 1px solid #afafaf;
+    outline: none;
+    padding: 0px 12px;
+}
+
+.label-combobox {
+    font-family: Roboto Medium;
+    margin-bottom: 8px;
+    font-size: 13px;
+}
+
+.input-combobox::placeholder {
+    color: #9E9E9E;
+    font-family: Roboto Italic;
+}
+
+.dropdown-icon {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -72px -338px;
+	width: 8px;
+	height: 5px;
+    position: absolute;
+    right: 12px;
+    top: 38px;
+    cursor: pointer;
+}
+
+.dropup-icon {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -28px -338px;
+	width: 8px;
+	height: 5px;
+    position: absolute;
+    right: 12px;
+    top: 38px;
+    cursor: pointer;
+}
+
+.combobox-list {
+    width: 100%;
+    max-height: 132px;
+    border-radius: 4px;
+    outline: none;
+    padding: 12px 12px;
+    box-shadow: 0px 4px 16px rgba(23,27,42,0.24);
+    overflow-y: auto;
+}
+
+.item-combobox {
+    height: 36px;
+    width: 100%;
+    border-radius: 4px;
+    outline: none;
+    padding: 0px 12px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.item-combobox:hover {
+    background-color: #1aa4c8;
+    color: #FFFFFF;
+}
+
+.item-combobox-active {
+    background-color: #1aa4c8;
+    color: #FFFFFF;
+}
+
+/*custom thanh scroll*/
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+.scroller::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #b8bcc3;
+}
+::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+::-webkit-scrollbar-track-piece {
+    background-color: #f1f1f1;
+    width: 6px;
+}
+::-webkit-scrollbar-track-piece {
+    background-color: #f1f1f1;
+    width: 6px;
+}
+::-webkit-scrollbar-track-piece {
+    background-color: #f1f1f1;
+    width: 6px;
+}
+.scroller::-webkit-scrollbar-track-piece {
+    background-color: #f1f1f1;
+    width: 10px;
+}
+
+/* style cho input chứa icon */
+.input-with-icon-container {
+    background-color: #ffffff;
+    border-radius: 2.5px;
+    border: 1px solid #afafaf;
+    width: 100%;
+    height: 35px;
+    position: relative;
+}
+
+.input-with-icon-input {
+    position: absolute;
+    top: 0;
+    left: 39px;
+    background-color: #ffffff;
+    border-radius: 2.5px;
+    border: 0px solid #afafaf;
+    width: calc(100% - 39px);
+    height: 100%;
+    outline: none;
+}
+
+.input-with-icon-icon-container {
+    position: absolute;
+    top: 6px;
+    left: 7px;
+    height: 24px;
+    width: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.input-with-icon-input::placeholder {
+    color: #9E9E9E;
+    font-family: Roboto Italic;
+    font-size: 13px;
+}
+
+/* style combobox with icon */
+.combobox-with-icon-container {
+    position: relative;
+    background-color: #ffffff;
+    border-radius: 2.5px;
+    border: 1px solid #afafaf;
+    width: 100%;
+    height: 35px;
+    z-index: 2;
+}
+
+.combobox-with-icon-icon {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    height: 24px;
+    width: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.combobox-with-icon-input {
+    position: absolute;
+    left: 38px;
+    background-color: #ffffff;
+    border-radius: 2.5px;
+    border: 0px solid #afafaf;
+    width: calc(100% - 38px);
+    height: 100%;
+    outline: none;
+}
+
+.combobox-with-icon-input::placeholder {
+    font-size: 13px;
+    color: #1F1F1F;
+}
+
+.combobox-with-icon-dropdown-icon {
+    position: absolute;
+    top: 15px;
+    right: 12px;
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -72px -338px;
+    width: 8px;
+    height: 5px;
+    cursor: pointer;
+}
+
+.combobox-with-icon-dropup-icon {
+    position: absolute;
+    top: 15px;
+    right: 12px;
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -28px -338px;
+    width: 8px;
+    height: 5px;
+    cursor: pointer;
+}
+
+.combobox-with-icon-list {
+    width: 100%;
+    max-height: 132px;
+    border-radius: 4px;
+    outline: none;
+    padding: 12px 12px;
+    box-shadow: 0px 4px 16px rgba(23, 27, 42, 0.24);
+    overflow-y: auto;
+    position: absolute;
+    top: 100%;
+    background-color: #FFFFFF;
+}
+
+.combobox-with-icon-item {
+    height: 36px;
+    width: 100%;
+    border-radius: 4px;
+    outline: none;
+    padding: 0px 12px;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+.combobox-with-icon-item:hover {
+    background-color: #1aa4c8;
+    color: #FFFFFF;
+}
+
+.icon-tick-v {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -71px -512px;
+	width: 11px;
+	height: 8px;
+    margin-right: 5px;
+}
+
+/* style cho number input */
+.number-input-container {
+    position: relative;
+}
+
+.number-input-container-label {
+    font-family: Roboto Medium;
+    margin-bottom: 8px;
+    font-size: 13px;
+}
+
+.number-input-container-input {
+    height: 36px;
+    width: 100%;
+    border-radius: 4px;
+    border: 1px solid #afafaf;
+    outline: none;
+    padding: 0px 30px;
+    text-align: right;
+}
+
+.number-input-container-input-error {
+    height: 36px;
+    width: 100%;
+    border-radius: 4px;
+    border: 1px solid #E61D1D;
+    outline: none;
+    padding: 0px 30px;
+    text-align: right;
+}
+
+.number-input-container-input:disabled {
+    background-color: #EBEBEB;
+}
+
+.number-input-container-input-padding {
+    padding: 0px 12px;
+}
+
+/* Ẩn nút mũi tên trong input number trên 
+    Chrome, Safari, Edge, Opera */
+.number-input-container-input::-webkit-outer-spin-button,
+.number-input-container-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Ẩn nút mũi tên trong input number trên 
+    Firefox */
+.number-input-container-input[type=number] {
+    -moz-appearance: textfield;
+}
+
+/* Ẩn nút mũi tên trong input number trên 
+    Chrome, Safari, Edge, Opera */
+.number-input-container-input-error::-webkit-outer-spin-button,
+.number-input-container-input-error::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Ẩn nút mũi tên trong input number trên 
+    Firefox */
+.number-input-container-input-error[type=number] {
+    -moz-appearance: textfield;
+}
+
+.number-input-container-arrow {
+    display: inline-flex;
+    flex-direction: column;
+    position: absolute;
+    right: 12px;
+    bottom: 10px;
+}
+
+.number-input-container-arrow-warning {
+    display: inline-flex;
+    flex-direction: column;
+    position: absolute;
+    right: 12px;
+    bottom: 30px;
+}
+
+.number-input-container-arrow-up {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -204px -332px;
+	width: 8px;
+	height: 5px;
+    cursor: pointer;
+}
+
+.number-input-container-arrow-down {
+    margin-top: 6px;
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -204px -343px;
+	width: 8px;
+	height: 5px;
+    cursor: pointer;
+}

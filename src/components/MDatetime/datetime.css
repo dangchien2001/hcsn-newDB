@@ -1,0 +1,324 @@
+.datetime-picker-container {
+    width: 100%;
+    height: 36px;
+    background-color: #FFFFFF;
+    border: 1px solid #afafaf;
+    border-radius: 4px;
+    padding-left: 12px;
+    position: relative;
+    z-index: 1;
+}
+
+.input-datetime-picker {
+    height: 100%;
+    width: 16px;
+    border: 0px;
+    outline: none;
+    text-align: center;
+}
+
+.input-datetime-picker-year {
+    height: 100%;
+    width: 32px;
+    border: 0px;
+    outline: none;
+    text-align: center;
+}
+
+/* Ẩn nút mũi tên trong input number trên 
+    Chrome, Safari, Edge, Opera */
+.input-datetime-picker::-webkit-outer-spin-button,
+.input-datetime-picker::-webkit-inner-spin-button,
+.input-datetime-picker-year::-webkit-outer-spin-button,
+.input-datetime-picker-year::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Ẩn nút mũi tên trong input number trên 
+    Firefox */
+.input-datetime-picker[type=number],
+.input-datetime-picker-year[type=number] {
+    -moz-appearance: textfield;
+}
+
+.datetime-picker-icon {
+    position: absolute;
+    top: 9px;
+    right: 12px;
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -287px -67px;
+	width: 18px;
+	height: 18px;
+    cursor: pointer;
+}
+
+.datetime-picker-select-box {
+    position: absolute;
+    bottom: calc(100% + 1px);
+    left: 0;
+    width: 320px;
+    background-color: #FFFFFF;
+    border-radius: 4px;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 16%);
+}
+
+.datetime-picker-header {
+    display: flex;
+}
+
+.datetime-value {
+    font-family: Roboto Bold;
+    font-size: 16px;
+    color: #1D2634;
+    margin-top: 27px;
+    margin-left: 24px;
+}
+
+.year-select-box {
+    width: 25px;
+    height: 24px;
+    margin-top: 24px;
+    margin-left: 3.25px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.year-select-icon {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -158px -249px;
+	width: 11px;
+	height: 7px;  
+}
+
+.pre-month-box {
+    width: 24px;
+    height: 24px;
+    margin-top: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.pre-month-icon {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -29px -246px;
+	width: 7px;
+	height: 12px;
+}
+
+.next-month-box {
+    width: 24px;
+    height: 24px;
+    margin-top: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    margin-left: 11px;
+    margin-right: 27.5px;
+}
+
+.next-month-icon {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -73px -246px;
+	width: 7px;
+	height: 12px;
+}
+
+.blank-datetime-picker {
+    flex: 1;
+}
+
+.day-bar {
+    display: flex;
+    font-family: Roboto Regular;
+    font-size: 14px;
+    color: #666666;
+}
+
+.monday {
+    margin-top: 14px;
+    margin-left: 24.25px;
+    height: 32px;
+    width: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.tuesday {
+    margin-top: 14px;
+    margin-left: 8px;
+    height: 32px;
+    width: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.wednesday {
+    margin-top: 14px;
+    margin-left: 3px;
+    height: 32px;
+    width: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.thursday {
+    margin-top: 14px;
+    margin-left: 13px;
+    height: 32px;
+    width: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.friday {
+    margin-top: 14px;
+    margin-left: 8px;
+    height: 32px;
+    width: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.saturday {
+    margin-top: 14px;
+    margin-left: 8px;
+    height: 32px;
+    width: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.sunday {
+    margin-top: 14px;
+    margin-left: 8px;
+    height: 32px;
+    width: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.week-bar {
+    display: flex;
+    font-family: Roboto Regular;
+    font-size: 14px;
+    color: #1D2634;
+}
+
+.day1 {
+    margin-top: 14px;
+    margin-left: 24.25px;
+    height: 32px;
+    width: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.day2 {
+    margin-top: 14px;
+    margin-left: 8px;
+    height: 32px;
+    width: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.day3 {
+    margin-top: 14px;
+    margin-left: 3px;
+    height: 32px;
+    width: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.day4 {
+    margin-top: 14px;
+    margin-left: 13px;
+    height: 32px;
+    width: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;  
+    cursor: pointer;
+}
+
+.day5 {
+    margin-top: 14px;
+    margin-left: 8px;
+    height: 32px;
+    width: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;  
+    cursor: pointer;
+}
+
+.day6 {
+    margin-top: 14px;
+    margin-left: 8px;
+    height: 32px;
+    width: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.day7 {
+    margin-top: 14px;
+    margin-left: 8px;
+    height: 32px;
+    width: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.day1:hover,
+.day2:hover,
+.day3:hover,
+.day4:hover,
+.day5:hover,
+.day6:hover,
+.day7:hover {
+    background-color: #1aa4c8;
+    color: #FFFFFF;
+    box-shadow: 0 2px 6px rgb(0 0 0 / 16%);
+}
+
+.today-button {
+    height: 51px;
+    border-top: 1px solid #1D2634;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: Roboto Medium;
+    color: #1aa4c8;
+    cursor: pointer;
+}
+
+.today-button:hover {
+    background-color: #1aa4c8;
+    color: #FFFFFF;
+}
+
+.active-date-time {
+    background-color: #1aa4c8;
+    color: #FFFFFF;
+}

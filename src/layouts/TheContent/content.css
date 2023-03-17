@@ -1,0 +1,71 @@
+.content-container {
+    background-color: rgba(26, 164, 200, .2);
+    height: calc(100vh - 44px);
+    width: 100%;
+    padding: 14px 22px;  
+}
+
+.function-bar {
+    display: flex;
+}
+
+.search-input {
+    width: 179px;
+    display: inline-block;
+}
+
+.search-icon-input {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -243px -23px;
+	width: 18px;
+	height: 18px;
+}
+
+.filter-product {
+    width: 219px;
+    display: inline-block;
+    margin-left: 11px;
+}
+
+.filter-icon-combobox {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -243px -68px;
+	width: 17px;
+	height: 16px;
+}
+
+.blank-content {
+    flex: 1;
+}
+
+.excel-icon-button {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -287px -111px;
+    width: 18px;
+    height: 17px;
+}
+
+.delete-icon-button {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -463px -111px;
+    width: 18px;
+    height: 18px;
+}
+
+.inline-block {
+    display: inline-block;
+    vertical-align: top;
+}
+
+.excel-button {
+    margin-left: 11px;
+}
+
+.delete-button {
+    margin-left: 10px;
+}
+
+.data-table-content {
+    margin-top: 11px;
+    width: 100%;
+    height: calc(100% - 46px);
+    overflow-x: auto;
+    overflow-y: auto;
+}
+

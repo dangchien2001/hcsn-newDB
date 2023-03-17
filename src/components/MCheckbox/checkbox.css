@@ -1,0 +1,20 @@
+.checkbox-container {
+    width: 14px;
+    height: 14px;
+}
+
+.checkbox-container:hover {
+    box-shadow: 0 0 3pt 2pt #d6f1f9;   
+} 
+
+.checkbox-without-active {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -113px -377px;
+	width: 14px;
+	height: 14px;
+}
+
+.checkbox-with-active {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -157px -377px;
+	width: 14px;
+	height: 14px;
+}

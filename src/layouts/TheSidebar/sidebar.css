@@ -1,0 +1,241 @@
+.sidebar-container {
+    height: 100vh;
+    width: 66px;
+    background-color: #1c3048;
+    padding-top: 11px;
+    padding-left: 11px;
+    padding-right: 11px;
+    position: relative;
+}
+
+.logo {
+    width: 100%;
+    height: 36px;
+    margin-bottom: 15px;
+    cursor: pointer;
+    padding-left: 4px;
+    display: flex;
+}
+
+.logo-img {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -20px -680px;
+    width: 36px;
+    height: 36px;
+}
+
+.sidebar-item {
+    width: 44px;
+    height: 40px;
+    opacity: .2;
+    border-radius: 6px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    margin-bottom: 10px;
+    position: relative;
+}
+
+.sidebar-item:hover {
+    background-color: #1aa4c8;
+    opacity: 1;
+    z-index: 2;
+}
+
+.sidebar-tooltip {
+    display: none;
+    background-color: #FFFFFF;
+    width: 200%;
+}
+
+.short-sidebar:hover .sidebar-tooltip {
+    display: block;
+    z-index: 1;
+}
+
+.sidebar-tooltip {
+    position: absolute;
+    left: 120%;
+}
+
+/*Lớp active dùng cho trang được active*/
+
+.active-icon {
+    background-color: #1aa4c8;
+    opacity: 1;
+}
+
+/*Lớp active dùng cho trang được active*/
+
+/* Các class chứa icon logo sidebar */
+
+/* icon tổng quan */
+/*khi hover*/
+.sidebar-item:hover .overview-icon {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -22px -198px;
+    width: 20px;
+    height: 21px;
+}
+
+/*khi ko hover*/
+.overview-icon {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -21px -153px;
+    width: 22px;
+    height: 22px;
+}
+
+/* icon tài sản */
+/*khi hover*/
+.sidebar-item:hover .asset-icon {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -65px -197px;
+    width: 22px;
+    height: 23px;
+}
+
+/*khi ko hover*/
+.asset-icon {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -65px -153px;
+    width: 22px;
+    height: 23px;
+}
+
+/*khi được chọn*/
+.active-icon .asset-icon {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -65px -197px;
+    width: 22px;
+    height: 23px;
+}
+
+/* icon tài sản đảm bảo */
+/*khi hover*/
+.sidebar-item:hover .collateral-icon {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -110px -197px;
+        width: 21px;
+        height: 22px;
+}
+
+/*khi ko hover*/
+.collateral-icon {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -110px -153px;
+        width: 21px;
+        height: 23px;
+}
+
+/* icon công cụ, dụng cụ */
+/*khi hover*/
+.sidebar-item:hover .tool-icon {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -153px -197px;
+        width: 22px;
+        height: 22px;
+}
+
+/*khi ko hover*/
+.tool-icon {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -153px -153px;
+        width: 22px;
+        height: 22px;
+}
+
+/* icon danh mục */
+/*khi hover*/
+.sidebar-item:hover .category-icon {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -198px -200px;
+        width: 20px;
+        height: 17px;
+}
+
+/*khi ko hover*/
+.category-icon {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -197px -155px;
+        width: 22px;
+        height: 18px;
+}
+
+/* icon tra cứu */
+/*khi hover*/
+.sidebar-item:hover .search-icon {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -241px -197px;
+        width: 22px;
+        height: 22px;
+}
+
+/*khi ko hover*/
+.search-icon {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -241px -153px;
+        width: 22px;
+        height: 22px;
+}
+
+/* icon báo cáo */
+/*khi hover*/
+.sidebar-item:hover .report-icon {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -330px -198px;
+        width: 20px;
+        height: 20px;
+}
+
+/*khi ko hover*/
+.report-icon {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -329px -153px;
+        width: 22px;
+        height: 22px;
+}
+
+/* Các class chứa icon logo sidebar */
+
+.toggle-sidebar {
+    width: calc(100% + 11px + 11px);
+    border-top: 1px solid #FFFFFF;
+    height: 40px;
+    margin-left: -11px;
+    position: absolute;
+    bottom: 0px;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    padding-right: 33px
+}
+
+/*sidebar khi được mở rộng*/
+.long-sidebar {
+    width: 200px;
+}
+
+.logo-text {
+    height: 100%;
+    padding-left: 10px;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    font-family: Roboto Bold;
+    font-size: 22px;
+}
+
+.sidebar-item-long {
+    width: 100%;
+    padding-left: 10px;
+}
+
+.sidebar-item-text {
+    flex: 1;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding-left: 10px;
+    color: #FFFFFF;
+}
+
+.close-sidebar-icon {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -285px -417px;
+    width: 22px;
+    height: 22px;
+    cursor: pointer;
+}
+
+.open-sidebar-icon {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -329px -417px;
+    width: 22px;
+    height: 22px;
+    margin-right: 11px;
+    cursor: pointer;
+}

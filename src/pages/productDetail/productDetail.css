@@ -1,0 +1,148 @@
+.layer-form-product {
+    height: 100vh;
+    width: calc(100vw);
+    background-color: rgba(56, 50, 50, 0.24);
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+}
+
+.form-product {
+    background-color: #FFFFFF;
+    border-radius: 4px;
+    position: relative;
+    z-index: 1;
+}
+
+.form-body-product {
+    display: flex;
+}
+
+.form-product-title {
+    font-family: Roboto Bold;
+    font-size: 20px;
+    margin-top: 24px;
+    margin-left: 24px;
+}
+
+.form-product-left {
+    width: 250px;
+    margin-top: 24px;
+    margin-left: 24px;
+    margin-bottom: 24px;
+}
+
+.department-combobox {
+    margin-top: 14px;
+}
+
+.type-product-combobox {
+    margin-top: 14px;
+}
+
+.quantity-product-input {
+    margin-top: 14px;
+} 
+
+.atrophy-product-input {
+    margin-top: 14px;
+}
+
+.date-buy-product {
+    font-family: Roboto Medium;
+    margin-bottom: 8px;
+    font-size: 13px;
+    margin-top: 14px;
+}
+
+.form-product-right {
+    width: 514px;
+    margin-top: 24px;
+    margin-left: 24px;
+    margin-right: 24px;
+    margin-bottom: 24px;
+}
+
+.department-use-input-product {
+    margin-top: 14px;
+}
+
+.name-type-product-input {
+    margin-top: 14px;
+}
+
+.price-count-year-product {
+    width: 100%;
+    display: flex;
+    margin-top: 14px;
+}
+
+.price-count-product {
+    width: 50%;
+}
+
+.price-count-product-right {
+    margin-left: 14px;
+}
+
+.start-date-use-product {
+    width: calc(50% - 7px);
+}
+
+.form-footer-product {
+    height: 60px;
+    width: 100%;
+    background-color: #EBEBEB;
+    display: flex;
+    align-items: center;
+    border-radius: 0px 0px 4px 4px;
+}
+
+.blank-product {
+    flex: 1;
+}
+
+.cancel-button {
+    width: 100px;
+    display: flex;
+    justify-content: center;
+    background-color: #FFFFFF;
+    color: #1aa4c8;
+}
+
+.cancel-button:hover {
+    color: #FFFFFF;
+}
+
+.save-button {
+    width: 100px;
+    display: flex;
+    justify-content: center;
+    margin-left: 10px;
+    margin-right: 24px;
+}
+
+.exit-icon-product {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -375px -287px;
+	width: 18px;
+	height: 18px;
+    position: absolute;
+    top: 24px;
+    right: 24px;
+    cursor: pointer;
+}
+
+.exit-icon-product:hover .exit-icon-product-tooltip {
+    display: block;
+}
+
+.exit-icon-product-tooltip {
+    position: absolute;
+    top: 24px;
+    right: 0;
+    display: none;
+}

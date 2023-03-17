@@ -1,0 +1,185 @@
+.button-container {
+    background-color: #1aa4c8;
+    border-radius: 3px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .16);
+    height: 36px;
+    display: flex;
+    align-items: center;
+    color: #FFFFFF;
+    padding: 0 12px;
+    cursor: pointer;
+    font-size: 13px;
+    outline: none;
+    border: 0px solid #FFFFFF;    
+}
+
+/*style cho sub button*/
+.sub-button {
+    background-color: #FFFFFF;
+    border-radius: 3px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .16);
+    height: 36px;
+    display: flex;
+    align-items: center;
+    color: #1aa4c8;
+    padding: 0 12px;
+    cursor: pointer;
+    font-size: 13px;
+    outline: none;
+    border: 1px solid #1aa4c8;
+}
+
+/*style cho outline button*/
+.outline-button {
+    background-color: #FFFFFF;
+    border-radius: 3px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .16);
+    height: 36px;
+    display: flex;
+    align-items: center;
+    color: #1F1F1F;
+    padding: 0 12px;
+    cursor: pointer;
+    font-size: 13px;
+    outline: none;
+    border: 1px solid #c5c5c5;
+}
+
+.text-button {
+    font-family: Roboto Medium;
+    font-weight: 500;
+}
+
+/*Đây là những trường hợp đổi màu của button với từng sự kiện*/
+.button-container:hover {
+    background-color: #0582a2;
+}
+
+.button-container:active {
+    background-color: #28b7dc;
+}
+
+.button-container:focus {
+    background-color: #d1edf4;
+}
+
+.button-container:focus:active {
+    background-color: #28b7dc;
+}
+
+.button-container:focus:hover {
+    background-color: #0582a2;
+}
+
+.button-container:hover:active {
+    background-color: #28b7dc;
+}
+
+/*style trạng thái cho sub button*/
+.sub-button:hover {
+    background-color: #d1edf4;
+}
+
+.sub-button:active {
+    background-color: #FFFFFF;
+}
+
+.sub-button:focus {
+    background-color: #FFFFFF;
+    box-shadow: 0 0 3pt 2pt #e8f6f9;
+}
+
+.sub-button:focus:active {
+    background-color: #FFFFFF;
+}
+
+.sub-button:focus:hover {
+    background-color: #d1edf4;
+}
+
+.sub-button:hover:active {
+    background-color: #FFFFFF;
+}
+
+/*style trạng thái cho outline button*/
+.outline-button:hover {
+    background-color: #1aa4c8;
+    color: #FFFFFF;
+}
+
+.outline-button:active {
+    background-color: #1aa4c8;
+}
+
+.outline-button:focus {
+    background-color: #1aa4c8;
+    color: #FFFFFF;
+}
+
+.outline-button:focus:active {
+    background-color: #1aa4c8;
+}
+
+.outline-button:focus:hover {
+    background-color: #1aa4c8;
+    color: #FFFFFF;
+}
+
+.outline-button:hover:active {
+    background-color: #1aa4c8;
+}
+
+/*style cho icon button*/
+.icon-btn-container {
+    height: 36px;
+    width: 36px;
+    background-color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 3px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, .16);
+    cursor: pointer;
+    outline: none;
+    border: 0px;
+    position: relative;
+    z-index: 1;
+}
+
+/*Đây là những trường hợp đổi màu của icon-button với từng sự kiện*/
+.icon-btn-container:hover {
+    background-color: #F6F6F6;
+    z-index: 2;
+}
+
+.icon-btn-container:active {
+    background-color: #EBEBEB;
+}
+
+.icon-btn-container:focus {
+    background-color: #d1edf4;
+}
+
+.icon-btn-container:focus:active {
+    background-color: #EBEBEB;
+}
+
+.icon-btn-container:focus:hover {
+    background-color: #F6F6F6;
+}
+
+.icon-btn-container:hover:active {
+    background-color: #EBEBEB;
+}
+
+.icon-btn-tooltip {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    display: none;
+    width: 300%;
+}
+
+.icon-btn-container:hover .icon-btn-tooltip {
+    display: block;
+}
