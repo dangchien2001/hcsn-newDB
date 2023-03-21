@@ -8,7 +8,8 @@
             <div class="search-input">
                 <MInputWithIcon
                     placeholder="Tìm kiếm tài sản"
-                    v-model="assetSearch"
+                    v-model="assetCodeOrName"
+                    @keyup.enter="() => {assetSearch = assetCodeOrName}"
                 >
                     <div class="search-icon-input"></div>
                 </MInputWithIcon>
@@ -120,7 +121,15 @@
             typeButton="deleteOption"
             @deleteAction="deleteAsset"
         >
-            <span style="font-family: Roboto Bold;">{{ this.listAssetForDelete.length < 10 ? "0" + this.listAssetForDelete.length : this.listAssetForDelete.length }}</span> tài sản đã được chọn. Bạn có muốn xóa các tài sản này khỏi danh sách ?
+            <span v-if="this.listAssetForDelete.length > 1 ? true : false">
+                <span style="font-family: Roboto Bold;">{{ this.listAssetForDelete.length < 10 ? "0" + this.listAssetForDelete.length : this.listAssetForDelete.length }}</span> tài sản đã được chọn. Bạn có muốn xóa các tài sản này khỏi danh sách ?
+            </span>
+            <span v-if="this.listAssetForDelete.length == 1 ? true : false">
+                Bạn có muốn xóa tài sản <span style="font-family: Roboto Bold;">&lt;&lt;{{ this.assetForDeleteOne[0].asset_code }} - {{ this.assetForDeleteOne[0].asset_name }}>></span> ? 
+            </span>
+            <span v-if="this.listAssetForDelete.length == 0 ? true : false">
+                Không có tài sản nào được chọn để xóa.
+            </span>
         </MPopup>
         
     </div>
@@ -243,6 +252,15 @@ export default {
         
     },
 
+    watch: {
+        listAssetForDelete: function(newValue) {
+            if(newValue.length == 1) {
+                axios.get("https://localhost:7210/api/Assets/" + newValue[0])
+                .then(res => {this.assetForDeleteOne = res.data});
+            }
+        }
+    },
+
     data() {
         return {
             isHide: false,
@@ -271,6 +289,11 @@ export default {
             toastMessage: "",
             // biến dùng để tác động vào table thông qua watch của table dùng để reset dữ liệu sau khi xóa
             tableChange: true,
+            // biến hứng dữ liệu binding từ input search
+            assetCodeOrName: "",
+
+            // biến lưu tài sản phục vụ hiển thị tên-mã tài sản để xóa một
+            assetForDeleteOne: [],
         }
     }
 }

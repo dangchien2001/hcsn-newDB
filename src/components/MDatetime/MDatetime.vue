@@ -127,44 +127,18 @@ export default {
         modelValue: String,
     },
     mounted() {
-        const modelValue = new Date(this.modelValue);
-        const fullDateModelValue = modelValue.getDate()+'-'+(modelValue.getMonth() + 1)+'-'+modelValue.getFullYear();
-        const dayModelValue = modelValue.getDay();
-        const fullYearModelValue = modelValue.getFullYear();
-        const monthModelValue = modelValue.getMonth() + 1;
-        const dateModelValue = modelValue.getDate();
-        
-
-        /**
-         * Logic lấy fullDate('DD-MM-YYYY') sau khi component được tạo
-         * Created by: NDCHIEN(2/3/2023)
-         */
-        const today = new Date();
-        const fullDate = today.getDate()+'-'+(today.getMonth() + 1)+'-'+today.getFullYear();
-        const day = today.getDay();
-        const date = today.getDate();
-        const month = today.getMonth() + 1;
-        const year = today.getFullYear();
-
-        /**
-         * Gán giá trị ngày tháng hiện tại cho biến
-         * Created by: NDCHIEN(2/3/2023)
-         */
-        
-            this.fullDate = fullDate;
-            this.day = day;
-            this.date = date;
-            this.month = month;
-            this.year = year;
-            this.handleNumberOfMonth(this.month); 
-        
-        
         /**
          * Gán ngày tháng cho biến nếu có ngày tháng truyền từ ngoài vào
          * Created by: NDCHIEN (16/3/2023)
          */
         if(this.modelValue != null) {
-            
+            const modelValue = new Date(this.modelValue);
+            const fullDateModelValue = modelValue.getDate()+'-'+(modelValue.getMonth() + 1)+'-'+modelValue.getFullYear();
+            const dayModelValue = modelValue.getDay();
+            const fullYearModelValue = modelValue.getFullYear();
+            const monthModelValue = modelValue.getMonth() + 1;
+            const dateModelValue = modelValue.getDate();
+
             this.fullDate = fullDateModelValue;
             this.day = dayModelValue;
             this.date = dateModelValue;
@@ -172,6 +146,36 @@ export default {
             this.year = fullYearModelValue;
             this.handleNumberOfMonth(this.month);
         }
+
+        if(this.modelValue == "") {
+            /**
+             * Logic lấy fullDate('DD-MM-YYYY') sau khi component được tạo
+             * Created by: NDCHIEN(2/3/2023)
+             */
+            const today = new Date();
+            const fullDate = today.getDate()+'-'+(today.getMonth() + 1)+'-'+today.getFullYear();
+            const day = today.getDay();
+            const date = today.getDate();
+            const month = today.getMonth() + 1;
+            const year = today.getFullYear();
+
+            /**
+             * Gán giá trị ngày tháng hiện tại cho biến
+             * Created by: NDCHIEN(2/3/2023)
+             */
+        
+            this.fullDate = fullDate;
+            this.day = day;
+            this.date = date;
+            this.month = month;
+            this.year = year;
+            this.handleNumberOfMonth(this.month); 
+            this.selectDate(date);
+        }
+
+        
+        
+        
 
         /**
          * Logic lấy ngày đầu tiên trong tháng
@@ -384,7 +388,10 @@ export default {
         selectDate(date) {
             this.date = date;
             if(this.date < 10) {
-                this.date = "0" + this.date;
+                this.date = "0" + Number(this.date);
+            }
+            if(this.month < 10) {
+                this.month = "0" + Number(this.month);
             }
             this.isHide = false;
             const selectedDate = this.year + '-' + this.month + '-' + this.date + 'T00:00:00';

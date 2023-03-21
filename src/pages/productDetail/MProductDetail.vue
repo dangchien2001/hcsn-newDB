@@ -49,8 +49,8 @@
                         v-model="this.ProductInfo.DepartmentCode"
                         :isEmpty="isDepartmentCodeEmpty"
                         @result="CheckDepartmentCodeEmpty"
-                        entityEmit="DepartmentId"
-                        @dataEmit="autoSelect($event, 'https://localhost:7210/api/Departments/', 'DepartmentName', 'DepartmentId')"
+                        entityEmit="department_id"
+                        @dataEmit="autoSelect($event, 'https://localhost:7210/api/Departments/', 'DepartmentName', 'DepartmentId', 'department_name')"
                     ></MCombobox>
 
                     <!-- combobox chứa mã loại tài sản -->
@@ -65,8 +65,8 @@
                         v-model="this.ProductInfo.TypeProductCode"
                         :isEmpty="isTypeProductCodeEmpty"
                         @result="CheckTypeProductCodeEmpty"
-                        entityEmit="AssetCategoryId"
-                        @dataEmit="autoSelect($event, 'https://localhost:7210/api/AssetCategories/', 'AssetCategoryName', 'AssetCategoryId')"
+                        entityEmit="asset_category_id"
+                        @dataEmit="autoSelect($event, 'https://localhost:7210/api/AssetCategories/', 'AssetCategoryName', 'TypeProductId', 'asset_category_name')"
                     ></MCombobox>
 
                     <!-- input chứa số lượng -->
@@ -262,6 +262,7 @@
                     text="Hủy"
                     class="cancel-button"
                     type="outline-button"
+                    @click="handleCancel()"
                 ></MButton>
 
                 <!-- nút lưu -->
@@ -306,7 +307,28 @@
                 typeButton="closeOption"
             ></MPopup>
 
+            <!-- popup cảnh báo hủy sau khi đã sửa -->
+            <MPopup
+                title=""
+                :content="'Thông tin thay đổi sẽ không được cập nhật nếu bạn không lưu. Bạn có muốn lưu các thay đổi này ?'"
+                v-if="popupCancelAfterChange"
+                @exitPopup="() => {this.popupCancelAfterChange = false}"
+                @save="handleSaveProduct"
+                @notSave="closeForm"
+                type="warning"
+                typeButton="fullOption"
+            ></MPopup>
 
+            <!-- popup cảnh báo khi ấn hủy -->
+            <MPopup
+                title=""
+                :content="'Bạn có muốn hủy bỏ khai báo tài sản này ?'"
+                v-if="popupCancel"
+                @exitPopup="() => {this.popupCancel = false}"
+                type="warning"
+                typeButton="cancelOption"
+                @cancel="closeForm"
+            ></MPopup>
 
         </div>
 
@@ -338,7 +360,18 @@ export default {
     },
     methods: {
 
-        
+        /**
+         * Hàm dùng để xử lý khi bấm hủy tài sản
+         * Created by: NDCHIEN(19/3/2023)
+         */
+        handleCancel() {
+            if(this.isEqual == true) {
+                this.popupCancel = true;
+            }
+            if(this.isEqual == false) {
+                this.popupCancelAfterChange = true;
+            }
+        },
 
         /**
          * Hàm dùng để gọi API lấy ra tên bộ phân sử dụng và tên loại sản phẩm
@@ -348,12 +381,12 @@ export default {
          * @param {*} entityId 
          * Created by: NDCHIEN(3/3/2023)
          */
-        autoSelect(value, api, entity, entityId) {
+        autoSelect(value, api, entity, entityId, entity_name) {
             this.ProductInfo[entityId] = value;
             try {
                 axios
                     .get(api + value)
-                    .then(res => {(this.ProductInfo[entity] = res.data[0][entity])})
+                    .then(res => {(this.ProductInfo[entity] = res.data[0][entity_name])})
                 } catch (e) {
                     console.log(e);
                 }
@@ -502,23 +535,10 @@ export default {
          * Created by: NDCHIEN(9/3/2023)
          */
         addAsset() {
+            this.newAsset.tracked_year = "2023-03-17T00:00:00";
+            console.log(this.newAsset);
             try {
-                axios.post("https://localhost:7210/api/Assets/", 
-                    {
-                    "AssetCode": this.ProductInfo.ProductCode,
-                    "AssetName": this.ProductInfo.ProductName,
-                    "AssetCategoryId": this.ProductInfo.AssetCategoryId,
-                    "DepartmentId": this.ProductInfo.DepartmentId,
-                    "Quantity": this.ProductInfo.Quantity,
-                    "Price": this.ProductInfo.Price,
-                    "AccumulatedDepreciation": this.ProductInfo.WearRate * this.ProductInfo.Price,
-                    "ResidualValue": this.ProductInfo.ResidualValue,
-                    "CreatedBy": "",
-                    "CreatedDate": "2023-02-28T03:21:36.291Z",
-                    "ModifiedBy": "",
-                    "ModifiedDate": "2023-02-28T03:21:36.291Z"
-                    }
-                )
+                axios.post("https://localhost:7210/api/Assets/", this.newAsset)
                 .then(res => {
                     if(res.data >= 1) {
                         this.$emit("addSuccess");
@@ -606,32 +626,54 @@ export default {
                 
                 // Console log ProductInfo mỗi khi có sự thay đổi
                 this.ProductInfo = newValue;
+                console.log("ProductInfo: ", this.ProductInfo);
                 this.newAsset = {
-                    asset_code: this.ProductInfo.ProductCode,
-                    asset_name: this.ProductInfo.ProductName,
-                    organization_id: "16b4f05f-5ff5-3dba-9751-12b245ff3d02",
-                    organization_code: "abc",
-                    organization_name: "abc",
-                    department_id: this.ProductInfo.DepartmentId,
-                    department_code: this.ProductInfo.DepartmentCode,
-                    department_name: this.ProductInfo.DepartmentName,
-                    asset_category_id: this.ProductInfo.TypeProductId,
-                    asset_category_code: this.ProductInfo.TypeProductCode,
-                    asset_category_name: this.ProductInfo.AssetCategoryName,
-                    purchase_date: this.ProductInfo.PurchaseDate,
-                    cost: this.ProductInfo.Price,
-                    quantity: this.ProductInfo.Quantity,
-                    depreciation_rate: this.ProductInfo.WearRate,
-                    tracked_year: this.trackedYear,
-                    life_time: this.ProductInfo.UseYear,
-                    production_year: this.ProductInfo.DayStartedUsing,
-                    active: 1,
-                    created_by: "NDCHIEN",
-                    created_date: "2023-03-16T22:16:44",
-                    modified_by: "NDCHIEN",
-                    modified_date: "2023-03-16T22:16:44",
-                }
-                console.log('this.ProductInfo: ', this.newAsset);
+                    "asset_code": this.ProductInfo.ProductCode,
+                    "asset_name": this.ProductInfo.ProductName,
+                    "organization_id": "16b4f05f-5ff5-3dba-9751-12b245ff3d02",
+                    "organization_code": "abc",
+                    "organization_name": "abc",
+                    "department_id": this.ProductInfo.DepartmentId,
+                    "department_code": this.ProductInfo.DepartmentCode,
+                    "department_name": this.ProductInfo.DepartmentName,
+                    "asset_category_id": this.ProductInfo.TypeProductId,
+                    "asset_category_code": this.ProductInfo.TypeProductCode,
+                    "asset_category_name": this.ProductInfo.AssetCategoryName,
+                    "purchase_date": this.ProductInfo.PurchaseDate,
+                    "cost": this.ProductInfo.Price,
+                    "quantity": this.ProductInfo.Quantity,
+                    "depreciation_rate": this.ProductInfo.WearRate,
+                    "tracked_year": this.trackedYear,
+                    "life_time": this.ProductInfo.UseYear,
+                    "production_year": this.ProductInfo.DayStartedUsing,
+                    "active": 1,
+                    "created_by": "NDCHIEN",
+                    "created_date": "2023-03-16T22:16:44",
+                    "modified_by": "NDCHIEN",
+                    "modified_date": "2023-03-16T22:16:44",
+                };
+                this.isEqual = ( 
+                    this.newAsset.asset_code == this.newAsset2.asset_code &&
+                    this.newAsset.asset_name == this.newAsset2.asset_name &&
+                    this.newAsset.organization_id == this.newAsset2.organization_id &&
+                    this.newAsset.organization_code == this.newAsset2.organization_code &&
+                    this.newAsset.organization_name == this.newAsset2.organization_name &&
+                    this.newAsset.department_id == this.newAsset2.department_id &&
+                    this.newAsset.department_code == this.newAsset2.department_code &&
+                    this.newAsset.department_name == this.newAsset2.department_name &&
+                    this.newAsset.purchase_date == this.newAsset2.purchase_date &&
+                    this.newAsset.cost == this.newAsset2.cost &&
+                    this.newAsset.quantity == this.newAsset2.quantity &&
+                    this.newAsset.depreciation_rate == this.newAsset2.depreciation_rate &&
+                    this.newAsset.tracked_year == this.newAsset2.tracked_year &&
+                    this.newAsset.life_time == this.newAsset2.life_time &&
+                    this.newAsset.production_year == this.newAsset2.production_year &&
+                    this.newAsset.active == this.newAsset2.active &&
+                    this.newAsset.created_by == this.newAsset2.created_by &&
+                    this.newAsset.created_date == this.newAsset2.created_date &&
+                    this.newAsset.modified_by == this.newAsset2.modified_by &&
+                    this.newAsset.modified_date == this.newAsset2.modified_date 
+                );
             },
             deep: true
         },
@@ -679,7 +721,7 @@ export default {
                             (this.ProductInfo.DepartmentCode = res.data[0].department_code),
                             (this.ProductInfo.TypeProductCode = res.data[0].asset_category_code),
                             (this.ProductInfo.Quantity = res.data[0].quantity),
-                            (this.ProductInfo.Price = res.data[0].cost),
+                            (this.ProductInfo.Price = Math.round(res.data[0].cost)),
                             (this.ProductInfo.DepartmentName = res.data[0].department_name),
                             (this.ProductInfo.AssetCategoryName = res.data[0].asset_category_name),
                             (this.ProductInfo.TypeProductId = res.data[0].asset_category_id),
@@ -691,7 +733,32 @@ export default {
                             (this.ProductInfo.PurchaseDate = res.data[0].purchase_date),
                             (this.ProductInfo.YearOfTracking = Number(new Date(res.data[0].tracked_year).getFullYear())),
                             (this.trackedYear = res.data[0].tracked_year),
-                            (this.forceRerender())
+                            (this.forceRerender()),
+                            (this.newAsset2 = {
+                                "asset_code": this.ProductInfo.ProductCode,
+                                "asset_name": this.ProductInfo.ProductName,
+                                "organization_id": "16b4f05f-5ff5-3dba-9751-12b245ff3d02",
+                                "organization_code": "abc",
+                                "organization_name": "abc",
+                                "department_id": this.ProductInfo.DepartmentId,
+                                "department_code": this.ProductInfo.DepartmentCode,
+                                "department_name": this.ProductInfo.DepartmentName,
+                                "asset_category_id": this.ProductInfo.TypeProductId,
+                                "asset_category_code": this.ProductInfo.TypeProductCode,
+                                "asset_category_name": this.ProductInfo.AssetCategoryName,
+                                "purchase_date": this.ProductInfo.PurchaseDate,
+                                "cost": this.ProductInfo.Price,
+                                "quantity": this.ProductInfo.Quantity,
+                                "depreciation_rate": this.ProductInfo.WearRate,
+                                "tracked_year": this.trackedYear,
+                                "life_time": this.ProductInfo.UseYear,
+                                "production_year": this.ProductInfo.DayStartedUsing,
+                                "active": 1,
+                                "created_by": "NDCHIEN",
+                                "created_date": "2023-03-16T22:16:44",
+                                "modified_by": "NDCHIEN",
+                                "modified_date": "2023-03-16T22:16:44",
+                            })
                         })
             } catch (e) {
                 console.log(e);
@@ -778,8 +845,16 @@ export default {
             componentKey: 1,
             // đối tượng dùng để chuyển product thành asset
             newAsset: {},
+            // đối tượng dùng để so sánh phục vụ phát hiện người dùng sửa
+            newAsset2: {},
             // biến lưu ngày theo dõi sản phẩm trên phần mềm
             trackedYear: null,
+            // biến phát hiện sự thay đổi bằng cách so sánh sự khác biệt giữa newAsset và newAsset2
+            isEqual: true,
+            // biến dùng để ẩn hiện popup cancel khi ko có sự thay đổi
+            popupCancel: false,
+            // biến dùng để ẩn hiện popup cancel khi phát hiện sự thay đổi
+            popupCancelAfterChange: false,
         }
     }
 }

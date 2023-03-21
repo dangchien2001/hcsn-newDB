@@ -39,6 +39,7 @@
                         type="outline-button"
                         class="outline-button"
                         v-if="fullOption"
+                        @click="exitPopup"
                     ></MButton>
 
                     <!-- sub button -->
@@ -47,6 +48,7 @@
                         type="sub-button"
                         class="sub-button"
                         v-if="fullOption"
+                        @click="() => {this.$emit('notSave')}"
                     ></MButton>
 
                     <!-- main button -->
@@ -55,6 +57,7 @@
                         type="button-container"
                         class="main-button"
                         v-if="fullOption"
+                        @click="() => {this.$emit('save')}"
                     ></MButton>
 
                     <!-- main button đồng ý -->
@@ -91,6 +94,23 @@
                         class="main-button"
                         v-if="deleteOption"
                         @click="() => {this.$emit('deleteAction')}"
+                    ></MButton>
+
+                    <!-- outline-main option -->
+                    <MButton
+                        text="Không"
+                        type="outline-button"
+                        class="outline-button"
+                        v-if="cancelOption"   
+                        @click="exitPopup"                    
+                    ></MButton>
+
+                    <MButton
+                        text="Hủy bỏ"
+                        type="button-container"
+                        class="main-button"
+                        v-if="cancelOption"
+                        @click="() => {this.$emit('cancel')}"
                     ></MButton>
 
                 </div>
@@ -148,6 +168,9 @@ export default {
         if(this.typeButton == "deleteOption") {
             this.deleteOption = true;
         }
+        if(this.typeButton == "cancelOption") {
+            this.cancelOption = true;
+        }
         
     },
     data() {
@@ -156,6 +179,7 @@ export default {
             acceptOption: false,
             closeOption: false,
             deleteOption: false,
+            cancelOption: false,
         }
     }
 }

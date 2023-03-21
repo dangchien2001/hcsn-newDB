@@ -451,7 +451,7 @@ export default {
                         (this.$emit("emitData", this.datas)), 
                         (this.TotalData = res.data.Data.length), 
                         (this.TotalQuantity = this.Total("quantity")),
-                        (this.TotalPrice = this.Total("Price")),
+                        (this.TotalPrice = this.Total("cost")),
                         (this.TotalAccumulatedDepreciation = this.Total("AccumulatedDepreciation")),
                         (this.TotalResidualValue = this.Total("ResidualValue"))
                     })
