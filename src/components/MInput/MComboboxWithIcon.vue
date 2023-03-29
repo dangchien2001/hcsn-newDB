@@ -37,6 +37,15 @@
             v-if="isOpen"
             @mousedown="(event)=>{event.preventDefault()}"
         >
+
+            <div 
+                class="combobox-with-icon-item"
+                @click="selectData('')"
+            >
+                <div class="icon-tick-v"></div>
+                Tất cả                
+            </div> 
+
             <div 
                 class="combobox-with-icon-item"
                 @click="selectData(data)"
@@ -87,6 +96,12 @@ export default {
          * created by: NDChien (10/02/2023)
          */
         selectData(data) {
+            if(data == '') {
+                this.$emit("emit", data);
+                this.text = "Tất cả";
+                this.isOpen = false;
+                return;
+            }
             this.$emit("emit", data);
             this.text = data[this.entity];
             this.isOpen = false;

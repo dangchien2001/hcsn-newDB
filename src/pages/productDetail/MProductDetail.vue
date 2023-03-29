@@ -83,17 +83,17 @@
                     ></MNumberInput>
 
                     <!-- input chứa tỉ lệ hao mòn -->
-                    <MNumberInput
+                    <MNumberRateInput
                         label="Tỷ lệ hao mòn (%)"
-                        :disabled="false"
-                        :allowArrow = "true"   
+                        :disabled="true"
+                        :allowArrow = "false"   
                         style="margin-top: 14px"  
                         :important="true"    
                         :alowNull="false"  
                         v-model="ProductInfo.WearRate"   
                         :isEqualZero="isWearRateEqualZero"  
                         @result="CheckWearRateEqualZero"   
-                    ></MNumberInput>
+                    ></MNumberRateInput>
 
                     <!-- datetime picker ngày mua -->
                     <div 
@@ -202,7 +202,7 @@
                             <MNumberInput
                                 label="Giá trị hao mòn năm"
                                 :allowArrow="false"
-                                :disabled="false"
+                                :disabled="true"
                                 :important="true"
                                 :alowNull="false"
                                 v-model="ProductInfo.ResidualValue"
@@ -330,6 +330,18 @@
                 @cancel="closeForm"
             ></MPopup>
 
+            <!-- popup cảnh báo trùng mã -->
+            <MPopup
+                title=""
+                
+                v-if="isShowPopupDuplicateCode"
+                @exitPopup="() => {this.isShowPopupDuplicateCode = false}"
+                type="warning"
+                typeButton="closeOption"
+            >
+                <span>Mã tài sản <span style="font-family: Roboto Bold;">{{this.ProductInfo.ProductCode}}</span> đã tồn tại</span>
+            </MPopup>
+
         </div>
 
     </div>
@@ -341,6 +353,7 @@ import MCombobox from '@/components/MInput/MCombobox.vue';
 import MDatetime from '@/components/MDatetime/MDatetime.vue';
 import MButton from '@/components/MButton/MButton.vue';
 import MNumberInput from '@/components/MInput/MNumberInput.vue';
+import MNumberRateInput from '@/components/MInput/MNumberRateInput.vue';
 import MPopup from '@/components/MPopup/MPopup.vue';
 import axios from 'axios';
 import MTooltip from '@/components/MTooltip/MTooltip.vue';
@@ -356,7 +369,7 @@ export default {
         typeForm: String,
     },
     components: {
-        MInput, MCombobox, MDatetime, MButton, MNumberInput, MPopup, MTooltip
+        MInput, MCombobox, MDatetime, MButton, MNumberInput, MPopup, MTooltip, MNumberRateInput
     },
     methods: {
 
@@ -365,11 +378,17 @@ export default {
          * Created by: NDCHIEN(19/3/2023)
          */
         handleCancel() {
-            if(this.isEqual == true) {
+            if(this.isEqual == true && this.dataForEdit != null) {
+                this.closeForm();
+            }
+            if(this.isEqual == false && this.dataForEdit != null) {
+                this.popupCancelAfterChange = true;
+            }
+            if(this.isChangeForAdd == false && this.dataForEdit == null) {
                 this.popupCancel = true;
             }
-            if(this.isEqual == false) {
-                this.popupCancelAfterChange = true;
+            if(this.isChangeForAdd == true && this.dataForEdit == null) {
+                this.closeForm();
             }
         },
 
@@ -386,7 +405,16 @@ export default {
             try {
                 axios
                     .get(api + value)
-                    .then(res => {(this.ProductInfo[entity] = res.data[0][entity_name])})
+                    .then(res => 
+                    {
+                        (this.ProductInfo[entity] = res.data[0][entity_name]);
+                        if(this.dataForEdit == null) {
+                            if(entity == 'AssetCategoryName') {
+                                (this.ProductInfo.WearRate = res.data[0].depreciation_rate), (this.ProductInfo.UseYear = res.data[0].life_time)
+                            }                           
+                        }
+                        
+                    })
                 } catch (e) {
                     console.log(e);
                 }
@@ -513,6 +541,11 @@ export default {
             if(this.typeForm == 'add') {
                 this.addAsset();
             }
+
+            // gọi API nếu hàm không return lỗi
+            if(this.typeForm == 'clone') {
+                this.cloneAsset();
+            }
         },
 
         /**
@@ -524,7 +557,8 @@ export default {
                 axios.put("https://localhost:7210/api/Assets/" + this.ProductInfo.ProductId , this.newAsset)
                 .then(res => {
                     (this.numberOfAffectedRows = res.data)
-                });               
+                }) 
+                .catch(res => {this.msgAddFail = res.response.data.ErrorCode; });               
             } catch(e) {
                 console.log(e);
             }
@@ -536,14 +570,33 @@ export default {
          */
         addAsset() {
             this.newAsset.tracked_year = "2023-03-17T00:00:00";
-            console.log(this.newAsset);
+            console.log("this.newAsset: ", this.newAsset);
             try {
                 axios.post("https://localhost:7210/api/Assets/", this.newAsset)
                 .then(res => {
                     if(res.data >= 1) {
                         this.$emit("addSuccess");
                     }
-                });               
+                })
+                .catch(res => {this.msgAddFail = res.response.data.ErrorCode; });               
+            } catch(e) {
+                console.log(e);
+            }
+        },
+
+        /**
+         * Hàm dùng để clone tài sản
+         * Created by: NDCHIEN(9/3/2023)
+         */
+        cloneAsset() {
+            this.newAsset.tracked_year = "2023-03-17T00:00:00";
+            console.log(this.newAsset);
+            try {
+                axios.post("https://localhost:7210/api/Assets/", this.newAsset)
+                .then(res => {
+                    (this.numberOfAffectedRows = res.data)
+                })
+                .catch(res => {this.msgAddFail = res.response.data.ErrorCode; });               
             } catch(e) {
                 console.log(e);
             }
@@ -616,6 +669,12 @@ export default {
     },
     watch: {
 
+        msgAddFail: function(newValue) {
+            if(newValue == 4) {
+                this.isShowPopupDuplicateCode = true;
+            }
+        },
+
         /**
          * Đối tượng product được hình thành với bất kì sự thay đổi nào của các input
          * Created by: NDCHIEN(2/3/2023)
@@ -623,10 +682,61 @@ export default {
         ProductInfo: {
             handler(newValue) {
                 this.ProductInfo.ResidualValue = this.ProductInfo.WearRate * this.ProductInfo.Price / 100;
-                
                 // Console log ProductInfo mỗi khi có sự thay đổi
                 this.ProductInfo = newValue;
                 console.log("ProductInfo: ", this.ProductInfo);
+                console.log("this.assetForAdd: ", this.assetForAdd);
+                
+                if(this.dataForEdit == null) {
+                    this.newAsset = {
+                    "asset_code": this.ProductInfo.ProductCode,
+                    "asset_name": this.ProductInfo.ProductName,
+                    "organization_id": "16b4f05f-5ff5-3dba-9751-12b245ff3d02",
+                    "organization_code": "abc",
+                    "organization_name": "abc",
+                    "department_id": this.ProductInfo.DepartmentId,
+                    "department_code": this.ProductInfo.DepartmentCode,
+                    "department_name": this.ProductInfo.DepartmentName,
+                    "asset_category_id": this.ProductInfo.TypeProductId,
+                    "asset_category_code": this.ProductInfo.TypeProductCode,
+                    "asset_category_name": this.ProductInfo.AssetCategoryName,
+                    "purchase_date": this.ProductInfo.PurchaseDate,
+                    "cost": this.ProductInfo.Price,
+                    "quantity": this.ProductInfo.Quantity,
+                    "depreciation_rate": this.ProductInfo.WearRate,
+                    "tracked_year": this.trackedYear,
+                    "life_time": this.ProductInfo.UseYear,
+                    "production_year": this.ProductInfo.DayStartedUsing,
+                    "active": 1,
+                    "created_by": "NDCHIEN",
+                    "created_date": "2023-03-16T22:16:44",
+                    "modified_by": "NDCHIEN",
+                    "modified_date": "2023-03-16T22:16:44",
+                };
+
+                    this.isChangeForAdd = (
+                        this.assetForAdd.ProductCode == this.ProductInfo.ProductCode &&
+                        this.assetForAdd.ProductName == this.ProductInfo.ProductName &&
+                        this.assetForAdd.DepartmentId == this.ProductInfo.DepartmentId &&
+                        this.assetForAdd.DepartmentCode == this.ProductInfo.DepartmentCode &&
+                        this.assetForAdd.DepartmentName == this.ProductInfo.DepartmentName &&
+                        this.assetForAdd.TypeProductCode == this.ProductInfo.TypeProductCode &&
+                        this.assetForAdd.TypeProductId == this.ProductInfo.TypeProductId &&
+                        this.assetForAdd.AssetCategoryName == this.ProductInfo.AssetCategoryName &&
+                        this.assetForAdd.Quantity == this.ProductInfo.Quantity &&
+                        this.assetForAdd.Price == this.ProductInfo.Price &&
+                        this.assetForAdd.UseYear == this.ProductInfo.UseYear &&
+                        this.assetForAdd.WearRate == this.ProductInfo.WearRate &&
+                        this.assetForAdd.ResidualValue == this.ProductInfo.ResidualValue &&
+                        this.assetForAdd.YearOfTracking == this.ProductInfo.YearOfTracking &&
+                        this.assetForAdd.PurchaseDate == this.ProductInfo.PurchaseDate &&
+                        this.assetForAdd.DayStartedUsing == this.ProductInfo.DayStartedUsing
+                    );
+                    console.log("this.isChangeForAdd: ", this.isChangeForAdd);
+                }
+            
+                if(this.dataForEdit != null) {
+
                 this.newAsset = {
                     "asset_code": this.ProductInfo.ProductCode,
                     "asset_name": this.ProductInfo.ProductName,
@@ -652,6 +762,8 @@ export default {
                     "modified_by": "NDCHIEN",
                     "modified_date": "2023-03-16T22:16:44",
                 };
+                console.log("this.newAsset: ", this.newAsset);
+                console.log("this.newAsset2: ", this.newAsset2);
                 this.isEqual = ( 
                     this.newAsset.asset_code == this.newAsset2.asset_code &&
                     this.newAsset.asset_name == this.newAsset2.asset_name &&
@@ -674,6 +786,15 @@ export default {
                     this.newAsset.modified_by == this.newAsset2.modified_by &&
                     this.newAsset.modified_date == this.newAsset2.modified_date 
                 );
+                console.log("this.isEqual: ", this.isEqual);
+                }
+                /**
+                 * Tự động tính tỉ lệ hao mòn dựa trên số năm sử dụng
+                 * Created by: NDCHIEN(23/3/2023)
+                 */
+                if(newValue.UseYear > 0) {
+                    this.ProductInfo.WearRate = Math.round(1 / newValue.UseYear * 1000000) / 1000000;
+                }          
             },
             deep: true
         },
@@ -691,7 +812,7 @@ export default {
                 this.$emit('showEditSuccessToast');               
                 this.$emit('closeForm');
             }
-        }
+        },
         
     },
     mounted() {
@@ -764,6 +885,67 @@ export default {
                 console.log(e);
             }
         }
+
+        /**
+         * Gọi API lấy dữ liệu theo ID phục vụ Clone
+         * Created by: NDCHIEN(24/3/2023)
+         */
+        if(this.dataForClone != null) {
+            // Gọi API lấy product theo id
+            try {
+                axios
+                    .get("https://localhost:7210/api/Assets/" + this.dataForClone)
+                    .then(res => 
+                        {
+
+                            (this.ProductInfo.ProductName = res.data[0].asset_name),
+                            (this.ProductInfo.DepartmentCode = res.data[0].department_code),
+                            (this.ProductInfo.TypeProductCode = res.data[0].asset_category_code),
+                            (this.ProductInfo.Quantity = res.data[0].quantity),
+                            (this.ProductInfo.Price = Math.round(res.data[0].cost)),
+                            (this.ProductInfo.DepartmentName = res.data[0].department_name),
+                            (this.ProductInfo.AssetCategoryName = res.data[0].asset_category_name),
+                            (this.ProductInfo.TypeProductId = res.data[0].asset_category_id),
+                            (this.ProductInfo.DepartmentId = res.data[0].department_id),
+                            (this.ProductInfo.UseYear = res.data[0].life_time),
+                            (this.ProductInfo.ProductId = res.data[0].asset_id),
+                            (this.ProductInfo.WearRate = res.data[0].depreciation_rate),
+                            (this.ProductInfo.DayStartedUsing = res.data[0].production_year),
+                            (this.ProductInfo.PurchaseDate = res.data[0].purchase_date),
+                            (this.ProductInfo.YearOfTracking = Number(new Date(res.data[0].tracked_year).getFullYear())),
+                            (this.trackedYear = res.data[0].tracked_year),
+                            (this.forceRerender()),
+                            (this.newAsset2 = {
+                                "asset_code": this.ProductInfo.ProductCode,
+                                "asset_name": this.ProductInfo.ProductName,
+                                "organization_id": "16b4f05f-5ff5-3dba-9751-12b245ff3d02",
+                                "organization_code": "abc",
+                                "organization_name": "abc",
+                                "department_id": this.ProductInfo.DepartmentId,
+                                "department_code": this.ProductInfo.DepartmentCode,
+                                "department_name": this.ProductInfo.DepartmentName,
+                                "asset_category_id": this.ProductInfo.TypeProductId,
+                                "asset_category_code": this.ProductInfo.TypeProductCode,
+                                "asset_category_name": this.ProductInfo.AssetCategoryName,
+                                "purchase_date": this.ProductInfo.PurchaseDate,
+                                "cost": this.ProductInfo.Price,
+                                "quantity": this.ProductInfo.Quantity,
+                                "depreciation_rate": this.ProductInfo.WearRate,
+                                "tracked_year": this.trackedYear,
+                                "life_time": this.ProductInfo.UseYear,
+                                "production_year": this.ProductInfo.DayStartedUsing,
+                                "active": 1,
+                                "created_by": "NDCHIEN",
+                                "created_date": "2023-03-16T22:16:44",
+                                "modified_by": "NDCHIEN",
+                                "modified_date": "2023-03-16T22:16:44",
+                            })
+                        })
+            } catch (e) {
+                console.log(e);
+            }
+        }
+
         /**
          * Gọi API lấy mã lớn nhất để thêm, nhân bản tài sản
          */
@@ -772,7 +954,23 @@ export default {
                 axios
                     .get('https://localhost:7210/api/Assets/MaxAssetCode')
                     .then(res => {
-                        (this.ProductInfo.ProductCode = res.data)
+                        (this.ProductInfo.ProductCode = res.data),
+                        (this.assetForAdd.ProductCode = this.ProductInfo.ProductCode),
+                        (this.assetForAdd.ProductName = this.ProductInfo.ProductName),
+                        (this.assetForAdd.DepartmentId = this.ProductInfo.DepartmentId),
+                        (this.assetForAdd.DepartmentCode = this.ProductInfo.DepartmentCode),
+                        (this.assetForAdd.DepartmentName = this.ProductInfo.DepartmentName),
+                        (this.assetForAdd.TypeProductCode = this.ProductInfo.TypeProductCode),
+                        (this.assetForAdd.TypeProductId = this.ProductInfo.TypeProductId),
+                        (this.assetForAdd.AssetCategoryName = this.ProductInfo.AssetCategoryName),
+                        (this.assetForAdd.Quantity = this.ProductInfo.Quantity),
+                        (this.assetForAdd.Price = this.ProductInfo.Price),
+                        (this.assetForAdd.UseYear = this.ProductInfo.UseYear),
+                        (this.assetForAdd.WearRate = this.ProductInfo.WearRate),
+                        (this.assetForAdd.ResidualValue = this.ProductInfo.ResidualValue),
+                        (this.assetForAdd.YearOfTracking = this.ProductInfo.YearOfTracking),
+                        (this.assetForAdd.PurchaseDate = this.ProductInfo.PurchaseDate),
+                        (this.assetForAdd.DayStartedUsing = this.ProductInfo.DayStartedUsing)
                     })
             } catch (e) {
                 console.log(e);
@@ -855,6 +1053,32 @@ export default {
             popupCancel: false,
             // biến dùng để ẩn hiện popup cancel khi phát hiện sự thay đổi
             popupCancelAfterChange: false,
+            // biến dùng để hứng msg sau khi add fail
+            msgAddFail: "",
+            // biến dùng để ẩn hiện popup trùng mã
+            isShowPopupDuplicateCode: false,
+            // biến dùng để so sánh sự thay đổi phục vụ thêm tài sản
+            assetForAdd: {
+                ProductId: "",
+                ProductCode: "",
+                ProductName: "",
+                DepartmentId: "",
+                DepartmentCode: "",
+                DepartmentName: "",
+                TypeProductCode: "",
+                TypeProductId: "",
+                AssetCategoryName: "",
+                Quantity: 0,
+                Price: 0,
+                UseYear: 0,
+                WearRate: 0,
+                ResidualValue: 0,
+                YearOfTracking: 0,
+                PurchaseDate: "",
+                DayStartedUsing: "",
+            },
+            // biến dùng để hứng sự thay đổi phục vụ thêm tài sản
+            isChangeForAdd: false,
         }
     }
 }

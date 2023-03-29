@@ -84,7 +84,7 @@
                 </div>
                 <div 
                     class="clone-icon"
-                    @click="cloneProduct(item.ProductId)"
+                    @click="cloneProduct(item.asset_id)"
                 >
                     <MTooltip
                         class="clone-tooltip"
@@ -243,6 +243,9 @@
         :dataForClone="data"
         v-if="isShowCloneForm"
         @closeForm="closeCloneForm"
+        @showEditSuccessToast=showCloneSuccessToast       
+        typeForm="clone"
+        @cloneSuccess="() => {console.log('abc')}"
     ></MProductDetail>
     
 </div>
@@ -262,10 +265,13 @@ export default {
     },
     props: {
         api: String,
+        apiTotal: String,
         model: String,
         filter: String,
         entity: String,
         tableChange: Boolean,
+        filterDepartment: String,
+        filterAssetCategory: String
     },
     created() {
 
@@ -275,13 +281,24 @@ export default {
                 .get(this.api + '?PageNumber=' + this.PageIndex + '&PageSize=' + this.PageSize)
                 .then(res => {
                     (this.datas = this.mappingArray(res.data.Data)), 
-                    (this.$emit("emitData", this.datas)), 
-                    (this.TotalData = res.data.Data.length), 
-                    (this.TotalQuantity = this.Total("quantity")),
-                    (this.TotalPrice = this.Total("cost")),
-                    (this.TotalAccumulatedDepreciation = this.Total("AccumulatedDepreciation")),
-                    (this.TotalResidualValue = this.Total("ResidualValue"))
+                    (this.$emit("emitData", this.datas))
                 })
+        } catch (e) {
+            console.log(e);
+        }
+
+        // gọi api dùng để hiện tổng số kết quả
+        try {
+            axios
+                .get(this.apiTotal)
+                .then(res => {
+                    (this.TotalData = res.data.TotalRecord), 
+                    (this.TotalQuantity = res.data.TotalQuantity),
+                    (this.TotalPrice = res.data.TotalPrice),
+                    (this.TotalAccumulatedDepreciation = res.data.TotalDepreciationValue),
+                    (this.TotalResidualValue = res.data.TotalPrice - res.data.TotalDepreciationValue)
+                })
+                .catch(res => console.log(res))
         } catch (e) {
             console.log(e);
         }
@@ -448,12 +465,42 @@ export default {
                     .get(this.api + '?PageNumber=' + 1 + '&PageSize=' + this.PageSize)
                     .then(res => {
                         (this.datas = this.mappingArray(res.data.Data)),
-                        (this.$emit("emitData", this.datas)), 
-                        (this.TotalData = res.data.Data.length), 
-                        (this.TotalQuantity = this.Total("quantity")),
-                        (this.TotalPrice = this.Total("cost")),
-                        (this.TotalAccumulatedDepreciation = this.Total("AccumulatedDepreciation")),
-                        (this.TotalResidualValue = this.Total("ResidualValue"))
+                        (this.$emit("emitData", this.datas))                       
+                    })
+            } catch (e) {
+                console.log(e);
+            }
+        },
+
+        /**
+         * Hàm dùng để hiện toast sau khi clone thành công 
+         */
+        showCloneSuccessToast() {
+            this.$emit('showEditSuccessToast');
+            // gọi api được truyền vào từ props
+            try {
+                axios
+                    .get(this.api + '?PageNumber=' + 1 + '&PageSize=' + this.PageSize)
+                    .then(res => {
+                        (this.datas = this.mappingArray(res.data.Data)),
+                        (this.$emit("emitData", this.datas))
+                    })
+            } catch (e) {
+                console.log(e);
+            }
+        },
+
+        /**
+         * Hàm dùng để filter data 
+         * Created by: NDCHIEN(24/3/2023)
+         */
+        filterData() {
+            try {
+                axios
+                    .get(this.api + '?assetFilter=' + this.filter + '&PageNumber=' + this.PageIndex + '&PageSize=' + this.PageSize + '&departmentFilter=' + this.filterDepartment + '&assetCategoryFilter=' + this.filterAssetCategory)
+                    .then(res => {
+                        (this.datas = this.mappingArray(res.data.Data)),
+                        (this.$emit("emitData", this.datas))
                     })
             } catch (e) {
                 console.log(e);
@@ -484,12 +531,7 @@ export default {
                     .get(this.api + '?assetFilter=' + this.filter + '&PageNumber=' + this.PageIndex + '&PageSize=' + newValue)
                     .then(res => {
                         (this.datas = this.mappingArray(res.data.Data)),
-                        (this.$emit("emitData", this.datas)), 
-                        (this.TotalData = res.data.Data.length), 
-                        (this.TotalQuantity = this.Total("quantity")),
-                        (this.TotalPrice = this.Total("cost")),
-                        (this.TotalAccumulatedDepreciation = this.Total("AccumulatedDepreciation")),
-                        (this.TotalResidualValue = this.Total("ResidualValue"))
+                        (this.$emit("emitData", this.datas))
                     })
             } catch (e) {
                 console.log(e);
@@ -516,12 +558,7 @@ export default {
                     .get(this.api + '?assetFilter=' + this.filter + '&PageNumber=' + newValue + '&PageSize=' + this.PageSize)
                     .then(res => {
                         (this.datas = this.mappingArray(res.data.Data)),
-                        (this.$emit("emitData", this.datas)), 
-                        (this.TotalData = res.data.Data.length), 
-                        (this.TotalQuantity = this.Total("quantity")),
-                        (this.TotalPrice = this.Total("cost")),
-                        (this.TotalAccumulatedDepreciation = this.Total("AccumulatedDepreciation")),
-                        (this.TotalResidualValue = this.Total("ResidualValue"))
+                        (this.$emit("emitData", this.datas))
                     })
             } catch (e) {
                 console.log(e);
@@ -529,25 +566,27 @@ export default {
         },
 
         /**
-         * Hàm gọi API tìm kiếm
+         * Hàm gọi API tìm kiếm theo tài sản
          * Created by: NDCHIEN(2/3/2023)
          */
-        filter: function(newValue) {
-            try {
-                axios
-                    .get(this.api + '?assetFilter=' + newValue + '&PageNumber=' + this.PageIndex + '&PageSize=' + this.PageSize)
-                    .then(res => {
-                        (this.datas = this.mappingArray(res.data.Data)),
-                        (this.$emit("emitData", this.datas)), 
-                        (this.TotalData = res.data.Data.length), 
-                        (this.TotalQuantity = this.Total("quantity")),
-                        (this.TotalPrice = this.Total("cost")),
-                        (this.TotalAccumulatedDepreciation = this.Total("AccumulatedDepreciation")),
-                        (this.TotalResidualValue = this.Total("ResidualValue"))
-                    })
-            } catch (e) {
-                console.log(e);
-            }
+        filter: function() {
+            this.filterData();
+        },
+
+        /**
+         * Hàm gọi API tìm kiếm theo phòng ban
+         * @param {*} newValue 
+         */
+        filterDepartment: function() {
+            this.filterData();
+        },
+
+        /**
+         * Hàm gọi API tìm kiếm theo loai tai san
+         * @param {*} newValue 
+         */
+        filterAssetCategory: function() {
+            this.filterData();
         },
 
         /**
@@ -564,12 +603,7 @@ export default {
                     .get(this.api + '?assetFilter=' + this.filter + '&PageNumber=' + this.PageIndex + '&PageSize=' + this.PageSize)
                     .then(res => {                       
                         (this.datas = this.mappingArray(res.data.Data)),
-                        (this.$emit("emitData", this.datas)), 
-                        (this.TotalData = res.data.Data.length), 
-                        (this.TotalQuantity = this.Total("quantity")),
-                        (this.TotalPrice = this.Total("cost")),
-                        (this.TotalAccumulatedDepreciation = this.Total("AccumulatedDepreciation")),
-                        (this.TotalResidualValue = this.Total("ResidualValue")),
+                        (this.$emit("emitData", this.datas)),
                         (this.unSelectRow()),
                         (this.isCheckboxHeaderSelect = false)
                     })

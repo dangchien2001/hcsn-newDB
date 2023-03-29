@@ -21,7 +21,7 @@
                     placeholder="Loại tài sản"
                     :api="api.AssetCategoryGetAll"
                     entity="asset_category_name"
-                    @emit="assetFilter($event, 'asset_category_id')"
+                    @emit="assetFilter($event, 'asset_category_id', 'assetCategorySearch')"
                 >
                     <div class="filter-icon-combobox"></div>
                 </MComboboxWithIcon>
@@ -33,7 +33,7 @@
                     placeholder="Bộ phận sử dụng"
                     :api="api.DepartmentGetAll"
                     entity="department_name"
-                    @emit="assetFilter($event, 'department_id')"
+                    @emit="assetFilter($event, 'department_id', 'departmentSearch')"
                 >
                     <div class="filter-icon-combobox"></div>
                 </MComboboxWithIcon>
@@ -82,10 +82,13 @@
         <div class="data-table-content">
             <MTable
                 :api="api.FilterAndPaging" 
+                :apiTotal="api.TotalResult"
                 model="product"
                 @emitData="getDataFromTable"
                 @NumberOfRecords="NumberOfRecords"
                 :filter="assetSearch"
+                :filterDepartment="departmentSearch"
+                :filterAssetCategory="assetCategorySearch"
                 entity="asset_id"
                 @showEditSuccessToast="showEditSuccessToast('Lưu dữ liệu thành công')"
                 @listAssetForDelete="emitDeleteAsset"
@@ -165,6 +168,7 @@ export default {
             this.tableChange = !this.tableChange;
         },
 
+
         /**
          * Hàm dùng để lấy dữ liệu được emit từ table phục vụ xóa bản ghi
          */
@@ -238,8 +242,12 @@ export default {
          * Hàm lọc dữ liệu theo phòng ban hoặc loại tài sản
          * @param {} value 
          */
-        assetFilter(value, entity) {
-            this.assetSearch = value[entity];
+        assetFilter(value, entity, entitySearch) {
+            if(value == '') {
+                this[entitySearch] = '';
+                return;
+            }
+            this[entitySearch] = value[entity];
         },
 
         /**
@@ -279,10 +287,15 @@ export default {
                 DepartmentGetAll: resource.API.DepartmentGetAll,
                 AssetCategoryGetAll: resource.API.AssetCategoryGetAll,
                 FilterAndPaging: resource.API.FilterAndPaging,
+                TotalResult: resource.API.TotalResult,
             },
 
-            // biến hứng dữ liệu search
+            // biến hứng dữ liệu search tài sản
             assetSearch: "",
+            // biến hứng dữ liệu search phòng ban
+            departmentSearch: "",
+            // biến hứng dữ liệu search loại tài sản
+            assetCategorySearch: "",
             // mảng hứng id tài sản phục vụ chức năng xóa
             listAssetForDelete: [],        
             // biến lưu message của toast

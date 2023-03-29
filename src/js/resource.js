@@ -146,6 +146,7 @@ var resource = {
         DepartmentGetAll: "https://localhost:7210/api/Departments",
         AssetCategoryGetAll: "https://localhost:7210/api/AssetCategories",
         FilterAndPaging: "https://localhost:7210/api/Assets/filter",
+        TotalResult: "https://localhost:7210/api/Assets/totalResults"
     }
     
 
