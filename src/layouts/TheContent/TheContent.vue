@@ -93,6 +93,9 @@
                 @showEditSuccessToast="showEditSuccessToast('Lưu dữ liệu thành công')"
                 @listAssetForDelete="emitDeleteAsset"
                 :tableChange="this.tableChange"
+                :numOfActivePage="activePage"
+                @cancelLoading="() => {this.$emit('cancelLoading')}"
+                @startLoading="() => {this.$emit('startLoading')}"
             ></MTable>
         </div>
         
@@ -100,6 +103,7 @@
         <MProductDetail
             v-if="isHide"
             @closeForm = handleForm
+            @returnActiveIndex = "() => {console.log('abc')}"
             title="Thêm mới tài sản"
             :data="this.dataFromTable"
             :dataForEdit="null"
@@ -134,8 +138,11 @@
                 Không có tài sản nào được chọn để xóa.
             </span>
         </MPopup>
+
         
     </div>
+
+    
 </template>
 
 <script>
@@ -156,6 +163,11 @@ export default {
         MInputWithIcon, MComboboxWithIcon, MButton, MIconButton,MTable ,MProductDetail, MToast, MPopup
     },
     methods: {
+
+        returnActiveIndex() {
+            this.activePage = 1;
+            console.log("this.activePage: ", this.activePage)
+        },
 
         /**
          * Hàm dùng để xử lý sau khi thêm mới tài sản thành công
@@ -192,7 +204,8 @@ export default {
                         // ẩn popup
                         (this.isShowPopup = false),
                         // hiện toast
-                        (this.showEditSuccessToast('Xóa tài sản thành công'))
+                        (this.showEditSuccessToast('Xóa tài sản thành công')),
+                        (this.listAssetForDelete.length = 0)
                     })
                 } catch (error) {
                     console.log(error);
@@ -205,7 +218,7 @@ export default {
          * Created by: NDCHIEN(2/3/2023)
          */
         handleForm() {
-            this.isHide = !this.isHide;
+            this.isHide = !this.isHide;    
         },
 
         /**
@@ -307,6 +320,9 @@ export default {
 
             // biến lưu tài sản phục vụ hiển thị tên-mã tài sản để xóa một
             assetForDeleteOne: [],
+
+            // biến làm cho trang quay về trang 1 
+            activePage: 1,
         }
     }
 }

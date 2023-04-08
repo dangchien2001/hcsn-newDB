@@ -6,7 +6,7 @@
 
         <!-- header -->
         <tr
-            class="table-header"
+            :class="['table-header']"
         >
 
             <!-- first/checkbox col -->
@@ -44,6 +44,7 @@
         </tr>
 
         <!-- body -->
+        
         <tr
             :class="['table-body-row', {'table-body-row-active' : rows[index]}]"
             v-for="(item, index) in datas"
@@ -164,36 +165,92 @@
                     <div class="list-page">
 
                         <!-- pre button -->
-                        <div class="list-page-pre-button">
+                        <div class="list-page-pre-button" @click="NextAndReturnPage('pre')">
 
                             <!-- pre button icon -->
                             <div class="list-page-pre-button-icon"></div>                            
 
                         </div>
+                       
+                        <!-- thanh phân trang ngắn nếu total page <= 5 -->
+                        <div class="pagging-box" v-if="typePaging == 'short'">
+                            <div 
+                                :class="['page', {'page-active' : i == activePage}]"
+                                v-for="i in totalPage"
+                                :key="i"
+                                @click="SelectPage(i)"
+                            >{{ i }}</div>                           
+                        </div>
 
-                        <!-- ô phân trang thứ nhất -->
-                        <div 
-                            :class="[ActivePage == 1 ? 'page-number-active' : '', 'page-number-one']"
-                            @click="SelectPageIndex(1)"
-                        >1</div>
+                        <!-- thanh phân trang dài nếu total page > 5 -->
+                        <div class="pagging-box" v-if="typePaging == 'long' && PageIndex <= 3 && PageIndex <= totalPage - 3">
+                            <div
+                                :class="['page', {'page-active' : i == activePage}]"
+                                v-for="i in 3" 
+                                :key="i"  
+                                @click="SelectPage(i)"                          
+                            >{{ i }}</div>
 
-                        <!-- ô phân trang thứ hai -->
-                        <div 
-                            :class="['page-number-two' ,ActivePage == 2 ? 'page-number-active' : '']"
-                            @click="SelectPageIndex(2)"
-                        >2</div>
+                            <div class="three-dot">...</div>
 
-                        <!-- ô ba chấm -->
-                        <div class="three-dot">...</div>
+                            <div
+                                :class="['page', {'page-active' : totalPage == activePage}]"  
+                                @click="SelectPage(totalPage)"                            
+                            >{{ totalPage }}</div>
+                        </div>
 
-                        <!-- ô phân trang cuối cùng -->
-                        <div 
-                            :class="[ActivePage == 10 ? 'page-number-active' : '', 'page-last-number']"
-                            @click="SelectPageIndex(10)"    
-                        >10</div>
+                        <!-- thanh phân trang dài nếu total page > 5 và page index > 3 -->
+                        <div class="pagging-box" v-if="typePaging == 'long' && PageIndex > 3 && PageIndex <= totalPage - 3">
+                            <div
+                                :class="['page', {'page-active' : 1 == activePage}]" 
+                                @click="SelectPage(1)"                          
+                            >1</div>
 
+                            <div class="three-dot">...</div>
+
+                            <div
+                                :class="['page', {'page-active' : i + PageIndex - 1 == activePage}]"
+                                v-for="i in 3" 
+                                :key="i"  
+                                @click="SelectPage(i + PageIndex - 1)"                          
+                            >{{ i + PageIndex - 1 }}</div>
+
+                            <div class="three-dot">...</div>
+
+                            <div
+                                :class="['page', {'page-active' : totalPage == activePage}]"  
+                                @click="SelectPage(totalPage)"                            
+                            >{{ totalPage }}</div>
+                        </div>
+
+                        <!-- thanh phân trang dài nếu total page > 5 và page index < totalPage - 3 -->
+                        <div class="pagging-box" v-if="typePaging == 'long' && PageIndex > totalPage - 3">
+                            <div
+                                :class="['page', {'page-active' : 1 == activePage}]" 
+                                @click="SelectPage(1)"                          
+                            >1</div>
+
+                            <div class="three-dot">...</div>
+
+                            <div
+                                :class="['page', {'page-active' : totalPage - 2 == activePage}]" 
+                                @click="SelectPage(totalPage - 2)"                          
+                            >{{ totalPage - 2 }}</div>
+
+                            <div
+                                :class="['page', {'page-active' : totalPage - 1 == activePage}]" 
+                                @click="SelectPage(totalPage - 1)"                          
+                            >{{ totalPage - 1 }}</div>
+
+                            <div
+                                :class="['page', {'page-active' : totalPage == activePage}]" 
+                                @click="SelectPage(totalPage)"                          
+                            >{{ totalPage }}</div>
+                            
+                        </div>
+                        
                         <!-- next button -->
-                        <div class="list-page-next-button">
+                        <div class="list-page-next-button" @click="NextAndReturnPage('next')">
 
                             <!-- next button icon -->
                             <div class="list-page-next-button-icon"></div>
@@ -207,7 +264,7 @@
             </td>
 
             <!-- td chứa tổng số lượng -->
-            <td class="count-product">{{ TotalQuantity }}</td>
+            <td class="count-product">{{ this.formatMoney(TotalQuantity) }}</td>
 
             <!-- nguyên giá -->
             <td class="count-price">
@@ -271,7 +328,8 @@ export default {
         entity: String,
         tableChange: Boolean,
         filterDepartment: String,
-        filterAssetCategory: String
+        filterAssetCategory: String,
+        numOfActivePage: Number 
     },
     created() {
 
@@ -280,30 +338,46 @@ export default {
             axios
                 .get(this.api + '?PageNumber=' + this.PageIndex + '&PageSize=' + this.PageSize)
                 .then(res => {
+                    (this.totalPage = res.data.TotalPage),
+                    (this.currentPage = res.data.CurrentPage),
                     (this.datas = this.mappingArray(res.data.Data)), 
-                    (this.$emit("emitData", this.datas))
+                    (this.$emit("emitData", this.datas)),
+                    (this.TotalData = res.data.TotalRecord), 
+                    (this.TotalQuantity = res.data.TotalQuantity),
+                    (this.TotalPrice = res.data.TotalCost),
+                    (this.TotalAccumulatedDepreciation = res.data.TotalDepreciationValue),
+                    (this.TotalResidualValue = res.data.TotalResidualValue),
+                    (this.$emit("cancelLoading"))
                 })
         } catch (e) {
             console.log(e);
         }
 
-        // gọi api dùng để hiện tổng số kết quả
-        try {
-            axios
-                .get(this.apiTotal)
-                .then(res => {
-                    (this.TotalData = res.data.TotalRecord), 
-                    (this.TotalQuantity = res.data.TotalQuantity),
-                    (this.TotalPrice = res.data.TotalPrice),
-                    (this.TotalAccumulatedDepreciation = res.data.TotalDepreciationValue),
-                    (this.TotalResidualValue = res.data.TotalPrice - res.data.TotalDepreciationValue)
-                })
-                .catch(res => console.log(res))
-        } catch (e) {
-            console.log(e);
-        }
+        this.ActivePage = this.numOfActivePage;
     },
+
+
     methods: {
+
+        NextAndReturnPage(type) {
+            if(type == "pre" && this.PageIndex > 1) {
+                this.PageIndex --; 
+                this.activePage --;
+            }
+            if(type == "next" && this.PageIndex < this.totalPage) {
+                this.PageIndex ++; 
+                this.activePage ++;
+            }
+        },
+
+        /**
+         * Hàm bôi đậm nút page sau khi bấm vào
+         */
+        SelectPage(value) {
+            this.activePage = value;
+            this.PageIndex = value;
+        },
+
 
         /**
          * Hàm dùng để hủy tích v trên tất cả các dòng
@@ -465,7 +539,13 @@ export default {
                     .get(this.api + '?PageNumber=' + 1 + '&PageSize=' + this.PageSize)
                     .then(res => {
                         (this.datas = this.mappingArray(res.data.Data)),
-                        (this.$emit("emitData", this.datas))                       
+                        (this.$emit("emitData", this.datas)),
+                        (this.TotalData = res.data.TotalRecord),
+                        (this.TotalQuantity = res.data.TotalQuantity),
+                        (this.TotalPrice = res.data.TotalCost),
+                        (this.TotalAccumulatedDepreciation = res.data.TotalDepreciationValue),
+                        (this.TotalResidualValue = res.data.TotalResidualValue),
+                        (this.ActivePage = 1)                       
                     })
             } catch (e) {
                 console.log(e);
@@ -483,7 +563,13 @@ export default {
                     .get(this.api + '?PageNumber=' + 1 + '&PageSize=' + this.PageSize)
                     .then(res => {
                         (this.datas = this.mappingArray(res.data.Data)),
-                        (this.$emit("emitData", this.datas))
+                        (this.$emit("emitData", this.datas)),
+                        (this.TotalData = res.data.TotalRecord),
+                        (this.TotalQuantity = res.data.TotalQuantity),
+                        (this.TotalPrice = res.data.TotalCost),
+                        (this.TotalAccumulatedDepreciation = res.data.TotalDepreciationValue),
+                        (this.TotalResidualValue = res.data.TotalResidualValue),
+                        (this.ActivePage = 1)
                     })
             } catch (e) {
                 console.log(e);
@@ -495,12 +581,23 @@ export default {
          * Created by: NDCHIEN(24/3/2023)
          */
         filterData() {
+            this.$emit("startLoading");
             try {
                 axios
                     .get(this.api + '?assetFilter=' + this.filter + '&PageNumber=' + this.PageIndex + '&PageSize=' + this.PageSize + '&departmentFilter=' + this.filterDepartment + '&assetCategoryFilter=' + this.filterAssetCategory)
                     .then(res => {
+                        (this.totalPage = res.data.TotalPage),
+                        (this.currentPage = res.data.CurrentPage),
                         (this.datas = this.mappingArray(res.data.Data)),
-                        (this.$emit("emitData", this.datas))
+                        (this.$emit("emitData", this.datas)),
+                        (this.TotalData = res.data.TotalRecord),
+                        (this.TotalQuantity = res.data.TotalQuantity),
+                        (this.TotalPrice = res.data.TotalCost),
+                        (this.TotalAccumulatedDepreciation = res.data.TotalDepreciationValue),
+                        (this.TotalResidualValue = res.data.TotalResidualValue),
+                        (this.PageIndex = 1),
+                        (this.activePage = 1),
+                        (this.$emit('cancelLoading'))
                     })
             } catch (e) {
                 console.log(e);
@@ -508,6 +605,25 @@ export default {
         }
     },
     watch: {
+
+        totalPage: function(newValue) {
+            if(newValue <= 5) {
+                this.typePaging = "short";
+            }
+            if(newValue > 5) {
+                this.typePaging = "long";
+            }
+        },
+
+        /**
+         * Theo dõi page đang được active
+         * Created by: NDCHIEN(7/4/2023)
+         * @param {*} newValue 
+         */
+        numOfActivePage: function(newValue) {
+            console.log("numOfActivePage: ", newValue)
+            this.ActivePage = newValue;
+        },
         
         /**
          * Gọi API mỗi khi thay đổi page size
@@ -523,15 +639,24 @@ export default {
             // làm rỗng mảng emit ra ngoài
             this.listAssetForDelete = [];
             this.$emit('listAssetForDelete', Object.values(this.listAssetForDelete));
+            this.$emit('startLoading')
             // goi api
             try {
                 this.PageIndex = 1;
                 this.ActivePage = 1;
                 axios
-                    .get(this.api + '?assetFilter=' + this.filter + '&PageNumber=' + this.PageIndex + '&PageSize=' + newValue)
+                    .get(this.api + '?assetFilter=' + this.filter + '&PageNumber=' + this.PageIndex + '&PageSize=' + newValue + '&departmentFilter=' + this.filterDepartment + '&assetCategoryFilter=' + this.filterAssetCategory)
                     .then(res => {
+                        (this.totalPage = res.data.TotalPage),
+                        (this.currentPage = res.data.CurrentPage),
                         (this.datas = this.mappingArray(res.data.Data)),
-                        (this.$emit("emitData", this.datas))
+                        (this.$emit("emitData", this.datas)),
+                        (this.TotalData = res.data.TotalRecord),
+                        (this.TotalQuantity = res.data.TotalQuantity),
+                        (this.TotalPrice = res.data.TotalCost),
+                        (this.TotalAccumulatedDepreciation = res.data.TotalDepreciationValue),
+                        (this.TotalResidualValue = res.data.TotalResidualValue),
+                        (this.$emit('cancelLoading'))
                     })
             } catch (e) {
                 console.log(e);
@@ -552,13 +677,22 @@ export default {
             // làm rỗng mảng emit ra ngoài
             this.listAssetForDelete = [];
             this.$emit('listAssetForDelete', Object.values(this.listAssetForDelete));
+            this.$emit('startLoading');
             // goi api
             try {
                 axios
-                    .get(this.api + '?assetFilter=' + this.filter + '&PageNumber=' + newValue + '&PageSize=' + this.PageSize)
+                    .get(this.api + '?assetFilter=' + this.filter + '&PageNumber=' + newValue + '&PageSize=' + this.PageSize + '&departmentFilter=' + this.filterDepartment + '&assetCategoryFilter=' + this.filterAssetCategory)
                     .then(res => {
+                        (this.totalPage = res.data.TotalPage),
+                        (this.currentPage = res.data.CurrentPage),
                         (this.datas = this.mappingArray(res.data.Data)),
-                        (this.$emit("emitData", this.datas))
+                        (this.$emit("emitData", this.datas)),
+                        (this.TotalData = res.data.TotalRecord),
+                        (this.TotalQuantity = res.data.TotalQuantity),
+                        (this.TotalPrice = res.data.TotalCost),
+                        (this.TotalAccumulatedDepreciation = res.data.TotalDepreciationValue),
+                        (this.TotalResidualValue = res.data.TotalResidualValue),
+                        (this.$emit('cancelLoading'))
                     })
             } catch (e) {
                 console.log(e);
@@ -597,15 +731,25 @@ export default {
         tableChange: function() {
             // làm rỗng mảng emit ra ngoài
             this.listAssetForDelete = [];
+            this.$emit('startLoading');
             // goi api làm mới dữ liệu
             try {
                 axios
-                    .get(this.api + '?assetFilter=' + this.filter + '&PageNumber=' + this.PageIndex + '&PageSize=' + this.PageSize)
-                    .then(res => {                       
+                    .get(this.api + '?assetFilter=' + this.filter + '&PageNumber=' + this.PageIndex + '&PageSize=' + this.PageSize + '&departmentFilter=' + this.filterDepartment + '&assetCategoryFilter=' + this.filterAssetCategory)
+                    .then(res => {                      
+                        (this.totalPage = res.data.TotalPage),
+                        (this.currentPage = res.data.CurrentPage), 
                         (this.datas = this.mappingArray(res.data.Data)),
                         (this.$emit("emitData", this.datas)),
+                        (this.TotalData = res.data.TotalRecord),
+                        (this.TotalQuantity = res.data.TotalQuantity),
+                        (this.TotalPrice = res.data.TotalCost),
+                        (this.TotalAccumulatedDepreciation = res.data.TotalDepreciationValue),
+                        (this.TotalResidualValue = res.data.TotalResidualValue),
                         (this.unSelectRow()),
-                        (this.isCheckboxHeaderSelect = false)
+                        (this.isCheckboxHeaderSelect = false),
+                        (this.ActivePage = 1),
+                        (this.$emit('cancelLoading'))
                     })
             } catch (e) {
                 console.log(e);
@@ -643,7 +787,7 @@ export default {
             PageIndex: 1,
 
             // biến dùng để bôi đậm trang đang ở
-            ActivePage: 1,
+            activePage: 1,
 
             // biến dùng để lưu bản ghi phục vụ sửa
             data: "",
@@ -775,6 +919,16 @@ export default {
 
             // Mảng dùng để lưu tất cả phần tử trong mảng hoặc ko có phần tử nào 
             listForDeleteAll: [],
+
+            // biến dùng để lưu tổng số trang
+            totalPage: 0,
+
+            // biến dùng để lưu trang hiện tại
+            currentPage: 0,
+
+            // biến dùng để lưu kiểu thanh phần trang
+            typePaging: null,
+            
         }
     }
 }

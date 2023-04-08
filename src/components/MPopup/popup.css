@@ -35,6 +35,10 @@
     align-items: center;
 }
 
+.popup-list-content-text {
+    margin-bottom: 12px;
+}
+
 .popup-content-icon-warning {
     background: url('../../assets/icons/Sprites.64af8f61.svg') no-repeat -598px -463px;
 	width: 36px;

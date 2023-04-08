@@ -21,6 +21,7 @@
             :value="this.formatMoney(this.modelValue) < 10 ? '0' + this.formatMoney(this.modelValue) : this.formatMoney(this.modelValue)"
             :disabled="isDisable"
             @input="handleInput"
+            @keypress="onlyNumberKey($event)"
         >
 
         <!-- thẻ chứa hai mũi tên lên xuống -->
@@ -69,6 +70,16 @@ export default {
         isEqualZero: Boolean,
     },
     methods: {
+
+        onlyNumberKey: function (evt) {
+            // Only ASCII character in that range allowed
+            var charCode = evt.keyCode;
+            if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+                evt.preventDefault();
+            } else {
+                return true;
+            }
+        },
 
         /**
          * Hàm lên xuống số

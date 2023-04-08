@@ -18,7 +18,7 @@
         <input 
             type="text" 
             :class="[paddingInput, isEqualZero ? 'number-input-container-input-error' : 'number-input-container-input']"
-            :value="this.modelValue"
+            :value="Math.round(this.modelValue * 10000) / 100"
             :disabled="isDisable"
             @input="handleInput"
         >

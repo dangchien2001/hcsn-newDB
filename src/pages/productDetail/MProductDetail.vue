@@ -295,16 +295,18 @@
                 @exitPopup="exitPopup"
                 typeButton="acceptOption"
                 type="fail"
+                
             ></MPopup>
 
             <!-- popup cảnh báo trường bỏ trống -->
             <MPopup
-                title=""
-                :content="'Cần phải nhập thông tin ' + firstError"
+                title="Cần phải nhập những thông tin sau:"
+                :content="firstError"
                 v-if="isShowPopupValidate"
                 @exitPopup="exitPopupValidate"
                 type="warning"
                 typeButton="closeOption"
+                :listContent="emptyList"
             ></MPopup>
 
             <!-- popup cảnh báo hủy sau khi đã sửa -->
@@ -373,6 +375,8 @@ export default {
     },
     methods: {
 
+        
+
         /**
          * Hàm dùng để xử lý khi bấm hủy tài sản
          * Created by: NDCHIEN(19/3/2023)
@@ -407,13 +411,10 @@ export default {
                     .get(api + value)
                     .then(res => 
                     {
-                        (this.ProductInfo[entity] = res.data[0][entity_name]);
-                        if(this.dataForEdit == null) {
-                            if(entity == 'AssetCategoryName') {
-                                (this.ProductInfo.WearRate = res.data[0].depreciation_rate), (this.ProductInfo.UseYear = res.data[0].life_time)
-                            }                           
-                        }
-                        
+                        (this.ProductInfo[entity] = res.data[0][entity_name]);                        
+                        if(entity == 'AssetCategoryName') {
+                            (this.ProductInfo.WearRate = res.data[0].depreciation_rate), (this.ProductInfo.UseYear = res.data[0].life_time)
+                        }                                                                           
                     })
                 } catch (e) {
                     console.log(e);
@@ -451,100 +452,118 @@ export default {
          * Created by: NDCHIEN(2/3/2023)
          */
         handleSaveProduct() {
+            
 
             /**
              * Trường hợp bị trùng mã 
              */
             // this.handleDuplicateProductCode(this.ProductInfo.ProductCode, this.data);
 
-            this.checkNull();
+            this.compareDate();
 
+            if(this.compareDate() == true) {
+                this.checkNull();
+            }
+            
 
+            
             
 
         },
 
+        /**
+         * Hàm check ngày mua có nhỏ hơn ngày sử dụng không
+         * Created by: NDCHIEN(2/3/2023)
+         */
+        compareDate() {
+            const result = new Date(this.ProductInfo.PurchaseDate).getTime() <= new Date(this.ProductInfo.DayStartedUsing).getTime();
+            console.log('this.ProductInfo.PurchaseDate): ', this.ProductInfo.PurchaseDate)
+            console.log('this.ProductInfo.DayStartedUsing: ', this.ProductInfo.DayStartedUsing)
+            console.log('result: ', result)
+            if(result == true) {
+                return true;
+            } else {
+                this.firstError = "Ngày mua phải nhỏ hơn ngày sử dụng";
+                this.showPopupError();
+                return false;
+            }
+        },
+
+        /**
+         * Hàm check null các input
+         * Created by: NDCHIEN(2/3/2023)
+         */
         checkNull() {
+            this.emptyList = [];
             /**
              * Kiểm tra các trường bắt buộc
              */
             // mã tài sản
             if(this.ProductInfo.ProductCode == "") {
                 this.isProductCodeEmpty = true;                
-                this.firstError = "Mã tài sản";
-                this.showPopupError();
-                return;
+                this.emptyList.push("Mã tài sản");               
             }
             // tên tài sản
             if(this.ProductInfo.ProductName == "") {
                 this.isProductNameEmpty = true;
-                this.firstError = "Tên tài sản";
-                this.showPopupError();
-                return;
+                this.emptyList.push("Tên tài sản");
+                
             }
             // mã loại tài sản
             if(this.ProductInfo.TypeProductCode == "") {
                 this.isTypeProductCodeEmpty = true;
-                this.firstError = "Mã loại tài sản";
-                this.showPopupError();
-                return;
+                this.emptyList.push("Mã loại tài sản");
             }
             // mã bộ phận sử dụng
             if(this.ProductInfo.DepartmentCode == "") {
                 this.isDepartmentCodeEmpty = true;
-                this.firstError = "Mã bộ phận sử dụng";
-                this.showPopupError();
-                return;
+                this.emptyList.push("Mã bộ phận sử dụng");
             }
             // số lượng
             if(this.ProductInfo.Quantity == 0) {
                 this.isQuantityEqualZero = true;
-                this.firstError = "Số lượng";
-                this.showPopupError();
-                return;
+                this.emptyList.push("Số lượng");
             }
             // tỉ lệ hao mòn
             if(this.ProductInfo.WearRate == 0) {
                 this.isWearRateEqualZero = true;
-                this.firstError = "Tỉ lệ hao mòn (%)";
-                this.showPopupError();
-                return;
+                this.emptyList.push("Tỉ lệ hao mòn (%)");
             }
             // nguyên giá
             if(this.ProductInfo.Price == 0) {
                 this.isPriceEqualZero = true;
-                this.firstError = "Nguyên giá";
-                this.showPopupError();
-                return;
+                this.emptyList.push("Nguyên giá");
             }
             // số năm dử dụng
             if(this.ProductInfo.UseYear == 0) {
                 this.isUseYearEqualZero = true;
-                this.firstError = "Số năm sử dụng";
-                this.showPopupError();
-                return;
+                this.emptyList.push("Số năm sử dụng");
             }
             // giá trị hao mòn năm
             if(this.ProductInfo.DepreciationValuePerYear == 0) {
                 this.isDepreciationValuePerYearEqualZero = true;
-                this.firstError = "Giá trị hao mòn năm";
-                this.showPopupError(); 
-                return;               
+                this.emptyList.push("Giá trị hao mòn năm");              
             }   
 
-            // gọi API nếu hàm không return lỗi
-            if(this.typeForm == 'edit') {
-                this.editAsset();
+            if(this.emptyList.length > 0) {
+                this.isShowPopupValidate = true;
             }
 
-            // gọi API nếu hàm không return lỗi
-            if(this.typeForm == 'add') {
-                this.addAsset();
-            }
+            if(this.emptyList.length == 0) {
+                // gọi API nếu hàm không return lỗi
+                if(this.typeForm == 'edit') {
+                    this.editAsset();
+                }
 
-            // gọi API nếu hàm không return lỗi
-            if(this.typeForm == 'clone') {
-                this.cloneAsset();
+                // gọi API nếu hàm không return lỗi
+                if(this.typeForm == 'add') {
+                    this.addAsset();
+                }
+
+                // gọi API nếu hàm không return lỗi
+                if(this.typeForm == 'clone') {
+                    this.cloneAsset();
+                }
             }
         },
 
@@ -681,7 +700,7 @@ export default {
          */
         ProductInfo: {
             handler(newValue) {
-                this.ProductInfo.ResidualValue = this.ProductInfo.WearRate * this.ProductInfo.Price / 100;
+                this.ProductInfo.ResidualValue = this.ProductInfo.WearRate * this.ProductInfo.Price;
                 // Console log ProductInfo mỗi khi có sự thay đổi
                 this.ProductInfo = newValue;
                 console.log("ProductInfo: ", this.ProductInfo);
@@ -811,6 +830,7 @@ export default {
             if(newValue == 1) {
                 this.$emit('showEditSuccessToast');               
                 this.$emit('closeForm');
+                this.$emit('returnActiveIndex');
             }
         },
         
@@ -1079,6 +1099,8 @@ export default {
             },
             // biến dùng để hứng sự thay đổi phục vụ thêm tài sản
             isChangeForAdd: false,
+            // mảng dùng để lưu các lỗi bỏ trống
+            emptyList: [],
         }
     }
 }

@@ -21,9 +21,21 @@
                             {'popup-content-icon-fail' : type == 'fail'}
                         ]"
                     ></div>
-                    <div class="popup-content-text">
-                        {{ content }}
+                    <div class="popup-content-text" v-if="listContent == undefined">
+                        {{ content }}                        
                         <slot></slot>
+                    </div>
+                    <div class="popup-content-text" v-if="listContent != undefined">
+                        
+
+                        <div 
+                            class="popup-list-content-text"
+                            v-for="(item, index) in listContent"
+                            :key="index"
+                        >
+                            - {{ item }}
+                            <slot></slot>
+                        </div>
                     </div>
                 </div>
 
@@ -137,6 +149,7 @@ export default {
         content: String,
         typeButton: String,
         type: String,
+        listContent: Array
     },
     components: {
         MButton,

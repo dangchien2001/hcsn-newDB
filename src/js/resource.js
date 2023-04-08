@@ -51,7 +51,7 @@ var resource = {
                     active: "",
                     text: "Báo cáo"
                 },
-            ],
+    ],
     
     // Mảng chứa thông tin về các trường (style, colName) trong table
     tableInfo: [
