@@ -96,7 +96,7 @@
                         text="Không"
                         type="button-container"
                         class="sub-button"
-                        v-if="deleteOption"
+                        v-if="deleteOption && !isEmpty"
                         @click="exitPopup"
                     ></MButton>
 
@@ -104,8 +104,16 @@
                         text="Xóa"
                         type="button-container"
                         class="main-button"
-                        v-if="deleteOption"
+                        v-if="deleteOption && !isEmpty"
                         @click="() => {this.$emit('deleteAction')}"
+                    ></MButton>
+
+                    <MButton
+                        text="Hủy bỏ"
+                        type="button-container"
+                        class="main-button"
+                        v-if="isEmpty"
+                        @click="exitPopup"
                     ></MButton>
 
                     <!-- outline-main option -->
@@ -149,7 +157,8 @@ export default {
         content: String,
         typeButton: String,
         type: String,
-        listContent: Array
+        listContent: Array,
+        isEmpty: Boolean
     },
     components: {
         MButton,

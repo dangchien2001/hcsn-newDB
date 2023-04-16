@@ -24,7 +24,8 @@ var comon = {
             var DecimalSeparator = Number('1.2').toLocaleString().substr(1, 1);
             var priceWithCommas = price.toLocaleString();
             var arParts = String(priceWithCommas).split(DecimalSeparator);
-            var intPart = arParts[0];       
+            var intPart = arParts[0];  
+            // var intPart2 = intPart.replaceAll('.',',');     
             return symbol + intPart;
         }        
         return price;

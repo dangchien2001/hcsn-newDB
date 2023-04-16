@@ -106,11 +106,11 @@
                 <div class="footer-content-function">
 
                     <!-- Tổng số bản ghi -->
-                    <div class="total-data">Tổng số:</div>&nbsp;
+                    <div class="total-data">{{ paging.total }}</div>&nbsp;
 
                     <div class="number-of-data">{{ TotalData }}</div>&nbsp;
 
-                    <div class="text-of-data">bản ghi</div>
+                    <div class="text-of-data">{{ paging.record }}</div>
 
                     <!-- số bản ghi trên 1 trang -->
                     <div class="number-of-data-in-page">
@@ -286,23 +286,29 @@
 
     <!-- form sửa tài sản -->
     <MProductDetail
-        title="Sửa tài sản"
+        :title="formType.edit"
         :dataForEdit="data"
         v-if="isShowForm"
         @closeForm="closeForm"
         @showEditSuccessToast=showEditSuccessToast
         typeForm="edit"
+        @startLoading="() => {this.$emit('startLoading')}"
+        @cancelLoading="() => {this.$emit('cancelLoading')}"
+        @returnActiveIndex="() => {this.activePage = 1; this.currentPage = 1}"
     ></MProductDetail>
 
     <!-- form nhân bản tài sản -->
     <MProductDetail
-        title="Nhân bản tài sản"
+        :title="formType.clone"
         :dataForClone="data"
         v-if="isShowCloneForm"
         @closeForm="closeCloneForm"
         @showEditSuccessToast=showCloneSuccessToast       
         typeForm="clone"
         @cloneSuccess="() => {console.log('abc')}"
+        @startLoading="() => {this.$emit('startLoading')}"
+        @cancelLoading="() => {this.$emit('cancelLoading')}"
+        @returnActiveIndex="() => {this.activePage = 1; this.currentPage = 1}"
     ></MProductDetail>
     
 </div>
@@ -329,12 +335,12 @@ export default {
         tableChange: Boolean,
         filterDepartment: String,
         filterAssetCategory: String,
-        numOfActivePage: Number 
+        numOfActivePage: Number,
+        activeChange: Boolean 
     },
     created() {
 
         // gọi api được truyền vào từ props
-        try {
             axios
                 .get(this.api + '?PageNumber=' + this.PageIndex + '&PageSize=' + this.PageSize)
                 .then(res => {
@@ -349,11 +355,9 @@ export default {
                     (this.TotalResidualValue = res.data.TotalResidualValue),
                     (this.$emit("cancelLoading"))
                 })
-        } catch (e) {
-            console.log(e);
-        }
 
-        this.ActivePage = this.numOfActivePage;
+
+        this.activePage = this.numOfActivePage;
     },
 
 
@@ -534,7 +538,6 @@ export default {
         showEditSuccessToast() {
             this.$emit('showEditSuccessToast');
             // gọi api được truyền vào từ props
-            try {
                 axios
                     .get(this.api + '?PageNumber=' + 1 + '&PageSize=' + this.PageSize)
                     .then(res => {
@@ -547,9 +550,7 @@ export default {
                         (this.TotalResidualValue = res.data.TotalResidualValue),
                         (this.ActivePage = 1)                       
                     })
-            } catch (e) {
-                console.log(e);
-            }
+
         },
 
         /**
@@ -558,7 +559,6 @@ export default {
         showCloneSuccessToast() {
             this.$emit('showEditSuccessToast');
             // gọi api được truyền vào từ props
-            try {
                 axios
                     .get(this.api + '?PageNumber=' + 1 + '&PageSize=' + this.PageSize)
                     .then(res => {
@@ -571,9 +571,7 @@ export default {
                         (this.TotalResidualValue = res.data.TotalResidualValue),
                         (this.ActivePage = 1)
                     })
-            } catch (e) {
-                console.log(e);
-            }
+
         },
 
         /**
@@ -582,7 +580,6 @@ export default {
          */
         filterData() {
             this.$emit("startLoading");
-            try {
                 axios
                     .get(this.api + '?assetFilter=' + this.filter + '&PageNumber=' + this.PageIndex + '&PageSize=' + this.PageSize + '&departmentFilter=' + this.filterDepartment + '&assetCategoryFilter=' + this.filterAssetCategory)
                     .then(res => {
@@ -599,13 +596,25 @@ export default {
                         (this.activePage = 1),
                         (this.$emit('cancelLoading'))
                     })
-            } catch (e) {
-                console.log(e);
-            }
+
         }
     },
     watch: {
 
+        /**
+         * Chuyển thành trang 1 sau khi thêm mới
+         * Created by: NDCHIEN(10/4/2023)
+         */
+        activeChange: function() {
+            this.activePage = 1;
+            this.currentPage = 1;
+            this.PageIndex = 1;
+        },
+
+        /**
+         * Đổi kiểu thanh phân trang dựa theo tổng số trang
+         * Created by: NDCHIEN(10/4/2023)
+         */
         totalPage: function(newValue) {
             if(newValue <= 5) {
                 this.typePaging = "short";
@@ -622,8 +631,8 @@ export default {
          */
         numOfActivePage: function(newValue) {
             console.log("numOfActivePage: ", newValue)
-            this.ActivePage = newValue;
-        },
+            this.activePage = newValue;  
+        }, 
         
         /**
          * Gọi API mỗi khi thay đổi page size
@@ -641,7 +650,6 @@ export default {
             this.$emit('listAssetForDelete', Object.values(this.listAssetForDelete));
             this.$emit('startLoading')
             // goi api
-            try {
                 this.PageIndex = 1;
                 this.ActivePage = 1;
                 axios
@@ -658,9 +666,7 @@ export default {
                         (this.TotalResidualValue = res.data.TotalResidualValue),
                         (this.$emit('cancelLoading'))
                     })
-            } catch (e) {
-                console.log(e);
-            }
+
         },
 
         /**
@@ -679,7 +685,6 @@ export default {
             this.$emit('listAssetForDelete', Object.values(this.listAssetForDelete));
             this.$emit('startLoading');
             // goi api
-            try {
                 axios
                     .get(this.api + '?assetFilter=' + this.filter + '&PageNumber=' + newValue + '&PageSize=' + this.PageSize + '&departmentFilter=' + this.filterDepartment + '&assetCategoryFilter=' + this.filterAssetCategory)
                     .then(res => {
@@ -694,9 +699,7 @@ export default {
                         (this.TotalResidualValue = res.data.TotalResidualValue),
                         (this.$emit('cancelLoading'))
                     })
-            } catch (e) {
-                console.log(e);
-            }
+
         },
 
         /**
@@ -733,7 +736,6 @@ export default {
             this.listAssetForDelete = [];
             this.$emit('startLoading');
             // goi api làm mới dữ liệu
-            try {
                 axios
                     .get(this.api + '?assetFilter=' + this.filter + '&PageNumber=' + this.PageIndex + '&PageSize=' + this.PageSize + '&departmentFilter=' + this.filterDepartment + '&assetCategoryFilter=' + this.filterAssetCategory)
                     .then(res => {                      
@@ -751,15 +753,16 @@ export default {
                         (this.ActivePage = 1),
                         (this.$emit('cancelLoading'))
                     })
-            } catch (e) {
-                console.log(e);
-            }
+
         }
     },
     data() {
         return {    
             tableInfo: resource.tableInfo,
             properties: resource[this.model],
+            formType: resource.formType,
+            paging: resource.paging,
+
             datas: [],
 
             // Biến lưu tổng số bản ghi

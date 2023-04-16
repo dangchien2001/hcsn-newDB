@@ -16,7 +16,7 @@
             @input="emitValue"
             :value="modelValue"
             :style="'text-align:' + textAlign"     
-            ref='focusMe'      
+            ref='focusMe'    
         >
         <div 
             class="warning"

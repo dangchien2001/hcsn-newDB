@@ -25,20 +25,39 @@
             :class="sidebarItemIcon.active + ' sidebar-item ' 
             + sidebarStatus.sidebarItemWidth" 
         >
-            <div 
-                :class="sidebarItemIcon.class" 
-            ></div>
-            <div 
-                class="sidebar-item-text" 
-                v-if="sidebarStatus.hide"
-            >
-                {{ sidebarItemIcon.text }}
+            <div style="display: flex; height: 100%; align-items: center; height: 40px; cursor: pointer;">
+                <div 
+                    :class="sidebarItemIcon.class" 
+                ></div>
+                <div 
+                    class="sidebar-item-text" 
+                    v-if="sidebarStatus.hide"
+                >
+                    {{ sidebarItemIcon.text }}
+                </div>
+
+                <MTooltip
+                :text="sidebarItemIcon.text"
+                class="sidebar-tooltip"
+                ></MTooltip>
+
+                <div class="toggle-item-bonus" v-if="sidebarItemIcon.items != undefined && this.isOpen == false" @click="() => {this.isOpen = !this.isOpen}"></div>
+
+                <div class="toggle-item-bonus-2" v-if="sidebarItemIcon.items != undefined && this.isOpen == true" @click="() => {this.isOpen = !this.isOpen}"></div>
             </div>
 
-            <MTooltip
-            :text="sidebarItemIcon.text"
-            class="sidebar-tooltip"
-            ></MTooltip>
+            <div class="side-bar-item-bonus-container" v-if="isOpen">
+                <div 
+                    class="side-bar-item-bonus" 
+                    v-for="(item, index) in sidebarItemIcon.items"
+                    :key="index"
+                >
+                    {{ item }}
+                </div>
+            </div>
+
+            
+        
         </div>
 
         
@@ -90,7 +109,9 @@ export default {
                 sidebarWidth: "long-sidebar",
                 hide: true,
                 sidebarItemWidth: "sidebar-item-long"
-            }
+            },
+            // biến phục vụ mở item bonus
+            isOpen: false
         }
     }
 }

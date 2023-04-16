@@ -27,7 +27,7 @@
 
                     <!-- input mã tài sản -->
                     <MInput
-                        fieldLabel="Mã tài sản"            
+                        :fieldLabel="formInput.assetCode"            
                         :important="true" 
                         :alowNull="false"
                         v-model="this.ProductInfo.ProductCode"    
@@ -41,8 +41,8 @@
                     <MCombobox
                         api="https://localhost:7210/api/Departments"
                         entity="department_code"
-                        label="Mã bộ phận sử dụng"
-                        placeholder="Chọn mã bộ phận sử dụng"
+                        :label="formInput.departmentCode"
+                        :placeholder="placeholder.departmentCode"
                         class="department-combobox"
                         :important="true"
                         :alowNull="false"
@@ -57,8 +57,8 @@
                     <MCombobox
                         api="https://localhost:7210/api/AssetCategories"
                         entity="asset_category_code"
-                        label="Mã loại tài sản"
-                        placeholder="Chọn mã loại tài sản"
+                        :label="formInput.assetCategoryCode"
+                        :placeholder="placeholder.assetCategoryCode"
                         class="type-product-combobox"
                         :important="true"
                         :alowNull="false"
@@ -71,7 +71,7 @@
 
                     <!-- input chứa số lượng -->
                     <MNumberInput
-                        label="Số lượng"
+                        :label="formInput.quantity"
                         :allowArrow ="true"
                         :disabled="false"
                         style="margin-top: 14px"
@@ -84,7 +84,7 @@
 
                     <!-- input chứa tỉ lệ hao mòn -->
                     <MNumberRateInput
-                        label="Tỷ lệ hao mòn (%)"
+                        :label="formInput.depreciationRate"
                         :disabled="true"
                         :allowArrow = "false"   
                         style="margin-top: 14px"  
@@ -99,13 +99,13 @@
                     <div 
                         class="date-buy-product"
                     >
-                        Ngày mua
+                        {{ formInput.purchaseDate }}
                         <span
                             style="color: red;font-size: 13px;"
                         >*</span>
                     </div>
                     <MDatetime
-                        label="Ngày mua"
+                        :label="formInput.purchaseDate"
                         :alowNull="false"
                         v-model="this.ProductInfo.PurchaseDate"
                         :key="componentKey"
@@ -128,7 +128,7 @@
 
                     <!-- input tên tài sản -->
                     <MInput
-                        fieldLabel="Tên tài sản"   
+                        :fieldLabel="formInput.assetName"   
                         v-model="this.ProductInfo.ProductName"   
                         :alowNull="false"     
                         :alowDisabled="false"  
@@ -139,7 +139,7 @@
 
                     <!-- input tên bộ phận sử dụng (không thể chỉnh sửa) -->
                     <MInput
-                        fieldLabel="Tên bộ phận sử dụng"            
+                        :fieldLabel="formInput.departmentName"            
                         :alowDisabled="true"      
                         :alowNull="true"
                         class="department-use-input-product"
@@ -148,7 +148,7 @@
 
                     <!-- input tên loại tài sản (không thể chỉnh sửa) -->
                     <MInput
-                        fieldLabel="Tên loại tài sản"            
+                        :fieldLabel="formInput.assetCategoryName"            
                         :alowDisabled="true"      
                         :alowNull="true"
                         class="name-type-product-input"
@@ -162,7 +162,7 @@
                         <div class="price-count-product">
 
                             <MNumberInput
-                                label="Nguyên giá" 
+                                :label="formInput.cost" 
                                 :allowArrow=false
                                 :disabled=false
                                 :important="true"
@@ -179,7 +179,7 @@
                             class="price-count-product price-count-product-right">
 
                             <MNumberInput
-                                label="Số năm sử dụng"
+                                :label="formInput.lifeTime"
                                 :allowArrow="false"
                                 :disabled="false"
                                 :important="true"
@@ -200,7 +200,7 @@
                         <div class="price-count-product">
 
                             <MNumberInput
-                                label="Giá trị hao mòn năm"
+                                :label="formInput.depreciationValueOfYear"
                                 :allowArrow="false"
                                 :disabled="true"
                                 :important="true"
@@ -219,7 +219,7 @@
 
                             <MInput
                                 :alowDisabled="true"
-                                fieldLabel="Năm theo dõi"
+                                :fieldLabel="formInput.trackedYear"
                                 v-model="this.ProductInfo.YearOfTracking"
                                 textAlign="right"
                             ></MInput>
@@ -233,13 +233,13 @@
 
                         <!-- datetime picker ngày bắt đầu sử dụng -->
                         <div class="date-buy-product">
-                            Ngày bắt đầu sử dụng
+                            {{ formInput.productionYear }}
                             <span
                                 style="color: red;font-size: 13px;"
                             >*</span>
                         </div>
                         <MDatetime
-                            label="Ngày bắt đầu sử dụng"
+                            :label="formInput.productionYear"
                             :alowNull="true"
                             v-model="this.ProductInfo.DayStartedUsing"
                             :key="componentKey"
@@ -289,8 +289,8 @@
 
             <!-- popup trùng mã -->
             <MPopup
-                title="Dữ liệu đầu vào không hợp lệ"
-                :content="'Mã tài sản ' + ProductInfo.ProductCode + ' đã tồn tại'"
+                :title="error.errorData"
+                :content="formInput.assetCode + ' ' + ProductInfo.ProductCode + ' ' + error.duplicateCode"
                 v-if="isShowPopup"
                 @exitPopup="exitPopup"
                 typeButton="acceptOption"
@@ -300,7 +300,7 @@
 
             <!-- popup cảnh báo trường bỏ trống -->
             <MPopup
-                title="Cần phải nhập những thông tin sau:"
+                :title="error.needData"
                 :content="firstError"
                 v-if="isShowPopupValidate"
                 @exitPopup="exitPopupValidate"
@@ -309,10 +309,19 @@
                 :listContent="emptyList"
             ></MPopup>
 
+            <!-- popup cảnh báo ngày mua phải nhỏ hơn ngày sử dụng -->
+            <MPopup
+                :content="firstError"
+                v-if="isShowPopupCompareDate"
+                @exitPopup="() => {isShowPopupCompareDate = false}"
+                type="warning"
+                typeButton="closeOption"
+            ></MPopup>
+
             <!-- popup cảnh báo hủy sau khi đã sửa -->
             <MPopup
                 title=""
-                :content="'Thông tin thay đổi sẽ không được cập nhật nếu bạn không lưu. Bạn có muốn lưu các thay đổi này ?'"
+                :content="warning.channgeWarning"
                 v-if="popupCancelAfterChange"
                 @exitPopup="() => {this.popupCancelAfterChange = false}"
                 @save="handleSaveProduct"
@@ -324,7 +333,7 @@
             <!-- popup cảnh báo khi ấn hủy -->
             <MPopup
                 title=""
-                :content="'Bạn có muốn hủy bỏ khai báo tài sản này ?'"
+                :content="warning.cancelWarning"
                 v-if="popupCancel"
                 @exitPopup="() => {this.popupCancel = false}"
                 type="warning"
@@ -341,7 +350,7 @@
                 type="warning"
                 typeButton="closeOption"
             >
-                <span>Mã tài sản <span style="font-family: Roboto Bold;">{{this.ProductInfo.ProductCode}}</span> đã tồn tại</span>
+                <span>{{ formInput.assetCode }} <span style="font-family: Roboto Bold;">{{this.ProductInfo.ProductCode}}</span> {{ error.duplicateCode }}</span>
             </MPopup>
 
         </div>
@@ -360,6 +369,7 @@ import MPopup from '@/components/MPopup/MPopup.vue';
 import axios from 'axios';
 import MTooltip from '@/components/MTooltip/MTooltip.vue';
 import comon from "@/js/comon";
+import resource from "@/js/resource"
 
 
 export default {
@@ -406,7 +416,6 @@ export default {
          */
         autoSelect(value, api, entity, entityId, entity_name) {
             this.ProductInfo[entityId] = value;
-            try {
                 axios
                     .get(api + value)
                     .then(res => 
@@ -416,9 +425,7 @@ export default {
                             (this.ProductInfo.WearRate = res.data[0].depreciation_rate), (this.ProductInfo.UseYear = res.data[0].life_time)
                         }                                                                           
                     })
-                } catch (e) {
-                    console.log(e);
-                }
+
         },
 
         exitPopupValidate() {
@@ -459,6 +466,8 @@ export default {
              */
             // this.handleDuplicateProductCode(this.ProductInfo.ProductCode, this.data);
 
+            // this.addAsset();
+            
             this.compareDate();
 
             if(this.compareDate() == true) {
@@ -483,8 +492,8 @@ export default {
             if(result == true) {
                 return true;
             } else {
-                this.firstError = "Ngày mua phải nhỏ hơn ngày sử dụng";
-                this.showPopupError();
+                this.firstError = this.error.compareDate;
+                this.isShowPopupCompareDate = true;
                 return false;
             }
         },
@@ -501,48 +510,48 @@ export default {
             // mã tài sản
             if(this.ProductInfo.ProductCode == "") {
                 this.isProductCodeEmpty = true;                
-                this.emptyList.push("Mã tài sản");               
+                this.emptyList.push(this.formInput.assetCode);               
             }
             // tên tài sản
             if(this.ProductInfo.ProductName == "") {
                 this.isProductNameEmpty = true;
-                this.emptyList.push("Tên tài sản");
+                this.emptyList.push(this.formInput.assetName);
                 
             }
             // mã loại tài sản
             if(this.ProductInfo.TypeProductCode == "") {
                 this.isTypeProductCodeEmpty = true;
-                this.emptyList.push("Mã loại tài sản");
+                this.emptyList.push(this.formInput.assetCategoryCode);
             }
             // mã bộ phận sử dụng
             if(this.ProductInfo.DepartmentCode == "") {
                 this.isDepartmentCodeEmpty = true;
-                this.emptyList.push("Mã bộ phận sử dụng");
+                this.emptyList.push(this.formInput.departmentCode);
             }
             // số lượng
             if(this.ProductInfo.Quantity == 0) {
                 this.isQuantityEqualZero = true;
-                this.emptyList.push("Số lượng");
+                this.emptyList.push(this.formInput.quantity);
             }
             // tỉ lệ hao mòn
             if(this.ProductInfo.WearRate == 0) {
                 this.isWearRateEqualZero = true;
-                this.emptyList.push("Tỉ lệ hao mòn (%)");
+                this.emptyList.push(this.formInput.depreciationRate);
             }
             // nguyên giá
             if(this.ProductInfo.Price == 0) {
                 this.isPriceEqualZero = true;
-                this.emptyList.push("Nguyên giá");
+                this.emptyList.push(this.formInput.cost);
             }
             // số năm dử dụng
             if(this.ProductInfo.UseYear == 0) {
                 this.isUseYearEqualZero = true;
-                this.emptyList.push("Số năm sử dụng");
+                this.emptyList.push(this.formInput.lifeTime);
             }
             // giá trị hao mòn năm
             if(this.ProductInfo.DepreciationValuePerYear == 0) {
                 this.isDepreciationValuePerYearEqualZero = true;
-                this.emptyList.push("Giá trị hao mòn năm");              
+                this.emptyList.push(this.formInput.depreciationValueOfYear);              
             }   
 
             if(this.emptyList.length > 0) {
@@ -572,15 +581,14 @@ export default {
          * Created by: NDCHIEN(3/3/2023)
          */
         editAsset() {
-            try {
-                axios.put("https://localhost:7210/api/Assets/" + this.ProductInfo.ProductId , this.newAsset)
+                this.$emit('startLoading');
+                axios.put(this.api.asset + this.ProductInfo.ProductId , this.newAsset)
                 .then(res => {
-                    (this.numberOfAffectedRows = res.data)
+                    (this.numberOfAffectedRows = res.data),
+                    (this.$emit('cancelLoading'))
                 }) 
-                .catch(res => {this.msgAddFail = res.response.data.ErrorCode; });               
-            } catch(e) {
-                console.log(e);
-            }
+                .catch(res => {(this.msgAddFail = res.response.data.ErrorCode), (this.$emit('cancelLoading'))});               
+
         },
 
         /**
@@ -590,17 +598,16 @@ export default {
         addAsset() {
             this.newAsset.tracked_year = "2023-03-17T00:00:00";
             console.log("this.newAsset: ", this.newAsset);
-            try {
-                axios.post("https://localhost:7210/api/Assets/", this.newAsset)
+                this.$emit('startLoading');
+                axios.post(this.api.asset, this.newAsset)
                 .then(res => {
                     if(res.data >= 1) {
                         this.$emit("addSuccess");
+                        this.$emit('cancelLoading');
                     }
                 })
-                .catch(res => {this.msgAddFail = res.response.data.ErrorCode; });               
-            } catch(e) {
-                console.log(e);
-            }
+                .catch(res => {(this.msgAddFail = res.response.data.ErrorCode), (this.$emit('cancelLoading'))});               
+
         },
 
         /**
@@ -610,15 +617,14 @@ export default {
         cloneAsset() {
             this.newAsset.tracked_year = "2023-03-17T00:00:00";
             console.log(this.newAsset);
-            try {
-                axios.post("https://localhost:7210/api/Assets/", this.newAsset)
+                this.$emit('startLoading');
+                axios.post(this.api.asset, this.newAsset)
                 .then(res => {
-                    (this.numberOfAffectedRows = res.data)
+                    (this.numberOfAffectedRows = res.data),
+                    (this.$emit('cancelLoading'))
                 })
-                .catch(res => {this.msgAddFail = res.response.data.ErrorCode; });               
-            } catch(e) {
-                console.log(e);
-            }
+                .catch(res => {this.msgAddFail = res.response.data.ErrorCode; (this.$emit('cancelLoading')) });               
+
         },
 
         /***
@@ -691,6 +697,7 @@ export default {
         msgAddFail: function(newValue) {
             if(newValue == 4) {
                 this.isShowPopupDuplicateCode = true;
+                this.msgAddFail = 0;
             }
         },
 
@@ -852,9 +859,8 @@ export default {
          */
         if(this.dataForEdit != null) {
             // Gọi API lấy product theo id
-            try {
                 axios
-                    .get("https://localhost:7210/api/Assets/" + this.dataForEdit)
+                    .get(this.api.asset + this.dataForEdit)
                     .then(res => 
                         {
                             (this.ProductInfo.ProductCode = res.data[0].asset_code),
@@ -901,9 +907,7 @@ export default {
                                 "modified_date": "2023-03-16T22:16:44",
                             })
                         })
-            } catch (e) {
-                console.log(e);
-            }
+
         }
 
         /**
@@ -912,9 +916,8 @@ export default {
          */
         if(this.dataForClone != null) {
             // Gọi API lấy product theo id
-            try {
                 axios
-                    .get("https://localhost:7210/api/Assets/" + this.dataForClone)
+                    .get(this.api.asset + this.dataForClone)
                     .then(res => 
                         {
 
@@ -961,18 +964,15 @@ export default {
                                 "modified_date": "2023-03-16T22:16:44",
                             })
                         })
-            } catch (e) {
-                console.log(e);
-            }
+
         }
 
         /**
          * Gọi API lấy mã lớn nhất để thêm, nhân bản tài sản
          */
         if(this.dataForEdit == null) {
-            try {
                 axios
-                    .get('https://localhost:7210/api/Assets/MaxAssetCode')
+                    .get(`${this.api.asset}MaxAssetCode`)
                     .then(res => {
                         (this.ProductInfo.ProductCode = res.data),
                         (this.assetForAdd.ProductCode = this.ProductInfo.ProductCode),
@@ -992,24 +992,28 @@ export default {
                         (this.assetForAdd.PurchaseDate = this.ProductInfo.PurchaseDate),
                         (this.assetForAdd.DayStartedUsing = this.ProductInfo.DayStartedUsing)
                     })
-            } catch (e) {
-                console.log(e);
-            }
+
         }        
     },
     data() {
         return {
+            formInput: resource.formInput,
+            placeholder: resource.placeholder,
+            error: resource.error,
+            warning: resource.warning,
+
+            api: resource.API,
 
             // đối tượng chứa dữ liệu được điền trong form phục vụ bindding
             ProductInfo: {
                 ProductId: "",
                 ProductCode: "",
                 ProductName: "",
-                DepartmentId: "",
+                DepartmentId: "00000000-0000-0000-0000-000000000000",
                 DepartmentCode: "",
                 DepartmentName: "",
                 TypeProductCode: "",
-                TypeProductId: "",
+                TypeProductId: "00000000-0000-0000-0000-000000000000",
                 AssetCategoryName: "",
                 Quantity: 0,
                 Price: 0,
@@ -1062,7 +1066,31 @@ export default {
             // biến phục vụ rende datetime
             componentKey: 1,
             // đối tượng dùng để chuyển product thành asset
-            newAsset: {},
+            newAsset: {
+                                "asset_code": "",
+                                "asset_name": "",
+                                "organization_id": "16b4f05f-5ff5-3dba-9751-12b245ff3d02",
+                                "organization_code": "abc",
+                                "organization_name": "abc",
+                                "department_id": "00000000-0000-0000-0000-000000000000",
+                                "department_code": "",
+                                "department_name": "",
+                                "asset_category_id": "00000000-0000-0000-0000-000000000000",
+                                "asset_category_code": "",
+                                "asset_category_name": "",
+                                "purchase_date": "",
+                                "cost": 0,
+                                "quantity": 0,
+                                "depreciation_rate": 0,
+                                "tracked_year": "",
+                                "life_time": 0,
+                                "production_year": "",
+                                "active": 1,
+                                "created_by": "NDCHIEN",
+                                "created_date": "2023-03-16T22:16:44",
+                                "modified_by": "NDCHIEN",
+                                "modified_date": "2023-03-16T22:16:44",                
+            },
             // đối tượng dùng để so sánh phục vụ phát hiện người dùng sửa
             newAsset2: {},
             // biến lưu ngày theo dõi sản phẩm trên phần mềm
@@ -1101,6 +1129,9 @@ export default {
             isChangeForAdd: false,
             // mảng dùng để lưu các lỗi bỏ trống
             emptyList: [],
+
+            // biến dùng để ẩn hiện popup so sánh ngày
+            isShowPopupCompareDate: false,
         }
     }
 }

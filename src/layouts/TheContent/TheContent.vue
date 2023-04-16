@@ -7,7 +7,7 @@
             <!-- ô tìm kiếm tài sản -->
             <div class="search-input">
                 <MInputWithIcon
-                    placeholder="Tìm kiếm tài sản"
+                    :placeholder="filter.asset"
                     v-model="assetCodeOrName"
                     @keyup.enter="() => {assetSearch = assetCodeOrName}"
                 >
@@ -18,7 +18,7 @@
             <!-- ô filter theo loại tài sản -->
             <div class="filter-product">
                 <MComboboxWithIcon
-                    placeholder="Loại tài sản"
+                    :placeholder="filter.assetCategory"
                     :api="api.AssetCategoryGetAll"
                     entity="asset_category_name"
                     @emit="assetFilter($event, 'asset_category_id', 'assetCategorySearch')"
@@ -30,7 +30,7 @@
             <!-- ô filter theo bộ phận sử dụng -->
             <div class="filter-product">
                 <MComboboxWithIcon
-                    placeholder="Bộ phận sử dụng"
+                    :placeholder="filter.department"
                     :api="api.DepartmentGetAll"
                     entity="department_name"
                     @emit="assetFilter($event, 'department_id', 'departmentSearch')"
@@ -48,7 +48,7 @@
                      
             >
                 <MButton
-                    text="+ Thêm tài sản"
+                    :text="button.add"
                     type="button-container"   
                     @click="handleForm"        
                 ></MButton>
@@ -57,11 +57,13 @@
 
             <!-- nút excel -->
             <div class="inline-block excel-button">
-                <MIconButton
-                    tooltipText="Xuất ra file Excel"
-                >
-                    <div class="excel-icon-button" ></div>
-                </MIconButton>
+                <a :href="`https://localhost:7210/api/Assets/Export?txtSearch=${assetCodeOrName}&DepartmentId=${departmentSearch}&AssetCategoryId=${assetCategorySearch}`">
+                    <MIconButton
+                        :tooltipText="tooltip.excel"
+                    >
+                        <div class="excel-icon-button" ></div>
+                    </MIconButton>
+                </a>
             </div>    
 
             <!-- nút xóa -->
@@ -69,7 +71,7 @@
                 class="inline-block delete-button" 
             >               
                 <MIconButton
-                    tooltipText="Xóa tài sản"
+                    :tooltipText="tooltip.delete"
                     @click="() => (this.isShowPopup = true)"
                 >
                     <div class="delete-icon-button"></div>
@@ -90,12 +92,14 @@
                 :filterDepartment="departmentSearch"
                 :filterAssetCategory="assetCategorySearch"
                 entity="asset_id"
-                @showEditSuccessToast="showEditSuccessToast('Lưu dữ liệu thành công')"
+                @showEditSuccessToast="showEditSuccessToast(toast.success)"
                 @listAssetForDelete="emitDeleteAsset"
                 :tableChange="this.tableChange"
                 :numOfActivePage="activePage"
+                :activeChange="activeChange"
                 @cancelLoading="() => {this.$emit('cancelLoading')}"
                 @startLoading="() => {this.$emit('startLoading')}"
+                :key="key"
             ></MTable>
         </div>
         
@@ -103,8 +107,8 @@
         <MProductDetail
             v-if="isHide"
             @closeForm = handleForm
-            @returnActiveIndex = "() => {console.log('abc')}"
-            title="Thêm mới tài sản"
+            @returnActiveIndex = "returnActiveIndex"
+            :title="form.add"
             :data="this.dataFromTable"
             :dataForEdit="null"
             typeForm="add"
@@ -119,7 +123,7 @@
             v-if="isShowToats"
         ></MToast>
 
-        <!-- popup xóa tài sản -->
+        <!-- popup xóa tài sản khi có tài sản được chọn-->
         <MPopup
             content=""
             @exitPopup="exitPopup"
@@ -127,15 +131,16 @@
             type="warning"
             typeButton="deleteOption"
             @deleteAction="deleteAsset"
+            :isEmpty="listAssetForDelete == 0 ? true : false"
         >
             <span v-if="this.listAssetForDelete.length > 1 ? true : false">
-                <span style="font-family: Roboto Bold;">{{ this.listAssetForDelete.length < 10 ? "0" + this.listAssetForDelete.length : this.listAssetForDelete.length }}</span> tài sản đã được chọn. Bạn có muốn xóa các tài sản này khỏi danh sách ?
+                <span style="font-family: Roboto Bold;">{{ this.listAssetForDelete.length < 10 ? "0" + this.listAssetForDelete.length : this.listAssetForDelete.length }}</span> {{ popup.deleteMore }}
             </span>
             <span v-if="this.listAssetForDelete.length == 1 ? true : false">
-                Bạn có muốn xóa tài sản <span style="font-family: Roboto Bold;">&lt;&lt;{{ this.assetForDeleteOne[0].asset_code }} - {{ this.assetForDeleteOne[0].asset_name }}>></span> ? 
+                {{ popup.deleteOne }} <span style="font-family: Roboto Bold;">&lt;&lt;{{ this.assetForDeleteOne[0].asset_code }} - {{ this.assetForDeleteOne[0].asset_name }}>></span> ? 
             </span>
             <span v-if="this.listAssetForDelete.length == 0 ? true : false">
-                Không có tài sản nào được chọn để xóa.
+                {{ popup.deleteZero }}
             </span>
         </MPopup>
 
@@ -165,8 +170,14 @@ export default {
     methods: {
 
         returnActiveIndex() {
-            this.activePage = 1;
+            this.activePage = 2;
+            this.activeChange = !this.activeChange;
+            this.addKey();
             console.log("this.activePage: ", this.activePage)
+        },
+
+        addKey() {
+            return this.key ++;
         },
 
         /**
@@ -178,6 +189,7 @@ export default {
             this.isShowToats = true;
             this.toastMessage = 'Lưu dữ liệu thành công';
             this.tableChange = !this.tableChange;
+            this.activeChange = !this.activeChange;
         },
 
 
@@ -193,8 +205,8 @@ export default {
          */
         deleteAsset() {
             if(this.listAssetForDelete.length > 0) {
-                try {
-                    axios.delete("https://localhost:7210/api/Assets/assetIds", {
+                this.$emit('startLoading');
+                    axios.delete("https://localhost:7210/api/Assets", {
                         data: Object.values(this.listAssetForDelete)
                     })
                     .then(res => {
@@ -205,11 +217,9 @@ export default {
                         (this.isShowPopup = false),
                         // hiện toast
                         (this.showEditSuccessToast('Xóa tài sản thành công')),
-                        (this.listAssetForDelete.length = 0)
+                        (this.listAssetForDelete.length = 0),
+                        (this.$emit('cancelLoading'))
                     })
-                } catch (error) {
-                    console.log(error);
-                }
             }
         },
 
@@ -301,7 +311,15 @@ export default {
                 AssetCategoryGetAll: resource.API.AssetCategoryGetAll,
                 FilterAndPaging: resource.API.FilterAndPaging,
                 TotalResult: resource.API.TotalResult,
+                assetExport: resource.API.assetExport
             },
+
+            filter: resource.filter,
+            button: resource.button,
+            tooltip: resource.tooltip,
+            toast: resource.toast,
+            form: resource.form,
+            popup: resource.popup,
 
             // biến hứng dữ liệu search tài sản
             assetSearch: "",
@@ -323,6 +341,11 @@ export default {
 
             // biến làm cho trang quay về trang 1 
             activePage: 1,
+
+            key: 0,
+
+            // biến dùng để hứng watch bên table
+            activeChange: true,
         }
     }
 }

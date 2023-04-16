@@ -14,7 +14,17 @@ var resource = {
                     name: "asset",
                     class: "asset-icon",
                     active: "active-icon",
-                    text: "Tài sản"
+                    text: "Tài sản",
+                    items: [
+                        "Ghi tăng",
+                        "Thay đổi thông tin",
+                        "Đánh giá lại",
+                        "Tính hao mòn",
+                        "Điều chuyển tài sản",
+                        "Ghi giảm",
+                        "Kiểm kê",
+                        "Khác"
+                    ]
                 },
                 {
                     // icon tài sản đảm bảo
@@ -146,9 +156,87 @@ var resource = {
         DepartmentGetAll: "https://localhost:7210/api/Departments",
         AssetCategoryGetAll: "https://localhost:7210/api/AssetCategories",
         FilterAndPaging: "https://localhost:7210/api/Assets/filter",
-        TotalResult: "https://localhost:7210/api/Assets/totalResults"
-    }
+        TotalResult: "https://localhost:7210/api/Assets/totalResults",
+        assetExport: "https://localhost:7210/api/Assets/Export",
+        asset: "https://localhost:7210/api/Assets/"
+    },
+
+    // kiểu form
+    formType: {
+        edit: "Sửa tài sản",
+        clone: "Nhân bản tài sản",
+    },
+
+    // phân trang
+    paging: {
+        total: "Tổng số:",
+        record: "bản ghi",
+    },
     
+    // các trường trong form
+    formInput: {
+        assetCode: "Mã tài sản",
+        departmentCode: "Mã bộ phận sử dụng",
+        assetCategoryCode: "Mã loại tài sản",
+        quantity: "Số lượng",
+        depreciationRate: "Tỷ lệ hao mòn (%)",
+        purchaseDate: "Ngày mua",
+        assetName: "Tên tài sản",
+        departmentName: "Tên bộ phận sử dụng",
+        assetCategoryName: "Tên loại tài sản",
+        cost: "Nguyên giá",
+        lifeTime: "Số năm sử dụng",
+        depreciationValueOfYear: "Giá trị hao mòn năm",
+        trackedYear: "Năm theo dõi",
+        productionYear: "Ngày bắt đầu sử dụng"
+    },
+
+    // lỗi popup
+    error: {
+        duplicateCode: "đã tồn tại",
+        errorData: "Dữ liệu đầu vào không hợp lệ",
+        needData: "Cần phải nhập những thông tin sau:",
+        compareDate: "Ngày mua phải nhỏ hơn ngày sử dụng"
+    },
+
+    warning: {
+        channgeWarning: "Thông tin thay đổi sẽ không được cập nhật nếu bạn không lưu. Bạn có muốn lưu các thay đổi này ?",
+        cancelWarning: "Bạn có muốn hủy bỏ khai báo tài sản này ?"
+    },
+
+    placeholder: {
+        departmentCode: "Chọn mã bộ phận sử dụng",
+        assetCategoryCode: "Chọn mã loại tài sản"
+    },
+
+    filter: {
+        asset: "Tìm kiếm tài sản",
+        assetCategory: "Loại tài sản",
+        department: "Bộ phận sử dụng"
+    },
+
+    button: {
+        add: "+ Thêm tài sản"
+    },
+
+    tooltip: {
+        excel: "Xuất ra file Excel",
+        delete: "Xóa tài sản"
+    },
+
+    toast: {
+        success: "Lưu dữ liệu thành công"
+    },
+
+    form: {
+        add: "Thêm mới tài sản"
+    },
+
+    popup: {
+        deleteMore: "tài sản đã được chọn. Bạn có muốn xóa các tài sản này khỏi danh sách ?",
+        deleteOne: "Bạn có muốn xóa tài sản",
+        deleteZero: "Không có tài sản nào được chọn để xóa."
+    }
 
 }
 
