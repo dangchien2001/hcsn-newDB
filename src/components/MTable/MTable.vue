@@ -1,17 +1,18 @@
 <template>
 
-<div>
+<div style="height: 100%; ">
     <!-- table -->
-    <table class="table-container">
+    <table :class="typeTable">
 
         <!-- header -->
         <tr
-            :class="['table-header']"
+            :class="['table-header', boldRow ? 'bold-row' : '']"
         >
 
             <!-- first/checkbox col -->
             <th
                 class="table-select-box-col"
+                :style="'width: 49px'"
             >
                 <MCheckbox
                     v-model="isCheckboxHeaderSelect"
@@ -53,7 +54,7 @@
         >
 
             <!-- checkbox col -->
-            <td class="table-select-box-col">
+            <td class="table-select-box-col-td">
                 <MCheckbox
                     v-model="rows[index]"
                     @click="handleSelectRow(item[entity], rows[index])"
@@ -97,10 +98,10 @@
         </tr>
 
         <!-- Phân trang -->
-        <tr class="footer-content">
+        <tr class="footer-content" v-if="!footer">
 
             <!-- td chứa chức năng có độ rộng bằng 6 td cộng lại chứa tổng số bản ghi, số bản ghi trên 1 trang, thanh phân trang -->
-            <td colspan="6">
+            <td :colspan="'6'">
 
                 <!-- thẻ div chỉ dùng để display flex -->
                 <div class="footer-content-function">
@@ -284,6 +285,182 @@
 
     </table>
 
+    <!-- footer-->
+    <table v-if="footer" style="" :class="['footer-table-v2', boldRow ? 'bold-row' : '']">
+        <tr>
+            <th style="width: 49px; border-top: none; border-bottom: none"></th>
+            <th v-for="(item, index) in tableInfo"
+                :key="index"
+                :style="item.style"></th>           
+        </tr>
+        <tr style="height: 39px">
+            <td :colspan="colspan">
+
+                <!-- thẻ div chỉ dùng để display flex -->
+                <div class="footer-content-function">
+
+                    <!-- Tổng số bản ghi -->
+                    <div class="total-data">{{ paging.total }}</div>&nbsp;
+
+                    <div class="number-of-data">{{ TotalData }}</div>&nbsp;
+
+                    <div class="text-of-data">{{ paging.record }}</div>
+
+                    <!-- số bản ghi trên 1 trang -->
+                    <div class="number-of-data-in-page">
+
+                        <!-- số hiển thị -->
+                        <div class="number-of-data-select">{{ PageSize }}</div>
+
+                        <!-- nút chọn mở -->
+                        <div 
+                            class="number-of-data-dropdown-button"
+                            @click="handleNumberOfRecordList"
+                            v-if="!isShowNumberOfRecord"
+                        ></div>
+
+                        <!-- nút chọn đóng -->
+                        <div 
+                            class="number-of-data-dropdown-button-close"
+                            @click="handleNumberOfRecordList"
+                            v-if="isShowNumberOfRecord"
+                        ></div>
+
+                        <!-- danh sách số bản ghi trên 1 trang -->
+                        <div 
+                            class="number-of-data-in-page-list" 
+                            v-if="isShowNumberOfRecord"
+                        >
+                            <div 
+                                class="number-of-data-in-page-item"
+                                @click="SelectNumberOfRecords(10)"
+                            >10</div>
+                            <div 
+                                class="number-of-data-in-page-item"
+                                @click="SelectNumberOfRecords(20)"
+                            >20</div>
+                            <div 
+                                class="number-of-data-in-page-item"
+                                @click="SelectNumberOfRecords(30)"
+                            >30</div>
+                            <div 
+                                class="number-of-data-in-page-item"
+                                @click="SelectNumberOfRecords(50)"
+                            >50</div>
+                            <div 
+                                class="number-of-data-in-page-item"
+                                @click="SelectNumberOfRecords(100)"
+                            >100</div>
+                        </div>
+
+                    </div>
+
+                    <!-- thanh phân trang -->
+                    <div class="list-page">
+
+                        <!-- pre button -->
+                        <div class="list-page-pre-button" @click="NextAndReturnPage('pre')">
+
+                            <!-- pre button icon -->
+                            <div class="list-page-pre-button-icon"></div>                            
+
+                        </div>
+                       
+                        <!-- thanh phân trang ngắn nếu total page <= 5 -->
+                        <div class="pagging-box" v-if="typePaging == 'short'">
+                            <div 
+                                :class="['page', {'page-active' : i == activePage}]"
+                                v-for="i in totalPage"
+                                :key="i"
+                                @click="SelectPage(i)"
+                            >{{ i }}</div>                           
+                        </div>
+
+                        <!-- thanh phân trang dài nếu total page > 5 -->
+                        <div class="pagging-box" v-if="typePaging == 'long' && PageIndex <= 3 && PageIndex <= totalPage - 3">
+                            <div
+                                :class="['page', {'page-active' : i == activePage}]"
+                                v-for="i in 3" 
+                                :key="i"  
+                                @click="SelectPage(i)"                          
+                            >{{ i }}</div>
+
+                            <div class="three-dot">...</div>
+
+                            <div
+                                :class="['page', {'page-active' : totalPage == activePage}]"  
+                                @click="SelectPage(totalPage)"                            
+                            >{{ totalPage }}</div>
+                        </div>
+
+                        <!-- thanh phân trang dài nếu total page > 5 và page index > 3 -->
+                        <div class="pagging-box" v-if="typePaging == 'long' && PageIndex > 3 && PageIndex <= totalPage - 3">
+                            <div
+                                :class="['page', {'page-active' : 1 == activePage}]" 
+                                @click="SelectPage(1)"                          
+                            >1</div>
+
+                            <div class="three-dot">...</div>
+
+                            <div
+                                :class="['page', {'page-active' : i + PageIndex - 1 == activePage}]"
+                                v-for="i in 3" 
+                                :key="i"  
+                                @click="SelectPage(i + PageIndex - 1)"                          
+                            >{{ i + PageIndex - 1 }}</div>
+
+                            <div class="three-dot">...</div>
+
+                            <div
+                                :class="['page', {'page-active' : totalPage == activePage}]"  
+                                @click="SelectPage(totalPage)"                            
+                            >{{ totalPage }}</div>
+                        </div>
+
+                        <!-- thanh phân trang dài nếu total page > 5 và page index < totalPage - 3 -->
+                        <div class="pagging-box" v-if="typePaging == 'long' && PageIndex > totalPage - 3">
+                            <div
+                                :class="['page', {'page-active' : 1 == activePage}]" 
+                                @click="SelectPage(1)"                          
+                            >1</div>
+
+                            <div class="three-dot">...</div>
+
+                            <div
+                                :class="['page', {'page-active' : totalPage - 2 == activePage}]" 
+                                @click="SelectPage(totalPage - 2)"                          
+                            >{{ totalPage - 2 }}</div>
+
+                            <div
+                                :class="['page', {'page-active' : totalPage - 1 == activePage}]" 
+                                @click="SelectPage(totalPage - 1)"                          
+                            >{{ totalPage - 1 }}</div>
+
+                            <div
+                                :class="['page', {'page-active' : totalPage == activePage}]" 
+                                @click="SelectPage(totalPage)"                          
+                            >{{ totalPage }}</div>
+                            
+                        </div>
+                        
+                        <!-- next button -->
+                        <div class="list-page-next-button" @click="NextAndReturnPage('next')">
+
+                            <!-- next button icon -->
+                            <div class="list-page-next-button-icon"></div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </td>
+            <td v-for="(item, index) in moreInfo" :key="index" style="text-align: right; font-family: Roboto Bold">{{ this.formatMoney(item) }}</td>
+            <td v-for="n in (tableInfo.length - colspan - moreInfo.length + 1)" :key="n"></td>
+        </tr>
+    </table>
+
     <!-- form sửa tài sản -->
     <MProductDetail
         :title="formType.edit"
@@ -336,7 +513,13 @@ export default {
         filterDepartment: String,
         filterAssetCategory: String,
         numOfActivePage: Number,
-        activeChange: Boolean 
+        activeChange: Boolean,
+        tableTh: Array, 
+        footer: Boolean,
+        colspan: String,
+        typeTable: String,
+        dataFooter: Array,
+        boldRow: Boolean
     },
     created() {
 
@@ -346,14 +529,16 @@ export default {
                 .then(res => {
                     (this.totalPage = res.data.TotalPage),
                     (this.currentPage = res.data.CurrentPage),
-                    (this.datas = this.mappingArray(res.data.Data)), 
+                    (this.datas = this.mappingArray(res.data.Data)),
+                    (this.data2 = res.data.Data),
                     (this.$emit("emitData", this.datas)),
                     (this.TotalData = res.data.TotalRecord), 
                     (this.TotalQuantity = res.data.TotalQuantity),
                     (this.TotalPrice = res.data.TotalCost),
                     (this.TotalAccumulatedDepreciation = res.data.TotalDepreciationValue),
                     (this.TotalResidualValue = res.data.TotalResidualValue),
-                    (this.$emit("cancelLoading"))
+                    (this.$emit("cancelLoading")),
+                    (this.moreInfo = res.data.MoreInfo)
                 })
 
 
@@ -601,6 +786,12 @@ export default {
     },
     watch: {
 
+        data2: function(newValue) {
+            if(newValue.length > 1) {
+                this.datas = newValue;
+            }
+        },
+
         /**
          * Chuyển thành trang 1 sau khi thêm mới
          * Created by: NDCHIEN(10/4/2023)
@@ -758,12 +949,15 @@ export default {
     },
     data() {
         return {    
-            tableInfo: resource.tableInfo,
+
+            tableInfo: this.tableTh,
             properties: resource[this.model],
             formType: resource.formType,
             paging: resource.paging,
 
             datas: [],
+
+            data2: [],
 
             // Biến lưu tổng số bản ghi
             TotalData: 0,
@@ -932,6 +1126,8 @@ export default {
             // biến dùng để lưu kiểu thanh phần trang
             typePaging: null,
             
+            // biến lưu mảng tính tổng
+            moreInfo: []
         }
     }
 }

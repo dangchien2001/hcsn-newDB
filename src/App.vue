@@ -7,7 +7,8 @@
     <!-- thẻ div chứa header và main content -->
     <div class="header-main">
       <TheHeader></TheHeader>
-      <TheContent @cancelLoading="() => {isLoading = false}" @startLoading="() => {isLoading = true}"></TheContent>
+      <!-- <TheContent @cancelLoading="() => {isLoading = false}" @startLoading="() => {isLoading = true}"></TheContent> -->
+      <router-view @cancelLoading="() => {isLoading = false}" @startLoading="() => {isLoading = true}"></router-view>
     </div>
 
     <MLoading v-if="isLoading"></MLoading>
@@ -18,13 +19,15 @@
 <script>
 import TheSidebar from "./layouts/TheSidebar/TheSidebar.vue"
 import TheHeader from "./layouts/TheHeader/TheHeader.vue"
-import TheContent from "./layouts/TheContent/TheContent.vue"  
+// import TheContent from "./layouts/TheContent/TheContent.vue"  
 import MLoading from "./components/MLoading/MLoading.vue"
 
 export default {
   name: 'App',
   components: {
-    TheSidebar, TheHeader, TheContent, MLoading
+    TheSidebar, TheHeader, 
+    // TheContent, 
+    MLoading
   },
   data() {
     return {
@@ -68,6 +71,8 @@ body {
     margin: 0;
     font-family: Roboto Regular;
 }
+
+a {text-decoration: none}
 
 * {
     box-sizing: border-box;

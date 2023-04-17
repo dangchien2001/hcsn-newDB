@@ -100,6 +100,9 @@
                 @cancelLoading="() => {this.$emit('cancelLoading')}"
                 @startLoading="() => {this.$emit('startLoading')}"
                 :key="key"
+                :tableTh="tableInfo"
+                :footer="false"
+                typeTable="table-container"
             ></MTable>
         </div>
         
@@ -294,6 +297,8 @@ export default {
 
     data() {
         return {
+            tableInfo: resource.tableInfo,
+
             isHide: false,
 
             // biến lưu trạng thái ẩn hiện của toast

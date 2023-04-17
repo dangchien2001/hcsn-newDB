@@ -107,7 +107,42 @@ var resource = {
         },
     ],
 
- 
+    // Mảng chứa các cột bảng chứng từ
+    voucherTh: [
+        {
+            colName: "STT",
+            style: "text-align: center; width: 49px"
+        },
+        {
+            colName: "Số chứng từ",
+            style: "text-align: left; width: 170px"
+        },
+        {
+            colName: "Ngày chứng từ",
+            style: "text-align: center; width: 200px"
+        },
+        {
+            colName: "Ngày ghi tăng",
+            style: "text-align: center; width: 200px"
+        },
+        {
+            colName: "Tổng nguyên giá",
+            style: "text-align: right; width: 200px"
+        },
+        {
+            colName: "Nội dung",
+            style: "text-align: left; min-width: 49px; padding-left: 20px"
+        },
+        {
+            colName: "",
+            style: "text-align: center;  width: 98px",
+        },
+    ],
+
+    // Mảng chứa các thuộc tính của footer bảng
+    assetFooter: [
+        'TotalPrice', '', ''
+    ],
     
 
     // Mảng chứa các thuộc tính đối tượng Product
@@ -150,6 +185,34 @@ var resource = {
         },
     ],
 
+    // Mảng chứa các thuộc tính đối tượng Voucher
+    voucher: [
+        {
+            name: "row_index",
+            style: "text-align: center;"
+        },
+        {
+            name: "voucher_code",
+            style: "text-align: left"
+        },
+        {
+            name: "voucher_date",
+            style: "text-align: center;"
+        },
+        {
+            name: "increment_date",
+            style: "text-align: center;"
+        },
+        {
+            name: "price",
+            style: "text-align: right;"
+        },
+        {
+            name: "description",
+            style: "text-align: left"
+        }
+    ],
+
    
     // API 
     API: {
@@ -158,7 +221,8 @@ var resource = {
         FilterAndPaging: "https://localhost:7210/api/Assets/filter",
         TotalResult: "https://localhost:7210/api/Assets/totalResults",
         assetExport: "https://localhost:7210/api/Assets/Export",
-        asset: "https://localhost:7210/api/Assets/"
+        asset: "https://localhost:7210/api/Assets/",
+        voucherFilterAndPaging: "https://localhost:7210/api/Vouchers/filter"
     },
 
     // kiểu form
@@ -236,7 +300,9 @@ var resource = {
         deleteMore: "tài sản đã được chọn. Bạn có muốn xóa các tài sản này khỏi danh sách ?",
         deleteOne: "Bạn có muốn xóa tài sản",
         deleteZero: "Không có tài sản nào được chọn để xóa."
-    }
+    },
+
+
 
 }
 

@@ -1,0 +1,134 @@
+.title-asset {
+    font-size: 24px;
+    font-family: Roboto Bold;
+}
+
+.content-container-v2 {
+    padding-left: 17px;
+    padding-right: 17px;
+}
+
+.asset-header {
+    display: flex;
+}
+
+.icon-toggle-voucher-detail {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -110px -420px;
+	width: 20px;
+	height: 15px;
+    box-shadow: none;
+    border-radius: 0px;
+}
+
+.icon-arrow-down-header {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -158px -249px;
+	width: 11px;
+	height: 7px;
+    box-shadow: none;
+    border-radius: 0px;
+}
+
+.header-asset-blank {
+    flex: 1;
+}
+
+.search-asset {
+    width: 280px;
+}
+
+.icon-search-asset {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -243px -23px;
+	width: 18px;
+	height: 18px;
+}
+
+.function-bar-asset {
+    background-color: #ffffff;
+    padding: 17px 17px;
+    display: flex;
+}
+
+.voucher-container {
+    margin-top: 17px;
+}
+
+.icon-asset-print {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -331px -67px;
+	width: 18px;
+	height: 18px;
+}
+
+.icon-asset-3-dot {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -383px -26px;
+	width: 3px;
+	height: 13px;
+}
+
+.asset-table {
+    width: 100%;
+    height: calc(100% - 40px);
+    overflow-x: auto;
+    overflow-y: auto;
+}
+
+.voucher-table-container {
+    height: calc(100% - 44px - 30px);
+        overflow-x: auto;
+        overflow-y: auto;
+        position: relative
+}
+
+.voucher-detail-table-container {
+    height: calc(100% - 43px);
+    overflow-x: auto;
+    overflow-y: auto;
+    position: relative
+}
+
+.voucher-table-container::-webkit-scrollbar-button:end {
+    height: 39px;
+    background-color: rgb(236, 234, 234);
+    border-top: 1px solid rgba(0, 0, 0, .16);
+}
+
+.voucher-detail-table-container::-webkit-scrollbar-button:end {
+    height: 39px;
+    background-color: rgb(236, 234, 234);
+    border-top: 1px solid rgba(0, 0, 0, .16);
+}
+
+.icon-btn-asset {
+    box-shadow: none;
+    border-radius: 0px;
+}
+
+.voucher-detail-header {
+    background-color: #FFFFFF;
+    width: 100%;
+    height: 44px;
+    display: flex;
+    align-items: center;
+}
+
+.voucher-detail-title {
+    font-family: Roboto Bold;
+    font-size: 17px;
+    padding-left: 17px;
+}
+
+.zoom-detail-container {
+    margin-right: 33px;
+    cursor: pointer;
+}
+
+.zoom-detail-icon {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -245px -333px;
+	width: 14px;
+	height: 14px;
+}
+
+.tiny-detail-icon {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -289px -333px;
+	width: 14px;
+	height: 14px;
+}

@@ -6,17 +6,19 @@
     >
 
         <!-- logo -->
-        <div 
-            :class="'logo'"
-        >
-            <div class="logo-img"></div>
+        <router-link to="/">
             <div 
-                class="logo-text" 
-                v-if="sidebarStatus.hide"
+                :class="'logo'"
             >
-                MISA QLTS
+                <div class="logo-img"></div>
+                <div 
+                    class="logo-text" 
+                    v-if="sidebarStatus.hide"
+                >
+                    MISA QLTS
+                </div>
             </div>
-        </div>
+        </router-link>
 
         <!-- side-bar-items -->
         <div             
@@ -25,35 +27,39 @@
             :class="sidebarItemIcon.active + ' sidebar-item ' 
             + sidebarStatus.sidebarItemWidth" 
         >
-            <div style="display: flex; height: 100%; align-items: center; height: 40px; cursor: pointer;">
-                <div 
-                    :class="sidebarItemIcon.class" 
-                ></div>
-                <div 
-                    class="sidebar-item-text" 
-                    v-if="sidebarStatus.hide"
-                >
-                    {{ sidebarItemIcon.text }}
+            
+                <div style="display: flex; height: 100%; align-items: center; height: 40px; cursor: pointer;">
+                    <div 
+                        :class="sidebarItemIcon.class" 
+                    ></div>
+                    <div 
+                        class="sidebar-item-text" 
+                        v-if="sidebarStatus.hide"
+                    >
+                        {{ sidebarItemIcon.text }}
+                    </div>
+
+                    <MTooltip
+                    :text="sidebarItemIcon.text"
+                    class="sidebar-tooltip"
+                    ></MTooltip>
+
+                    <div class="toggle-item-bonus" v-if="sidebarItemIcon.items != undefined && this.isOpen == false" @click="() => {this.isOpen = !this.isOpen}"></div>
+
+                    <div class="toggle-item-bonus-2" v-if="sidebarItemIcon.items != undefined && this.isOpen == true" @click="() => {this.isOpen = !this.isOpen}"></div>
                 </div>
-
-                <MTooltip
-                :text="sidebarItemIcon.text"
-                class="sidebar-tooltip"
-                ></MTooltip>
-
-                <div class="toggle-item-bonus" v-if="sidebarItemIcon.items != undefined && this.isOpen == false" @click="() => {this.isOpen = !this.isOpen}"></div>
-
-                <div class="toggle-item-bonus-2" v-if="sidebarItemIcon.items != undefined && this.isOpen == true" @click="() => {this.isOpen = !this.isOpen}"></div>
-            </div>
+            
 
             <div class="side-bar-item-bonus-container" v-if="isOpen">
-                <div 
-                    class="side-bar-item-bonus" 
-                    v-for="(item, index) in sidebarItemIcon.items"
-                    :key="index"
-                >
-                    {{ item }}
-                </div>
+                <router-link to="/Asset">
+                    <div 
+                        class="side-bar-item-bonus" 
+                        v-for="(item, index) in sidebarItemIcon.items"
+                        :key="index"
+                    >
+                        {{ item }}
+                    </div>
+                </router-link>
             </div>
 
             

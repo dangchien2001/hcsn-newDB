@@ -28,6 +28,11 @@ var comon = {
             // var intPart2 = intPart.replaceAll('.',',');     
             return symbol + intPart;
         }        
+
+        if((this.formatDate(price) != null && this.formatDate(price) != 'NaN/NaN/NaN')){
+            return this.formatDate(price)
+        }
+
         return price;
     },
     formatDateForDateInput(datetime) {
