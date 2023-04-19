@@ -56,7 +56,7 @@
                     <MTable
                         :tableTh="voucherTh"
                         :footer="'newFooter'"
-                        :api="api.voucherFilterAndPaging" 
+                        :arrayTotal="dataTotalVoucher"
                         @cancelLoading="() => {this.$emit('cancelLoading')}"
                         @startLoading="() => {this.$emit('startLoading')}"   
                         model="voucher"     
@@ -67,6 +67,11 @@
                         :allowFunctionCol="true"
                         :allowGetAll="false"
                         @objectAfterClickRow="(object) => {handleVoucherIdAfterClickRow(object)}"
+                        :dataAvailable="dataVoucher"
+                        :totalRecord="totalRecordVoucher"
+                        :totalPageProp="totalPageVoucher"
+                        :currentPageProp="currentPageVoucher"
+                        
                     ></MTable>
                 </div>
             </Pane>
@@ -84,8 +89,7 @@
                 <div class="voucher-detail-table-container">
                     <MTable
                         :tableTh="voucherDetailTh"
-                        :footer="''"
-                        :api="api.voucherDetailGetAll" 
+                        :footer="''"                       
                         @cancelLoading="() => {this.$emit('cancelLoading')}"
                         @startLoading="() => {this.$emit('startLoading')}"   
                         model="voucherDetail"     
@@ -93,8 +97,8 @@
                         typeTable="table-container-non-border" 
                         :dataFooter="assetFooter"
                         :boldRow="true"
-                        :allowFunctionCol="false"
-                        :callApiAfterIdChange="idVoucher"
+                        :allowFunctionCol="false"                        
+                        :dataAvailable="dataVoucherDetail"                   
                     ></MTable>
                 </div>
             </Pane>
@@ -104,11 +108,15 @@
             v-if="isShowForm"
             @exitForm="() => {isShowForm = false}"
             @openAssetList="() => {isShowListAsset = true}"
+            :dataAvailable="dataForFormDetail"
         ></MFormDetail>
 
         <MListAssetNoActive 
-            v-if="isShowListAsset"
+            v-show="isShowListAsset"
             @exitListAsset="() => {isShowListAsset = false}"
+            @cancelLoading="() => {this.$emit('cancelLoading')}"
+            @startLoading="() => {this.$emit('startLoading')}"
+            @assetForVoucher="(e) => {dataForFormDetail = e}"
         ></MListAssetNoActive>
 
     </div>
@@ -124,6 +132,7 @@ import MTable from '@/components/MTable/MTable.vue';
 import resource from '@/js/resource';
 import MFormDetail from '../../pages/formDetail/MFormDetail.vue'
 import MListAssetNoActive from '@/pages/listAssetNoActive/MListAssetNoActive.vue'
+import axios from 'axios'
 
 export default {
     name: 'AssetView',
@@ -131,8 +140,23 @@ export default {
         MButton, MIconButton, MInputWithIcon, Splitpanes, Pane, MTable, MFormDetail, MListAssetNoActive
     },
     created() {
-        // gọi api đổ chứng từ vào table
-        
+        // gọi api phân trang bảng voucher đổ chứng từ vào table
+        // Created by: NDCHIEN(19/4/2023)
+        this.$emit('startLoading');
+        axios       
+        .get('https://localhost:7210/api/Vouchers/filter?pageSize=20&pageNumber=1')
+        .then(res => {
+            this.dataVoucher = res.data.Data;
+            this.dataTotalVoucher = res.data.MoreInfo;
+            this.totalRecordVoucher = res.data.TotalRecord;
+            this.totalPageVoucher = res.data.TotalPage;
+            this.currentPageVoucher = res.data.CurrentPage;
+
+            this.$emit('cancelLoading');
+        })
+        .catch(res => {
+            console.log(res);
+        })
     },
     methods: {
         /**
@@ -141,7 +165,20 @@ export default {
          */
         handleVoucherIdAfterClickRow(object) {
             this.idVoucher = object.voucher_id;
-            console.log(this.idVoucher);
+        }
+    },
+    watch: {
+        idVoucher: function(newValue) {
+            this.$emit('startLoading');
+            axios
+            .get('https://localhost:7210/api/VoucherDetails/filter?voucherId=' + newValue)
+            .then(res => {
+                this.dataVoucherDetail = res.data;
+                this.$emit('cancelLoading');
+            })
+            .catch(res => {
+                console.log(res);
+            })
         }
     },
     data() {
@@ -153,9 +190,22 @@ export default {
             isShowDetailTable: true,
             isZoom: false,
             size: 50,
+
+            // biến hứng id của bảng voucher sau khi click vào dòng
             idVoucher: '',
+
             isShowForm: false,
-            isShowListAsset: false
+            isShowListAsset: false,
+            dataForFormDetail: [],
+
+            // data của bảng voucher sau kh gọi api phân trang
+            dataVoucher: [],
+            dataTotalVoucher: [],
+            totalRecordVoucher: 0,
+            totalPageVoucher: 0,
+            currentPageVoucher: 0,
+            // data của bảng voucher detail sau kh gọi api phân trang
+            dataVoucherDetail: [],
         }
     }
 }

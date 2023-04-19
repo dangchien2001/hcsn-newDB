@@ -58,7 +58,7 @@
             <td class="table-select-box-col-td">
                 <MCheckbox
                     v-model="rows[index]"
-                    @click="handleSelectRow(item[entity], rows[index])"
+                    @click="handleSelectRow(item[entity], rows[index], item)"
                 ></MCheckbox>
             </td>
 
@@ -525,12 +525,21 @@ export default {
         allowFunctionCol: Boolean,
         allowGetAll: Boolean,
         callApiAfterIdChange: String,
-        dataAvailable: Array
+        // props chứa mảng data được truyền từ ngoài vào
+        dataAvailable: Array,
+        // props chứa mảng data cho footer được truyền từ ngoài vào
+        arrayTotal: Array,
+        // props chứa tổng số bản ghi thỏa mãn sau khi filter
+        totalRecord: Number,
+        // props chứa số trang sau khi phân trang
+        totalPageProp: Number,
+        // props chứa trang hiện tại 
+        currentPageProp: Number
     },
     created() {
 
         // gọi api được truyền vào từ props
-        if(this.allowGetAll == false) {
+        if(this.allowGetAll == false && this.api != undefined) {
             axios
                 .get(this.api + '?PageNumber=' + this.PageIndex + '&PageSize=' + this.PageSize)
                 .then(res => {
@@ -548,7 +557,7 @@ export default {
                     (this.moreInfo = res.data.MoreInfo)
                 })
         }
-        else {
+        if(this.allowGetAll == true && this.api != undefined) {
             axios
                 .get(this.api)
                 .then(res => {
@@ -568,10 +577,14 @@ export default {
             if(type == "pre" && this.PageIndex > 1) {
                 this.PageIndex --; 
                 this.activePage --;
+                this.currentPage --;
+                this.$emit('updateCurrentPage', this.currentPage);
             }
             if(type == "next" && this.PageIndex < this.totalPage) {
                 this.PageIndex ++; 
                 this.activePage ++;
+                this.currentPage ++;
+                this.$emit('updateCurrentPage', this.currentPage);
             }
         },
 
@@ -700,8 +713,13 @@ export default {
                     const dataSelected = this.datas[i][this.entity];                  
                     this.listForDeleteAll.push(dataSelected);
                     this.listAssetForDelete = this.listForDeleteAll;
+
+                    const dataSelectedForEmit = this.datas[i];                  
+                    this.AllRowForEmit.push(dataSelectedForEmit);
+                    this.listRowForEmit = this.AllRowForEmit;
                 }
                 this.$emit('listAssetForDelete', Object.values(this.listAssetForDelete));
+                this.$emit('listRowForEmit', Object.values(this.listRowForEmit));
                 return;
             }
             if(value == false) {
@@ -709,7 +727,9 @@ export default {
                     this.rows[i] = false;
                 }
                 this.listAssetForDelete.splice(0, this.datas.length);
+                this.listRowForEmit.splice(0, this.datas.length);
                 this.$emit('listAssetForDelete', Object.values(this.listAssetForDelete));
+                this.$emit('listRowForEmit', Object.values(this.listRowForEmit));
                 return;
             }
         },
@@ -720,16 +740,21 @@ export default {
          * @param {*} row 
          * Created by: NDCHIEN(2/3/2023)
          */
-        handleSelectRow(value, row) {
+        handleSelectRow(value, row, entity) {
             if(row == true) {
                 this.listAssetForDelete.push(value);
                 this.$emit('listAssetForDelete', Object.values(this.listAssetForDelete));
+                this.listRowForEmit.push(entity);
+                this.$emit('listRowForEmit', Object.values(this.listRowForEmit));
             }
             if(row == false) {
                 this.isCheckboxHeaderSelect = false;
                 const indexOfRow = this.listAssetForDelete.indexOf(value);
                 this.listAssetForDelete.splice(indexOfRow, 1);
                 this.$emit('listAssetForDelete', Object.values(this.listAssetForDelete));
+                const indexOfRowForEmit = this.listRowForEmit.indexOf(entity);
+                this.listRowForEmit.splice(indexOfRowForEmit, 1);
+                this.$emit('listRowForEmit', Object.values(this.listRowForEmit));
             }
         },
 
@@ -801,6 +826,60 @@ export default {
         }
     },
     watch: {
+
+        /**
+         * gán tổng số trang từ prop cho biến totalPage
+         * Created by: NDCHIEN(19/4/2023)
+         */
+        totalPageProp: function(newValue) {
+            if(newValue != undefined) {
+                this.totalPage = newValue;
+            }
+        },
+
+        /**
+         * gán trang hiện tại từ prop
+         * Created by: NDCHIEN(19/4/2023)
+         */
+        currentPageProp: function(newValue) {
+            if(newValue != undefined) {
+                this.currentPage = newValue;
+                this.PageIndex = newValue;
+                this.activePage = newValue;
+            }
+        },
+
+        /**
+         * gán tổng số bản ghi cho biến TotalData hiển thị tổng số bản ghi
+         * Created by: NDCHIEN(19/4/2023)
+         * @param {*} newValue 
+         */
+        totalRecord: function(newValue) {
+            if(newValue != undefined) {
+                this.TotalData = newValue;
+            }
+        },
+
+        /**
+         * gán mảng chứa thông tin footer cho biến moreInfo
+         * Created by: NDCHIEN(19/4/2023)
+         */
+        arrayTotal: function(newValue) {
+            if(newValue != undefined) {
+                this.moreInfo = newValue;
+            }
+        },
+
+        /**
+         * gán data có sẵn được truyền vào cho hai biến datas, datas2 phục vụ render
+         * Created by: NDCHIEN(19/4/2023)
+         */
+        dataAvailable: function(newValue) {
+            if(newValue != undefined) {
+                this.datas = newValue;
+                this.data2 = newValue;
+            }
+        },
 
         /**
          * Gọi api mỗi khi id truyền vào thay đổi
@@ -915,22 +994,26 @@ export default {
             // làm rỗng mảng emit ra ngoài
             this.listAssetForDelete = [];
             this.$emit('listAssetForDelete', Object.values(this.listAssetForDelete));
-            this.$emit('startLoading');
-            // goi api
-                axios
-                    .get(this.api + '?assetFilter=' + this.filter + '&PageNumber=' + newValue + '&PageSize=' + this.PageSize + '&departmentFilter=' + this.filterDepartment + '&assetCategoryFilter=' + this.filterAssetCategory)
-                    .then(res => {
-                        (this.totalPage = res.data.TotalPage),
-                        (this.currentPage = res.data.CurrentPage),
-                        (this.datas = this.mappingArray(res.data.Data)),
-                        (this.$emit("emitData", this.datas)),
-                        (this.TotalData = res.data.TotalRecord),
-                        (this.TotalQuantity = res.data.TotalQuantity),
-                        (this.TotalPrice = res.data.TotalCost),
-                        (this.TotalAccumulatedDepreciation = res.data.TotalDepreciationValue),
-                        (this.TotalResidualValue = res.data.TotalResidualValue),
-                        (this.$emit('cancelLoading'))
-                    })
+
+            if(this.api != undefined)
+            {
+                this.$emit('startLoading');
+                // goi api
+                    axios
+                        .get(this.api + '?assetFilter=' + this.filter + '&PageNumber=' + newValue + '&PageSize=' + this.PageSize + '&departmentFilter=' + this.filterDepartment + '&assetCategoryFilter=' + this.filterAssetCategory)
+                        .then(res => {
+                            (this.totalPage = res.data.TotalPage),
+                            (this.currentPage = res.data.CurrentPage),
+                            (this.datas = this.mappingArray(res.data.Data)),
+                            (this.$emit("emitData", this.datas)),
+                            (this.TotalData = res.data.TotalRecord),
+                            (this.TotalQuantity = res.data.TotalQuantity),
+                            (this.TotalPrice = res.data.TotalCost),
+                            (this.TotalAccumulatedDepreciation = res.data.TotalDepreciationValue),
+                            (this.TotalResidualValue = res.data.TotalResidualValue),
+                            (this.$emit('cancelLoading'))
+                        })
+            }
 
         },
 
@@ -1168,7 +1251,11 @@ export default {
             typePaging: null,
             
             // biến lưu mảng tính tổng
-            moreInfo: []
+            moreInfo: [],
+            // mảng chứa các đối tượng được emit ra ngoài sau khi click vào các dòng
+            listRowForEmit: [],
+            // mảng dùng để lưu tất cả đối tượng được emit ra ngoài hoặc không một đối tượng nào
+            AllRowForEmit: []
         }
     }
 }

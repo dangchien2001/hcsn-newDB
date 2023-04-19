@@ -159,15 +159,15 @@ var resource = {
         },
         {
             colName: "Nguyên giá",
-            style: "text-align: left; width: 170px"
+            style: "text-align: right; width: 170px"
         },
         {
             colName: "Hao mòn năm",
-            style: "text-align: left; width: 170px"
+            style: "text-align: right; width: 170px"
         },
         {
             colName: "Giá trị còn lại",
-            style: "text-align: left; width: 170px"
+            style: "text-align: right; width: 170px; padding-right: 16px"
         },
     ],
 
@@ -191,15 +191,15 @@ var resource = {
         },
         {
             name: "cost",
-            style: "text-align: left;"
+            style: "text-align: right;"
         },
         {
             name: "depreciation_value",
-            style: "text-align: left;"
+            style: "text-align: right;"
         },
         {
             name: "residual_value",
-            style: "text-align: left;"
+            style: "text-align: right; padding-right: 16px" 
         },
     ],
 

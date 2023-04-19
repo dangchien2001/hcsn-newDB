@@ -35,40 +35,52 @@
                     </div>
                 </div>
                 <div class="title-form-body-voucher-detail-2">Thông tin chi tiết</div>
-                <div class="filter-input-voucher-detail-container">
-                    <div class="filter-input-voucher-detail">
-                        <MInputWithIcon
-                            placeholder="Tìm kiếm theo mã, tên tài sản"
-                        >
-                            <div class="icon-search"></div>
-                        </MInputWithIcon>
+                <div class="voucher-info-with-table-and-filter">
+                    <div class="filter-input-voucher-detail-container">
+                        <div class="filter-input-voucher-detail">
+                            <MInputWithIcon
+                                placeholder="Tìm kiếm theo mã, tên tài sản"
+                            >
+                                <div class="icon-search"></div>
+                            </MInputWithIcon>
+                        </div>
+                        <div class="blank"></div>
+                        <MButton
+                            text="Chọn tài sản"
+                            type="outline-button"
+                            style="width: 130px"
+                            @click="() => {this.$emit('openAssetList')}"
+                        ></MButton>
                     </div>
-                    <div class="blank"></div>
-                    <MButton
-                        text="Chọn tài sản"
-                        type="outline-button"
-                        style="width: 130px"
-                        @click="() => {this.$emit('openAssetList')}"
-                    ></MButton>
-                </div>
-                <div class="table-voucher-detail">
-                    <MTable
-                        :tableTh="voucherDetailTh"
-                        :footer="'newFooter'"
-                        @cancelLoading="() => {this.$emit('cancelLoading')}"
-                        @startLoading="() => {this.$emit('startLoading')}"   
-                        model="voucherDetail"     
-                        colspan="5"   
-                        typeTable="table-container-non-border" 
-                        :dataFooter="assetFooter"
-                        :boldRow="true"
-                        :allowFunctionCol="false"
-                        :dataAvailable="dataForTest"
-                    ></MTable>
+                    <div class="table-voucher-detail">
+                        <MTable
+                            :tableTh="voucherDetailTh"
+                            :footer="'newFooter'"
+                            @cancelLoading="() => {this.$emit('cancelLoading')}"
+                            @startLoading="() => {this.$emit('startLoading')}"   
+                            model="voucherDetail"     
+                            colspan="5"   
+                            typeTable="table-container-non-border" 
+                            :dataFooter="assetFooter"
+                            :boldRow="true"
+                            :allowFunctionCol="false"
+                            :dataAvailable="dataForTest"
+                        ></MTable>
+                    </div>
                 </div>
             </div>
             <div class="form-footer-voucher-detail">
-                
+                <div class="blank"></div>
+                <MButton
+                    text="Hủy bỏ"
+                    type="outline-button"
+                    @click="() => {this.$emit('exitForm')}"
+                ></MButton>
+                <MButton
+                    text="Đồng ý"
+                    type="button-container"
+                    style="width: 100px; justify-content: center;margin-right: 17px;"
+                ></MButton>
             </div>           
         </div>
     </div>
@@ -85,24 +97,23 @@ export default {
     components: {
         MInput, MDatetime, MInputWithIcon, MButton, MTable
     },
+    props: {
+        dataAvailable: Array
+    },
+    watch: {
+        /**
+         * Lấy dữ liệu từ bảng chọn tài sản chưa active để hiển thị
+         * Created by: NDCHIEN(19/4/2023)
+         */
+        dataAvailable: function(newValue) {
+            this.dataForTest = newValue;
+        }
+    },
     data() {
         return {
             voucherTh: resource.voucherTh,
             voucherDetailTh: resource.voucherDetailTh,
-            dataForTest: [
-                {
-                    row_index:1,
-                    voucher_detail_id:"0d56760e-461f-449f-8fe0-a041cace3df2",
-                    voucher_id:"153105e0-6702-29ed-7632-03c92da59c43",
-                    asset_id:"4760d71f-6e2f-5b32-19cb-66948daf6128",
-                    asset_code:"TS-66418",
-                    asset_name:"IPhone 14",
-                    department_name:"Phòng hành chính",
-                    cost:40741890,
-                    depreciation_value:6790328.5586,
-                    residual_value:33951561.4414
-                }
-            ]
+            dataForTest: []
         }
     }
 }
