@@ -29,9 +29,14 @@ var comon = {
             return symbol + intPart;
         }        
 
-        if((this.formatDate(price) != null && this.formatDate(price) != 'NaN/NaN/NaN')){
-            return this.formatDate(price)
-        }
+        if(price != null && price.length == 19) {
+            if(this.formatDate(price) != null && this.formatDate(price) != 'NaN/NaN/NaN'){
+                return this.formatDate(price)
+            }
+        }   
+
+        // console.log(price)
+        // console.log(this.formatDate('10/01/2001'.replaceAll('-','')))
 
         return price;
     },

@@ -139,6 +139,70 @@ var resource = {
         },
     ],
 
+    // mảng chứa các cột bảng detail
+    voucherDetailTh: [
+        {
+            colName: "STT",
+            style: "text-align: center; width: 49px"
+        },
+        {
+            colName: "Mã tài sản",
+            style: "text-align: left; width: 200px"
+        },
+        {
+            colName: "Tên tài sản",
+            style: "text-align: left; width: 300px"
+        },
+        {
+            colName: "Bộ phận sử dụng",
+            style: "text-align: left; min-width: 170px"
+        },
+        {
+            colName: "Nguyên giá",
+            style: "text-align: left; width: 170px"
+        },
+        {
+            colName: "Hao mòn năm",
+            style: "text-align: left; width: 170px"
+        },
+        {
+            colName: "Giá trị còn lại",
+            style: "text-align: left; width: 170px"
+        },
+    ],
+
+    // mảng chứa căn lề các dòng thuộc tính
+    voucherDetail: [
+        {
+            name: "row_index",
+            style: "text-align: center;"
+        },
+        {
+            name: "asset_code",
+            style: "text-align: left;"
+        },
+        {
+            name: "asset_name",
+            style: "text-align: left;"
+        },
+        {
+            name: "department_name",
+            style: "text-align: left;"
+        },
+        {
+            name: "cost",
+            style: "text-align: left;"
+        },
+        {
+            name: "depreciation_value",
+            style: "text-align: left;"
+        },
+        {
+            name: "residual_value",
+            style: "text-align: left;"
+        },
+    ],
+
     // Mảng chứa các thuộc tính của footer bảng
     assetFooter: [
         'TotalPrice', '', ''
@@ -176,11 +240,11 @@ var resource = {
             style: "text-align: right;"
         },
         {
-            name: "AccumulatedDepreciation",
+            name: "depreciation_value",
             style: "text-align: right;"
         },
         {
-            name: "ResidualValue",
+            name: "residual_value",
             style: "text-align: right;"
         },
     ],
@@ -212,7 +276,6 @@ var resource = {
             style: "text-align: left"
         }
     ],
-
    
     // API 
     API: {
@@ -222,7 +285,8 @@ var resource = {
         TotalResult: "https://localhost:7210/api/Assets/totalResults",
         assetExport: "https://localhost:7210/api/Assets/Export",
         asset: "https://localhost:7210/api/Assets/",
-        voucherFilterAndPaging: "https://localhost:7210/api/Vouchers/filter"
+        voucherFilterAndPaging: "https://localhost:7210/api/Vouchers/filter",
+        voucherDetailGetAll: "https://localhost:7210/api/VoucherDetails/filter?voucherId="
     },
 
     // kiểu form

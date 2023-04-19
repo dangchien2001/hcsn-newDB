@@ -7,6 +7,7 @@
                 text="Thêm"
                 type="button-container"
                 style="min-width: 100px; justify-content: center; margin-right: 17px;"
+                @click="() => {isShowForm = true}"
             ></MButton>
             <MIconButton
                 :tooltipText="'abc'"
@@ -54,7 +55,7 @@
                 <div class="voucher-table-container">
                     <MTable
                         :tableTh="voucherTh"
-                        :footer="true"
+                        :footer="'newFooter'"
                         :api="api.voucherFilterAndPaging" 
                         @cancelLoading="() => {this.$emit('cancelLoading')}"
                         @startLoading="() => {this.$emit('startLoading')}"   
@@ -63,6 +64,9 @@
                         typeTable="table-container-non-border" 
                         :dataFooter="assetFooter"
                         :boldRow="true"
+                        :allowFunctionCol="true"
+                        :allowGetAll="false"
+                        @objectAfterClickRow="(object) => {handleVoucherIdAfterClickRow(object)}"
                     ></MTable>
                 </div>
             </Pane>
@@ -79,20 +83,34 @@
 
                 <div class="voucher-detail-table-container">
                     <MTable
-                        :tableTh="voucherTh"
-                        :footer="true"
-                        :api="api.voucherFilterAndPaging" 
+                        :tableTh="voucherDetailTh"
+                        :footer="''"
+                        :api="api.voucherDetailGetAll" 
                         @cancelLoading="() => {this.$emit('cancelLoading')}"
                         @startLoading="() => {this.$emit('startLoading')}"   
-                        model="voucher"     
+                        model="voucherDetail"     
                         colspan="5"   
                         typeTable="table-container-non-border" 
                         :dataFooter="assetFooter"
                         :boldRow="true"
+                        :allowFunctionCol="false"
+                        :callApiAfterIdChange="idVoucher"
                     ></MTable>
                 </div>
             </Pane>
         </splitpanes >
+
+        <MFormDetail 
+            v-if="isShowForm"
+            @exitForm="() => {isShowForm = false}"
+            @openAssetList="() => {isShowListAsset = true}"
+        ></MFormDetail>
+
+        <MListAssetNoActive 
+            v-if="isShowListAsset"
+            @exitListAsset="() => {isShowListAsset = false}"
+        ></MListAssetNoActive>
+
     </div>
 </template>
 
@@ -104,24 +122,40 @@ import { Splitpanes, Pane } from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
 import MTable from '@/components/MTable/MTable.vue';
 import resource from '@/js/resource';
+import MFormDetail from '../../pages/formDetail/MFormDetail.vue'
+import MListAssetNoActive from '@/pages/listAssetNoActive/MListAssetNoActive.vue'
 
 export default {
     name: 'AssetView',
     components: {
-        MButton, MIconButton, MInputWithIcon, Splitpanes, Pane, MTable
+        MButton, MIconButton, MInputWithIcon, Splitpanes, Pane, MTable, MFormDetail, MListAssetNoActive
     },
     created() {
         // gọi api đổ chứng từ vào table
         
     },
+    methods: {
+        /**
+         * Hàm lấy id của bảng voucher sau khi click phục vụ gọi api hiển thị bảng voucher detail
+         * Created by: NDCHIEN(18/4/2023)
+         */
+        handleVoucherIdAfterClickRow(object) {
+            this.idVoucher = object.voucher_id;
+            console.log(this.idVoucher);
+        }
+    },
     data() {
         return {
             voucherTh: resource.voucherTh,
+            voucherDetailTh: resource.voucherDetailTh,
             api: resource.API,
             assetFooter: resource.assetFooter,
             isShowDetailTable: true,
             isZoom: false,
-            size: 50
+            size: 50,
+            idVoucher: '',
+            isShowForm: false,
+            isShowListAsset: false
         }
     }
 }

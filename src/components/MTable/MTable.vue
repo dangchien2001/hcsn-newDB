@@ -51,6 +51,7 @@
             v-for="(item, index) in datas"
             :key="index"
             @dblclick="editProduct(item.asset_id)"
+            @click="() => {this.$emit('objectAfterClickRow', item)}"
         >
 
             <!-- checkbox col -->
@@ -74,6 +75,7 @@
             <!-- function col -->
             <td
                 class="function-col"
+                v-if="allowFunctionCol"
             >
                 <div 
                     class="edit-icon"
@@ -98,7 +100,7 @@
         </tr>
 
         <!-- Phân trang -->
-        <tr class="footer-content" v-if="!footer">
+        <tr class="footer-content" v-if="footer == 'oldFooter'">
 
             <!-- td chứa chức năng có độ rộng bằng 6 td cộng lại chứa tổng số bản ghi, số bản ghi trên 1 trang, thanh phân trang -->
             <td :colspan="'6'">
@@ -286,7 +288,7 @@
     </table>
 
     <!-- footer-->
-    <table v-if="footer" style="" :class="['footer-table-v2', boldRow ? 'bold-row' : '']">
+    <table v-if="footer == 'newFooter'" style="" :class="['footer-table-v2', boldRow ? 'bold-row' : '']">
         <tr>
             <th style="width: 49px; border-top: none; border-bottom: none"></th>
             <th v-for="(item, index) in tableInfo"
@@ -515,15 +517,20 @@ export default {
         numOfActivePage: Number,
         activeChange: Boolean,
         tableTh: Array, 
-        footer: Boolean,
+        footer: String,
         colspan: String,
         typeTable: String,
         dataFooter: Array,
-        boldRow: Boolean
+        boldRow: Boolean,
+        allowFunctionCol: Boolean,
+        allowGetAll: Boolean,
+        callApiAfterIdChange: String,
+        dataAvailable: Array
     },
     created() {
 
         // gọi api được truyền vào từ props
+        if(this.allowGetAll == false) {
             axios
                 .get(this.api + '?PageNumber=' + this.PageIndex + '&PageSize=' + this.PageSize)
                 .then(res => {
@@ -540,7 +547,16 @@ export default {
                     (this.$emit("cancelLoading")),
                     (this.moreInfo = res.data.MoreInfo)
                 })
-
+        }
+        else {
+            axios
+                .get(this.api)
+                .then(res => {
+                    (this.data2 = res.data),
+                    (this.$emit("emitData", this.datas)),
+                    (this.$emit("cancelLoading"))
+                })
+        }
 
         this.activePage = this.numOfActivePage;
     },
@@ -786,6 +802,31 @@ export default {
     },
     watch: {
 
+        /**
+         * Gọi api mỗi khi id truyền vào thay đổi
+         */
+        callApiAfterIdChange: function(newValue) {
+            // làm rỗng mảng emit ra ngoài
+            this.listAssetForDelete = [];
+            this.$emit('startLoading');
+            // goi api làm mới dữ liệu
+                axios
+                    .get(this.api + newValue)
+                    .then(res => {                      
+                        (this.unSelectRow()),
+                        (this.isCheckboxHeaderSelect = false),
+                        (this.ActivePage = 1),
+                        (this.data2 = res.data),
+                        (this.datas = res.data),
+                        (this.$emit("emitData", this.datas)),
+                        (this.$emit("cancelLoading"))
+                    })
+        },
+
+        /**
+         * Tạo ra mảng lưu dữ liệu mới để tách base
+         * @param {*} newValue 
+         */
         data2: function(newValue) {
             if(newValue.length > 1) {
                 this.datas = newValue;
@@ -955,9 +996,9 @@ export default {
             formType: resource.formType,
             paging: resource.paging,
 
-            datas: [],
+            datas: this.dataAvailable,
 
-            data2: [],
+            data2: this.dataAvailable,
 
             // Biến lưu tổng số bản ghi
             TotalData: 0,

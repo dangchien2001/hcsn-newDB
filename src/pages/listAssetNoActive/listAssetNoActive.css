@@ -1,0 +1,78 @@
+.layer-list-asset {
+    height: 100vh;
+    width: calc(100vw);
+    background-color: rgba(56, 50, 50, 0.24);
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 3;
+}
+
+.list-asset-box {
+    background-color: #FFFFFF;
+    border-radius: 4px;
+    position: relative;
+    z-index: 1;
+    height: 600px;
+    width: 1000px;
+}
+
+.header-list-asset {
+    width: 100%;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid rgba(0, 0, 0, .16);
+}
+
+.title-list-asset {
+    font-size: 24px;
+    font-family: Roboto Bold;
+    margin-left: 17px;
+}
+
+.body-list-asset-row-1 {
+    width: 100%;
+    padding: 10px 17px;
+}
+
+.search-asset-container {
+    width: 33%;
+}
+
+.icon-search-asset {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -243px -23px;
+	width: 18px;
+	height: 18px;
+}
+
+.footer-list-asset {
+    width: 100%;
+    height: 70px;
+    display: flex;
+    align-items: center;
+    background-color: rgba(0, 0, 0, .16);
+}
+
+.blank {
+    flex: 1;
+}
+
+.body-list-asset {
+    height: calc(100% - 70px - 70px);
+}
+
+.exit-icon {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -375px -287px;
+        width: 18px;
+        height: 18px;
+        margin-right: 17px;
+        cursor: pointer;
+}
+
+.table-list-asset {
+
+}

@@ -101,8 +101,9 @@
                 @startLoading="() => {this.$emit('startLoading')}"
                 :key="key"
                 :tableTh="tableInfo"
-                :footer="false"
+                :footer="'oldFooter'"
                 typeTable="table-container"
+                :allowFunctionCol="true"
             ></MTable>
         </div>
         
