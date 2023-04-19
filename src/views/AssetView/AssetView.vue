@@ -30,6 +30,8 @@
                     <div class="search-asset">
                         <MInputWithIcon
                             :placeholder="'Tìm kiếm theo số chứng từ, nội dung'"
+                            v-model="keyWord"
+                            @keyup.enter="searchVoucher"
                         >
                             <div class="icon-search-asset"></div>
                         </MInputWithIcon>              
@@ -71,7 +73,9 @@
                         :totalRecord="totalRecordVoucher"
                         :totalPageProp="totalPageVoucher"
                         :currentPageProp="currentPageVoucher"
-                        
+                        @updateCurrentPage="(e) => {currentPageVoucher = e}"
+                        numOfActivePage="1"
+                        @updateNumberOfRecord="(e) => {pageSizeVoucher = e}"
                     ></MTable>
                 </div>
             </Pane>
@@ -142,32 +146,50 @@ export default {
     created() {
         // gọi api phân trang bảng voucher đổ chứng từ vào table
         // Created by: NDCHIEN(19/4/2023)
-        this.$emit('startLoading');
-        axios       
-        .get('https://localhost:7210/api/Vouchers/filter?pageSize=20&pageNumber=1')
-        .then(res => {
-            this.dataVoucher = res.data.Data;
-            this.dataTotalVoucher = res.data.MoreInfo;
-            this.totalRecordVoucher = res.data.TotalRecord;
-            this.totalPageVoucher = res.data.TotalPage;
-            this.currentPageVoucher = res.data.CurrentPage;
-
-            this.$emit('cancelLoading');
-        })
-        .catch(res => {
-            console.log(res);
-        })
+        this.voucherFilter(this.keyWord, this.pageSizeVoucher, this.currentPageVoucher);
     },
     methods: {
+        /**
+         * Hàm tìm kiếm trong bảng voucher sau khi ấn enter
+         * Created by: NDCHIEN(19/4/2023)
+         */
+        searchVoucher() {
+            this.voucherFilter(this.keyWord, this.pageSizeVoucher, this.currentPageVoucher);
+        },
+
         /**
          * Hàm lấy id của bảng voucher sau khi click phục vụ gọi api hiển thị bảng voucher detail
          * Created by: NDCHIEN(18/4/2023)
          */
         handleVoucherIdAfterClickRow(object) {
             this.idVoucher = object.voucher_id;
+        },
+
+        /**
+         * Hàm gọi api phân trang bảng voucher
+         * Created by: NDCHIEN(19/4/2023)
+         */
+        voucherFilter(keyWord, pageSize, pageNumber) {
+            this.$emit('startLoading');
+            axios       
+            .get(`https://localhost:7210/api/Vouchers/filter?voucherFilter=${keyWord}&pageSize=${pageSize}&pageNumber=${pageNumber}`)
+            .then(res => {
+                this.dataVoucher = res.data.Data;
+                this.dataTotalVoucher = res.data.MoreInfo;
+                this.totalRecordVoucher = res.data.TotalRecord;
+                this.totalPageVoucher = res.data.TotalPage;
+                this.currentPageVoucher = res.data.CurrentPage;
+
+                this.$emit('cancelLoading');
+            })
+            .catch(res => {
+                console.log(res);
+            })
         }
     },
     watch: {
+        // gọi api bảng voucher detail mỗi khi idVoucher thay đổi (sau khi click vào từng dòng trong bảng voucher)
+        // Created by: NDCHIEN(19/4/2023)
         idVoucher: function(newValue) {
             this.$emit('startLoading');
             axios
@@ -179,6 +201,22 @@ export default {
             .catch(res => {
                 console.log(res);
             })
+        },
+
+        /**
+         * Gọi api sau khi biến currentPageVoucher thay đổi (sau khi bấm chuyển trang)
+         * Created by: NDCHIEN(19/4/2023) 
+         */
+        currentPageVoucher: function(newValue) {
+            this.voucherFilter(this.keyWord, this.pageSizeVoucher, newValue);
+        },
+
+        /**
+         * Gọi api sau khi biến pageSizeVoucher thay dổi (sau khi bấm chọn pagesize, cho về trang 1)
+         * Created by: NDCHIEN(19/4/2023)
+         */
+        pageSizeVoucher: function(newValue) {
+            this.voucherFilter(this.keyWord, newValue, 1);
         }
     },
     data() {
@@ -190,6 +228,9 @@ export default {
             isShowDetailTable: true,
             isZoom: false,
             size: 50,
+
+            // biến hứng từ khóa được search
+            keyWord: '',
 
             // biến hứng id của bảng voucher sau khi click vào dòng
             idVoucher: '',
@@ -203,9 +244,12 @@ export default {
             dataTotalVoucher: [],
             totalRecordVoucher: 0,
             totalPageVoucher: 0,
-            currentPageVoucher: 0,
+            currentPageVoucher: 1,
+            pageSizeVoucher: 20,
             // data của bảng voucher detail sau kh gọi api phân trang
             dataVoucherDetail: [],
+
+            test: 0,
         }
     }
 }

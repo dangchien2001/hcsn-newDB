@@ -594,6 +594,8 @@ export default {
         SelectPage(value) {
             this.activePage = value;
             this.PageIndex = value;
+            this.currentPage = value;
+            this.$emit('updateCurrentPage', this.currentPage);
         },
 
 
@@ -640,6 +642,7 @@ export default {
         SelectNumberOfRecords(value) {
             this.PageSize = value;
             this.isShowNumberOfRecord = !this.isShowNumberOfRecord;
+            this.$emit('updateNumberOfRecord', value);
         },
 
         /***
@@ -846,6 +849,7 @@ export default {
                 this.currentPage = newValue;
                 this.PageIndex = newValue;
                 this.activePage = newValue;
+                this.$emit('updateCurrentPage', this.currentPage);
             }
         },
 
@@ -959,25 +963,28 @@ export default {
             // làm rỗng mảng emit ra ngoài
             this.listAssetForDelete = [];
             this.$emit('listAssetForDelete', Object.values(this.listAssetForDelete));
-            this.$emit('startLoading')
-            // goi api
-                this.PageIndex = 1;
-                this.ActivePage = 1;
-                axios
-                    .get(this.api + '?assetFilter=' + this.filter + '&PageNumber=' + this.PageIndex + '&PageSize=' + newValue + '&departmentFilter=' + this.filterDepartment + '&assetCategoryFilter=' + this.filterAssetCategory)
-                    .then(res => {
-                        (this.totalPage = res.data.TotalPage),
-                        (this.currentPage = res.data.CurrentPage),
-                        (this.datas = this.mappingArray(res.data.Data)),
-                        (this.$emit("emitData", this.datas)),
-                        (this.TotalData = res.data.TotalRecord),
-                        (this.TotalQuantity = res.data.TotalQuantity),
-                        (this.TotalPrice = res.data.TotalCost),
-                        (this.TotalAccumulatedDepreciation = res.data.TotalDepreciationValue),
-                        (this.TotalResidualValue = res.data.TotalResidualValue),
-                        (this.$emit('cancelLoading'))
-                    })
 
+            if(this.api != undefined)
+            {
+                this.$emit('startLoading')
+                // goi api
+                    this.PageIndex = 1;
+                    this.ActivePage = 1;
+                    axios
+                        .get(this.api + '?assetFilter=' + this.filter + '&PageNumber=' + this.PageIndex + '&PageSize=' + newValue + '&departmentFilter=' + this.filterDepartment + '&assetCategoryFilter=' + this.filterAssetCategory)
+                        .then(res => {
+                            (this.totalPage = res.data.TotalPage),
+                            (this.currentPage = res.data.CurrentPage),
+                            (this.datas = this.mappingArray(res.data.Data)),
+                            (this.$emit("emitData", this.datas)),
+                            (this.TotalData = res.data.TotalRecord),
+                            (this.TotalQuantity = res.data.TotalQuantity),
+                            (this.TotalPrice = res.data.TotalCost),
+                            (this.TotalAccumulatedDepreciation = res.data.TotalDepreciationValue),
+                            (this.TotalResidualValue = res.data.TotalResidualValue),
+                            (this.$emit('cancelLoading'))
+                        })
+            }
         },
 
         /**
@@ -1245,7 +1252,7 @@ export default {
             totalPage: 0,
 
             // biến dùng để lưu trang hiện tại
-            currentPage: 0,
+            currentPage: 1,
 
             // biến dùng để lưu kiểu thanh phần trang
             typePaging: null,
