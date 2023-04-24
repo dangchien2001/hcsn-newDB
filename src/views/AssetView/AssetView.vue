@@ -110,17 +110,18 @@
 
         <MFormDetail 
             v-if="isShowForm"
-            @exitForm="() => {isShowForm = false}"
+            @exitForm="() => {isShowForm = false; dataForFormDetail.length = 0}"
             @openAssetList="() => {isShowListAsset = true}"
             :dataAvailable="dataForFormDetail"
         ></MFormDetail>
 
         <MListAssetNoActive 
-            v-show="isShowListAsset"
+            v-if="isShowListAsset"
             @exitListAsset="() => {isShowListAsset = false}"
             @cancelLoading="() => {this.$emit('cancelLoading')}"
             @startLoading="() => {this.$emit('startLoading')}"
-            @assetForVoucher="(e) => {dataForFormDetail = e}"
+            @assetForVoucher="(e) => {dataForFormDetail = dataForFormDetail.concat(e)}"
+            :dataAvailable="dataForFormDetail"
         ></MListAssetNoActive>
 
     </div>
@@ -143,10 +144,12 @@ export default {
     components: {
         MButton, MIconButton, MInputWithIcon, Splitpanes, Pane, MTable, MFormDetail, MListAssetNoActive
     },
-    created() {
+    async created() {
         // gọi api phân trang bảng voucher đổ chứng từ vào table
         // Created by: NDCHIEN(19/4/2023)
-        this.voucherFilter(this.keyWord, this.pageSizeVoucher, this.currentPageVoucher);
+        await this.voucherFilter(this.keyWord, this.pageSizeVoucher, this.currentPageVoucher);
+        
+        this.getVoucherDetail(this.dataVoucherFirst);
     },
     methods: {
         /**
@@ -169,9 +172,9 @@ export default {
          * Hàm gọi api phân trang bảng voucher
          * Created by: NDCHIEN(19/4/2023)
          */
-        voucherFilter(keyWord, pageSize, pageNumber) {
+        async voucherFilter(keyWord, pageSize, pageNumber) {
             this.$emit('startLoading');
-            axios       
+            await axios       
             .get(`https://localhost:7210/api/Vouchers/filter?voucherFilter=${keyWord}&pageSize=${pageSize}&pageNumber=${pageNumber}`)
             .then(res => {
                 this.dataVoucher = res.data.Data;
@@ -179,21 +182,24 @@ export default {
                 this.totalRecordVoucher = res.data.TotalRecord;
                 this.totalPageVoucher = res.data.TotalPage;
                 this.currentPageVoucher = res.data.CurrentPage;
+                
+                this.dataVoucherFirst = this.dataVoucher[0].voucher_id;
 
                 this.$emit('cancelLoading');
             })
             .catch(res => {
                 console.log(res);
             })
-        }
-    },
-    watch: {
-        // gọi api bảng voucher detail mỗi khi idVoucher thay đổi (sau khi click vào từng dòng trong bảng voucher)
-        // Created by: NDCHIEN(19/4/2023)
-        idVoucher: function(newValue) {
+        },
+
+        /**
+         * lấy dữ liệu chi tiết của chứng từ
+         * Created by: NDCHIEN(21/4/2023)
+         */
+        getVoucherDetail(voucherID) {
             this.$emit('startLoading');
             axios
-            .get('https://localhost:7210/api/VoucherDetails/filter?voucherId=' + newValue)
+            .get('https://localhost:7210/api/VoucherDetails/filter?voucherId=' + voucherID)
             .then(res => {
                 this.dataVoucherDetail = res.data;
                 this.$emit('cancelLoading');
@@ -201,6 +207,13 @@ export default {
             .catch(res => {
                 console.log(res);
             })
+        },
+    },
+    watch: {
+        // gọi api bảng voucher detail mỗi khi idVoucher thay đổi (sau khi click vào từng dòng trong bảng voucher)
+        // Created by: NDCHIEN(19/4/2023)
+        idVoucher: function(newValue) {
+            this.getVoucherDetail(newValue);
         },
 
         /**
@@ -217,6 +230,16 @@ export default {
          */
         pageSizeVoucher: function(newValue) {
             this.voucherFilter(this.keyWord, newValue, 1);
+        },
+        /**
+         * Search tự động sau khi ô tìm kiếm trở về rỗng
+         * Created by: NDCHIEN(20/4/2023)
+         * @param {*} newValue 
+         */
+        keyWord: function(newValue) {
+            if(newValue.length == 0) {
+                this.voucherFilter(this.keyWord, newValue, 1);
+            }
         }
     },
     data() {
@@ -241,13 +264,20 @@ export default {
 
             // data của bảng voucher sau kh gọi api phân trang
             dataVoucher: [],
+            // data footer bảng voucher
             dataTotalVoucher: [],
+            // tổng số bản ghi sau filter bảng voucher
             totalRecordVoucher: 0,
+            // tổng số trang sau khi filter bảng voucher
             totalPageVoucher: 0,
+            // trang hiện tại bảng voucher
             currentPageVoucher: 1,
+            // số bản ghi trên 1 trang bảng voucher
             pageSizeVoucher: 20,
             // data của bảng voucher detail sau kh gọi api phân trang
             dataVoucherDetail: [],
+            // biến lưu phần tử đầu tiên của mảng dataVoucher dùng để hiển thị chi tiết ngay khi load trang
+            dataVoucherFirst: {},
 
             test: 0,
         }

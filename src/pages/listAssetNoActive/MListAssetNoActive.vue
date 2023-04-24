@@ -11,6 +11,8 @@
                     <div class="search-asset-container">
                         <MInputWithIcon
                             placeholder="Tìm kiếm theo mã, tên tài sản"
+                            @keyup.enter="searchAsset"
+                            v-model="keyWord"
                         >
                             <div class="icon-search-asset"></div>
                         </MInputWithIcon>
@@ -30,6 +32,12 @@
                             :allowFunctionCol="false"
                             :dataAvailable="dataAfterFilter"
                             @listRowForEmit="(e) => {dataForSelect = e}"
+                            :totalRecord="totalRecord"
+                            :totalPageProp="totalPage"
+                            :currentPageProp="currentPage"
+                            @updateCurrentPage="(e) => {currentPage = e}"
+                            numOfActivePage="1"
+                            @updateNumberOfRecord="(e) => {pageSize = e}"
                         ></MTable>
                     </div>
             </div>
@@ -58,20 +66,15 @@ import MTable from '@/components/MTable/MTable.vue';
 import resource from '@/js/resource';
 import axios from 'axios';
 export default {
+    props: {
+        // props chứa data được truyền từ ngoài vào
+        dataAvailable: Array,
+    },
     components: {
         MInputWithIcon, MButton, MTable
     },
     created() {
-        this.$emit("startLoading");
-        axios
-        .get('https://localhost:7210/api/Assets/NoActive?pageSize=10&pageNumber=1')
-        .then(res => {
-            this.dataAfterFilter = res.data.Data;
-            this.$emit('cancelLoading');
-        })
-        .catch(res => {
-            console.log(res);
-        })
+        this.assetFilter(this.keyWord, this.pageSize, this.currentPage);        
     },
     methods: {
         /**
@@ -84,14 +87,83 @@ export default {
                 this.$emit('assetForVoucher', this.dataForSelect);
                 this.$emit('exitListAsset');
             }
-        }
+        },
+
+        /**
+         * Hàm dùng để gọi api phân trang tài sản chưa active và loại bỏ các tài sản đã được chọn từ trước
+         * Created by: NDCHIEN(20/4/2023)
+         */
+        assetFilter(keyWord, pageSize, pageNumber) {
+            this.$emit('startLoading');
+            axios       
+            .post(`https://localhost:7210/api/Assets/NoActive?assetFilter=${keyWord}&pageSize=${pageSize}&pageNumber=${pageNumber}`, this.dataAvailable.map(item => item.asset_code))
+            .then(res => {
+                this.dataAfterFilter = res.data.Data;
+                this.dataTotal = res.data.MoreInfo;
+                this.totalRecord = res.data.TotalRecord;
+                this.totalPage = res.data.TotalPage;
+                this.currentPage = res.data.CurrentPage;
+
+                this.$emit('cancelLoading');
+            })
+            .catch(res => {
+                console.log(res);
+            })
+        },
+        /**
+         * Hàm tìm kiếm trong bảng asset no active sau khi ấn enter
+         * Created by: NDCHIEN(20/4/2023)
+         */
+        searchAsset() {
+            this.assetFilter(this.keyWord, this.pageSize, this.currentPage);
+        },
+    },
+    watch: {
+        /**
+         * Gọi api sau khi biến currentPage thay đổi (sau khi bấm chuyển trang)
+         * Created by: NDCHIEN(20/4/2023) 
+         */
+        currentPage: function(newValue) {
+            this.assetFilter(this.keyWord, this.pageSize, newValue);
+        },
+        /**
+         * Gọi api sau khi biến pageSize thay dổi (sau khi bấm chọn pagesize, cho về trang 1)
+         * Created by: NDCHIEN(20/4/2023)
+         */
+        pageSize: function(newValue) {
+            this.assetFilter(this.keyWord, newValue, 1);
+        },
+        /**
+         * Search tự động sau khi ô tìm kiếm trở về rỗng
+         * Created by: NDCHIEN(20/4/2023)
+         * @param {*} newValue 
+         */
+        keyWord: function(newValue) {
+            if(newValue.length == 0) {
+                this.assetFilter(this.keyWord, newValue, 1);
+            }
+        },
     },
     data() {
         return {
-            voucherTh: resource.voucherTh,
+            // biến lưu tên các cột trong bảng
             voucherDetailTh: resource.voucherDetailTh,
+            // biến lưu dữ liệu sau khi filter
             dataAfterFilter: [],
-            dataForSelect: []
+            // biến lưu dữ liệu được chọn để emit ra ngoài
+            dataForSelect: [],
+            // biến lưu trang hiện tại
+            currentPage: 1,
+            // biến lưu số bản ghi trên 1 trang
+            pageSize: 20,
+            // biến lưu dữ liệu cho footer 
+            dataTotal: [],
+            // biến lưu từ khóa được search
+            keyWord: '',
+            // biến lưu tổng số bản ghi sau khi filter
+            totalRecord: 0,
+            // biến lưu tổng số trang sau khi flter
+            totalPage: 0,
         }
     }
 }

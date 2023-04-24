@@ -113,6 +113,7 @@ export default {
         return {
             voucherTh: resource.voucherTh,
             voucherDetailTh: resource.voucherDetailTh,
+            // biến hứng data được truyền tù ngoài vào
             dataForTest: []
         }
     }

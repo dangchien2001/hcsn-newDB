@@ -273,7 +273,7 @@ var resource = {
         },
         {
             name: "description",
-            style: "text-align: left"
+            style: "text-align: left; padding-left: 20px;"
         }
     ],
    

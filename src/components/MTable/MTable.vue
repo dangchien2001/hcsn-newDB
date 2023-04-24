@@ -1,6 +1,6 @@
 <template>
 
-<div style="height: 100%; ">
+<div style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
     <!-- table -->
     <table :class="typeTable">
 
@@ -51,7 +51,9 @@
             v-for="(item, index) in datas"
             :key="index"
             @dblclick="editProduct(item.asset_id)"
-            @click="() => {this.$emit('objectAfterClickRow', item)}"
+            @click="() => {
+                this.$emit('objectAfterClickRow', item);                
+            }"
         >
 
             <!-- checkbox col -->
@@ -675,8 +677,10 @@ export default {
          * Created by: NDCHIEN(2/3/2023)
          */
         editProduct(item) {
-            this.data = item;
-            this.isShowForm = true;
+            if(item != null || item != undefined) {
+                this.data = item;
+                this.isShowForm = true;
+            }
         },
 
         /**
@@ -735,6 +739,10 @@ export default {
                 this.$emit('listRowForEmit', Object.values(this.listRowForEmit));
                 return;
             }
+        },
+
+        handleAfterClickRow() {
+
         },
 
         /**
