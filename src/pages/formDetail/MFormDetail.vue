@@ -60,17 +60,21 @@
                     </div>
                     <div class="table-voucher-detail">
                         <MTable
-                            :tableTh="voucherDetailTh"
+                            :tableTh="voucherDetailThForm"
                             :footer="'newFooter'"
                             @cancelLoading="() => {this.$emit('cancelLoading')}"
                             @startLoading="() => {this.$emit('startLoading')}"   
-                            model="voucherDetail"     
+                            model="voucherDetailForm"     
                             colspan="5"   
                             typeTable="table-container-non-border" 
                             :dataFooter="assetFooter"
                             :boldRow="true"
                             :allowFunctionCol="false"
-                            :dataAvailable="dataAvailable"
+                            :dataAvailable="dataAvailable.map(formatAssetData)"
+                            :allowEditAndDeleteCol="true"
+                            @delete="(asset_code) => {this.$emit('deleteAsset', asset_code)}"
+                            :allowPaging="false"
+                            :arrayTotal="test"
                         ></MTable>
                     </div>
                 </div>
@@ -131,21 +135,46 @@ export default {
             axios
             .get('https://localhost:7210/api/Vouchers/maxCode')
             .then(res => this.voucher.voucher.voucher_code = res.data);
+        },
+
+        /**
+         * Hàm format lại data được truyền vào bảng tài sản (format chỗ STT)
+         * Created by: NDCHIEN(25/4/2023)
+         */
+        formatAssetData(asset, index) {
+            var row_index = index + 1;
+            return {
+                row_index: row_index,
+                asset_code: asset.asset_code,
+                asset_name: asset.asset_name,
+                department_name: asset.department_name,
+                cost: asset.cost,
+                depreciation_value: asset.depreciation_value,
+                residual_value: asset.residual_value
+            };
         }
     },
     watch: {
         /**
-         * Lấy dữ liệu từ bảng chọn tài sản chưa active để hiển thị
+         * Lấy dữ liệu mảng từ bảng chọn tài sản chưa active để tính tổng footer và format lại (chỉ lấy mảng chứa id)
          * Created by: NDCHIEN(19/4/2023)
+         * Modified by: NDCHIEN(25/4/2023)
          */
         dataAvailable: function(newValue) {
             this.voucher.assetIds = newValue.map(item => item.asset_id);
+            var totalCost = 0;
+            newValue.forEach(item => totalCost += item.cost);
+            var totalDepreciationValue = 0;
+            newValue.forEach(item => totalDepreciationValue += item.depreciation_value);
+            var totalResidualValue = 0;
+            newValue.forEach(item => totalResidualValue += item.residual_value);
+            this.test = [totalCost, totalDepreciationValue, totalResidualValue];
         }
     },
     data() {
         return {
             voucherTh: resource.voucherTh,
-            voucherDetailTh: resource.voucherDetailTh,
+            voucherDetailThForm: resource.voucherDetailThForm,
             // biến hứng data được truyền tù ngoài vào
             dataForTest: [],
             // đối tượng voucher phục vụ xóa, sửa
@@ -166,7 +195,8 @@ export default {
                     modified_by: "",
                     modified_date: "2023-04-24T00:00:00"
                 },
-            }
+            },
+            test: [0, 0, 0]
         }
     }
 }

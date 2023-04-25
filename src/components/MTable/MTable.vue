@@ -31,10 +31,10 @@
             </th>
 
             <!-- tooltip cho trường HM/KH lũy kế -->
-            <MTooltip
+            <!-- <MTooltip
                 text="Hao mòn/ khấu hao lũy kế"
                 class="table-header-tooltip"
-            ></MTooltip>
+            ></MTooltip> -->
 
             <!-- tooltip cho trường STT -->
             <MTooltip
@@ -95,6 +95,31 @@
                     <MTooltip
                         class="clone-tooltip"
                         text="Nhân bản tài sản"
+                    ></MTooltip>
+                </div>
+            </td>
+
+            <!-- function col (edit, delete) -->
+            <td
+                class="function-col"
+                v-if="allowEditAndDeleteCol"
+            >
+                <div 
+                    class="edit-icon"
+                    @click="() => {this.$emit('edit', dataAvailable[index][properties[1].name])}"
+                >
+                    <MTooltip
+                        class="edit-tooltip" 
+                        text="abc"
+                    ></MTooltip>
+                </div>
+                <div 
+                    class="delete-icon"
+                    @click="() => {this.$emit('delete', dataAvailable[index][properties[1].name])}"
+                >
+                    <MTooltip
+                        class="delete-tooltip"
+                        text="abc"
                     ></MTooltip>
                 </div>
             </td>
@@ -304,14 +329,14 @@
                 <div class="footer-content-function">
 
                     <!-- Tổng số bản ghi -->
-                    <div class="total-data">{{ paging.total }}</div>&nbsp;
+                    <div class="total-data" v-if="allowPaging">{{ paging.total }}</div>&nbsp;
 
-                    <div class="number-of-data">{{ TotalData }}</div>&nbsp;
+                    <div class="number-of-data" v-if="allowPaging">{{ TotalData }}</div>&nbsp;
 
-                    <div class="text-of-data">{{ paging.record }}</div>
+                    <div class="text-of-data" v-if="allowPaging">{{ paging.record }}</div>
 
                     <!-- số bản ghi trên 1 trang -->
-                    <div class="number-of-data-in-page">
+                    <div class="number-of-data-in-page" v-if="allowPaging">
 
                         <!-- số hiển thị -->
                         <div class="number-of-data-select">{{ PageSize }}</div>
@@ -360,7 +385,7 @@
                     </div>
 
                     <!-- thanh phân trang -->
-                    <div class="list-page">
+                    <div class="list-page" v-if="allowPaging">
 
                         <!-- pre button -->
                         <div class="list-page-pre-button" @click="NextAndReturnPage('pre')">
@@ -536,7 +561,11 @@ export default {
         // props chứa số trang sau khi phân trang
         totalPageProp: Number,
         // props chứa trang hiện tại 
-        currentPageProp: Number
+        currentPageProp: Number,
+        // props cho phép cột chức năng sửa xóa
+        allowEditAndDeleteCol: Boolean,
+        // props cho phép paging hay ko
+        allowPaging: Boolean,
     },
     created() {
 

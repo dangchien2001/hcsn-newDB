@@ -170,6 +170,41 @@ var resource = {
             style: "text-align: right; width: 170px; padding-right: 16px"
         },
     ],
+    // mảng chứa th của table voucher detail trong form thêm, sửa
+    voucherDetailThForm: [
+        {
+            colName: "STT",
+            style: "text-align: center; min-width: 49px"
+        },
+        {
+            colName: "Mã tài sản",
+            style: "text-align: left; min-width: 100px"
+        },
+        {
+            colName: "Tên tài sản",
+            style: "text-align: left; min-width: 150px"
+        },
+        {
+            colName: "Bộ phận sử dụng",
+            style: "text-align: left; width: 250px"
+        },
+        {
+            colName: "Nguyên giá",
+            style: "text-align: right; min-width: 100px"
+        },
+        {
+            colName: "Hao mòn năm",
+            style: "text-align: right; min-width: 150px"
+        },
+        {
+            colName: "Giá trị còn lại",
+            style: "text-align: right; min-width: 150px;"
+        },
+        {
+            colName: "",
+            style: "text-align: center; min-width: 98px",
+        },
+    ],
 
     // mảng chứa căn lề các dòng thuộc tính
     voucherDetail: [
@@ -200,6 +235,37 @@ var resource = {
         {
             name: "residual_value",
             style: "text-align: right; padding-right: 16px" 
+        },
+    ],
+
+    voucherDetailForm: [
+        {
+            name: "row_index",
+            style: "text-align: center;"
+        },
+        {
+            name: "asset_code",
+            style: "text-align: left;"
+        },
+        {
+            name: "asset_name",
+            style: "text-align: left;"
+        },
+        {
+            name: "department_name",
+            style: "text-align: left;"
+        },
+        {
+            name: "cost",
+            style: "text-align: right;"
+        },
+        {
+            name: "depreciation_value",
+            style: "text-align: right;"
+        },
+        {
+            name: "residual_value",
+            style: "text-align: right;" 
         },
     ],
 

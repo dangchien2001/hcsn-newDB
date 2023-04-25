@@ -66,7 +66,7 @@
                         typeTable="table-container-non-border" 
                         :dataFooter="assetFooter"
                         :boldRow="true"
-                        :allowFunctionCol="true"
+                        :allowEditAndDeleteCol="true"
                         :allowGetAll="false"
                         @objectAfterClickRow="(object) => {handleVoucherIdAfterClickRow(object)}"
                         :dataAvailable="dataVoucher"
@@ -76,6 +76,7 @@
                         @updateCurrentPage="(e) => {currentPageVoucher = e}"
                         numOfActivePage="1"
                         @updateNumberOfRecord="(e) => {pageSizeVoucher = e}"
+                        :allowPaging="true"
                     ></MTable>
                 </div>
             </Pane>
@@ -114,6 +115,7 @@
             @openAssetList="() => {isShowListAsset = true}"
             :dataAvailable="dataForFormDetail"
             @closeForm="handleAfterInsertVoucher"
+            @deleteAsset="deleteAssetFromFormDetail"
         ></MFormDetail>
 
         <MListAssetNoActive 
@@ -219,6 +221,16 @@ export default {
                 console.log(res);
             })
         },
+
+        /**
+         * Hàm xóa tài sản ở table trong form thêm, sửa chứng từ
+         * Created by: NDCHIEN(25/4/2023)
+         * @param {*} asset_code 
+         */
+        deleteAssetFromFormDetail(asset_code) {
+            // Hàm này loại bỏ đối tượng được xóa khỏi mảng dataForFormDetail(đây là mảng chứa tài sản bị loại khi gọi api tài sản chưa active)
+            this.dataForFormDetail = this.dataForFormDetail.filter(item => item.asset_code !== asset_code);
+        },
     },
     watch: {
         // gọi api bảng voucher detail mỗi khi idVoucher thay đổi (sau khi click vào từng dòng trong bảng voucher)
@@ -271,6 +283,8 @@ export default {
 
             isShowForm: false,
             isShowListAsset: false,
+
+            // data được lấy từ bảng chứa tài sản chưa active
             dataForFormDetail: [],
 
             // data của bảng voucher sau kh gọi api phân trang

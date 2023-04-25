@@ -38,6 +38,7 @@
                             @updateCurrentPage="(e) => {currentPage = e}"
                             numOfActivePage="1"
                             @updateNumberOfRecord="(e) => {pageSize = e}"
+                            :allowPaging="true"
                         ></MTable>
                     </div>
             </div>

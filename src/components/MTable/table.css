@@ -71,6 +71,7 @@ td {
 
 .function-col {
     text-align: center;
+    width: 98px;
 }
 
 .edit-icon {
@@ -117,6 +118,32 @@ td {
 }
 
 .clone-tooltip {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    width: 100px;
+    display: none;
+}
+
+.delete-icon {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -463px -111px;
+	width: 18px;
+	height: 18px;
+    display: inline-block;
+    cursor: pointer;
+    margin-left: 10px;
+    position: relative;
+}
+
+.delete-icon:hover {
+    z-index: 1;
+}
+
+.delete-icon:hover .delete-tooltip {
+    display: block;
+}
+
+.delete-tooltip {
     position: absolute;
     top: 100%;
     right: 0;
