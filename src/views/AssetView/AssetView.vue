@@ -113,6 +113,7 @@
             @exitForm="() => {isShowForm = false; dataForFormDetail.length = 0}"
             @openAssetList="() => {isShowListAsset = true}"
             :dataAvailable="dataForFormDetail"
+            @closeForm="handleAfterInsertVoucher"
         ></MFormDetail>
 
         <MListAssetNoActive 
@@ -152,6 +153,16 @@ export default {
         this.getVoucherDetail(this.dataVoucherFirst);
     },
     methods: {
+        /**
+         * Hàm xử lý sự kiện sau khi insert chứng từ
+         * Created by: NDCHIEN(24/4/2023)
+         */
+        handleAfterInsertVoucher() {
+            this.isShowForm = false;
+            this.voucherFilter(this.keyWord, this.pageSizeVoucher, this.currentPageVoucher);    
+            this.dataForFormDetail.length = 0;
+            this.$emit('showToast');       
+        },
         /**
          * Hàm tìm kiếm trong bảng voucher sau khi ấn enter
          * Created by: NDCHIEN(19/4/2023)

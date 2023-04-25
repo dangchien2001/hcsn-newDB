@@ -8,10 +8,21 @@
     <div class="header-main">
       <TheHeader></TheHeader>
       <!-- <TheContent @cancelLoading="() => {isLoading = false}" @startLoading="() => {isLoading = true}"></TheContent> -->
-      <router-view @cancelLoading="() => {isLoading = false}" @startLoading="() => {isLoading = true}"></router-view>
+      <router-view 
+        @cancelLoading="() => {isLoading = false}" 
+        @startLoading="() => {isLoading = true}"
+        @showToast="() => {isShowToast = true}"
+      ></router-view>
     </div>
 
     <MLoading v-if="isLoading"></MLoading>
+
+    <MToast
+      v-if="isShowToast"
+      status="success"
+      content="Lưu chứng từ thành công ?"
+      style="z-index: 1;"
+    ></MToast>
     
   </div>
 </template>
@@ -21,17 +32,20 @@ import TheSidebar from "./layouts/TheSidebar/TheSidebar.vue"
 import TheHeader from "./layouts/TheHeader/TheHeader.vue"
 // import TheContent from "./layouts/TheContent/TheContent.vue"  
 import MLoading from "./components/MLoading/MLoading.vue"
+import MToast from "./components/MToast/MToast.vue"
+
 
 export default {
   name: 'App',
   components: {
     TheSidebar, TheHeader, 
     // TheContent, 
-    MLoading
+    MLoading, MToast
   },
   data() {
     return {
-      isLoading: true
+      isLoading: true,
+      isShowToast: false
     }
   }
 }

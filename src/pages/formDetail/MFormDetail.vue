@@ -14,15 +14,20 @@
                             <MInput
                                 fieldLabel="Mã chứng từ"
                                 :important="true"
+                                v-model="voucher.voucher.voucher_code"
                             ></MInput>
                         </div>
                         <div class="form-input-voucher-detail">
                             <div class="text-input-voucher-detail">Ngày bắt đầu sử dụng <span class="important-input">*</span></div>
-                            <MDatetime></MDatetime>
+                            <MDatetime
+                                v-model="voucher.voucher.voucher_date"
+                            ></MDatetime>
                         </div>
                         <div class="form-input-voucher-detail">
                             <div class="text-input-voucher-detail">Ngày ghi tăng <span class="important-input">*</span></div>
-                            <MDatetime></MDatetime>
+                            <MDatetime
+                                v-model="voucher.voucher.increment_date"
+                            ></MDatetime>
                         </div>
                     </div>
 
@@ -30,6 +35,7 @@
                         <div class="note-input-voucher-detail">
                             <MInput
                                 fieldLabel="Ghi chú"
+                                v-model="voucher.voucher.description"
                             ></MInput>
                         </div>
                     </div>
@@ -64,7 +70,7 @@
                             :dataFooter="assetFooter"
                             :boldRow="true"
                             :allowFunctionCol="false"
-                            :dataAvailable="dataForTest"
+                            :dataAvailable="dataAvailable"
                         ></MTable>
                     </div>
                 </div>
@@ -80,6 +86,7 @@
                     text="Đồng ý"
                     type="button-container"
                     style="width: 100px; justify-content: center;margin-right: 17px;"
+                    @click="insertVoucher"
                 ></MButton>
             </div>           
         </div>
@@ -93,6 +100,7 @@ import MInputWithIcon from '@/components/MInput/MInputWithIcon.vue';
 import MButton from '@/components/MButton/MButton.vue';
 import MTable from '@/components/MTable/MTable.vue';
 import resource from '@/js/resource';
+import axios from 'axios';
 export default {
     components: {
         MInput, MDatetime, MInputWithIcon, MButton, MTable
@@ -100,13 +108,38 @@ export default {
     props: {
         dataAvailable: Array
     },
+    created() {
+        this.getMaxCode();
+    },
+    methods: {
+        /**
+         * Hàm thêm mới chứng từ
+         * Created by: NDCHIEN(24/4/2023)
+         */
+        insertVoucher() {
+            axios
+            .post('https://localhost:7210/api/Vouchers/Detail', this.voucher)
+            .then(res => this.$emit('closeForm', res))
+            .catch(res => this.$emit('closeForm', res))
+        },
+
+        /**
+         * Hàm gọi API lấy mã lớn nhất
+         * Created by: NDCHIEN(24/4/2023)
+         */
+        getMaxCode() {
+            axios
+            .get('https://localhost:7210/api/Vouchers/maxCode')
+            .then(res => this.voucher.voucher.voucher_code = res.data);
+        }
+    },
     watch: {
         /**
          * Lấy dữ liệu từ bảng chọn tài sản chưa active để hiển thị
          * Created by: NDCHIEN(19/4/2023)
          */
         dataAvailable: function(newValue) {
-            this.dataForTest = newValue;
+            this.voucher.assetIds = newValue.map(item => item.asset_id);
         }
     },
     data() {
@@ -114,7 +147,26 @@ export default {
             voucherTh: resource.voucherTh,
             voucherDetailTh: resource.voucherDetailTh,
             // biến hứng data được truyền tù ngoài vào
-            dataForTest: []
+            dataForTest: [],
+            // đối tượng voucher phục vụ xóa, sửa
+            voucher: {
+                assetIds: [
+
+                ],
+                voucher: {
+                    row_index: 0,
+                    voucher_id: "00000000-0000-0000-0000-000000000000",
+                    voucher_code: "",
+                    voucher_date: "",
+                    increment_date: "",
+                    description: "",
+                    price: 0,
+                    created_by: "",
+                    created_date: "2023-04-24T00:00:00",
+                    modified_by: "",
+                    modified_date: "2023-04-24T00:00:00"
+                },
+            }
         }
     }
 }
