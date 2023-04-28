@@ -104,6 +104,7 @@
                 :footer="'oldFooter'"
                 typeTable="table-container"
                 :allowFunctionCol="true"
+                :allowCheckBox = "true"
             ></MTable>
         </div>
         

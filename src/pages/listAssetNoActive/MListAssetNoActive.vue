@@ -39,6 +39,7 @@
                             numOfActivePage="1"
                             @updateNumberOfRecord="(e) => {pageSize = e}"
                             :allowPaging="true"
+                            :allowCheckBox = "true"                            
                         ></MTable>
                     </div>
             </div>
@@ -57,6 +58,8 @@
                 ></MButton>
             </div>
         </div>
+
+        
     </div>
 </template>
 
@@ -70,6 +73,8 @@ export default {
     props: {
         // props chứa data được truyền từ ngoài vào
         dataAvailable: Array,
+        // props chứa data đã active nhưng bị xóa từ ngoài vào
+        assetForNoActive: Array,
     },
     components: {
         MInputWithIcon, MButton, MTable
@@ -97,7 +102,10 @@ export default {
         assetFilter(keyWord, pageSize, pageNumber) {
             this.$emit('startLoading');
             axios       
-            .post(`https://localhost:7210/api/Assets/NoActive?assetFilter=${keyWord}&pageSize=${pageSize}&pageNumber=${pageNumber}`, this.dataAvailable.map(item => item.asset_code))
+            .post(`https://localhost:7210/api/Assets/NoActive?assetFilter=${keyWord}&pageSize=${pageSize}&pageNumber=${pageNumber}`, {
+                asset_no_active: this.dataAvailable.map(item => item.asset_code),
+                asset_active: this.assetForNoActive.map(item => item.asset_code)
+            })
             .then(res => {
                 this.dataAfterFilter = res.data.Data;
                 this.dataTotal = res.data.MoreInfo;

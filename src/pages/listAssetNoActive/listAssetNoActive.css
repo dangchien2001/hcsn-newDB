@@ -51,7 +51,7 @@
 
 .footer-list-asset {
     width: 100%;
-    height: 70px;
+    height: 50px;
     display: flex;
     align-items: center;
     background-color: rgba(0, 0, 0, .16);
@@ -62,7 +62,7 @@
 }
 
 .body-list-asset {
-    height: calc(100% - 70px - 70px);
+    height: calc(100% - 70px - 50px);
 }
 
 .exit-icon {

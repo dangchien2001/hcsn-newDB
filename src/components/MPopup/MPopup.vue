@@ -21,11 +21,11 @@
                             {'popup-content-icon-fail' : type == 'fail'}
                         ]"
                     ></div>
-                    <div class="popup-content-text" v-if="listContent == undefined">
+                    <div class="popup-content-text" v-if="listContent == undefined || listContent == null">
                         {{ content }}                        
                         <slot></slot>
                     </div>
-                    <div class="popup-content-text" v-if="listContent != undefined">
+                    <div class="popup-content-text" v-if="listContent != undefined || listContent != null">
                         
 
                         <div 

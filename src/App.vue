@@ -11,7 +11,9 @@
       <router-view 
         @cancelLoading="() => {isLoading = false}" 
         @startLoading="() => {isLoading = true}"
-        @showToast="() => {isShowToast = true}"
+        @showToast="() => {isShowToast = true, contentToast = 'Thêm chứng từ thành công'}"
+        @showPopupError="handleContentPopupAfterInsertVoucher"
+        @afterDeleteSuccess="(data) => {isShowToast = true, contentToast = data}"
       ></router-view>
     </div>
 
@@ -20,9 +22,20 @@
     <MToast
       v-if="isShowToast"
       status="success"
-      content="Lưu chứng từ thành công ?"
+      :content="contentToast"
       style="z-index: 1;"
+      @hideToast="isShowToast = false"
     ></MToast>
+
+    <MPopup
+      type="warning"
+      v-if="isShowPopUp"
+      :content="contentPopup"
+      typeButton="closeOption"
+      @exitPopup="() => {isShowPopUp = false}"
+      :title="titlePopUp"
+      :listContent="listContentPopup"
+    ></MPopup>
     
   </div>
 </template>
@@ -33,19 +46,43 @@ import TheHeader from "./layouts/TheHeader/TheHeader.vue"
 // import TheContent from "./layouts/TheContent/TheContent.vue"  
 import MLoading from "./components/MLoading/MLoading.vue"
 import MToast from "./components/MToast/MToast.vue"
-
+import MPopup from "./components/MPopup/MPopup.vue"
 
 export default {
   name: 'App',
   components: {
     TheSidebar, TheHeader, 
     // TheContent, 
-    MLoading, MToast
+    MLoading, MToast, MPopup
+  },
+  methods: {
+    /**
+     * Hàm xử lí nội dung popup sau khi thêm chứng từ
+     * Created by: NDCHIEN(25/4/2023)
+     * Modified by: NDCHIEN(26/4/2023)
+     */
+    handleContentPopupAfterInsertVoucher(res) {  
+      this.contentPopup = res.UserMsg;
+      if(res.MoreInfo != null) {
+        this.titlePopUp = "Thông tin chứng từ không hợp lệ: ";
+        this.listContentPopup = res.MoreInfo;
+      }
+      else {
+        this.titlePopUp = "";
+        this.listContentPopup = null;
+      }
+      this.isShowPopUp = true;
+    }
   },
   data() {
     return {
       isLoading: true,
-      isShowToast: false
+      isShowToast: false,
+      isShowPopUp: false,
+      contentPopup: "",
+      titlePopUp: "",
+      listContentPopup: [],
+      contentToast: ""
     }
   }
 }

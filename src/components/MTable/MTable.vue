@@ -13,10 +13,12 @@
             <th
                 class="table-select-box-col"
                 :style="'width: 49px'"
+                v-if="allowCheckBox"
             >
                 <MCheckbox
                     v-model="isCheckboxHeaderSelect"
                     @click="handleSelectAll(isCheckboxHeaderSelect)"
+                    
                 ></MCheckbox>
             </th>
 
@@ -57,10 +59,11 @@
         >
 
             <!-- checkbox col -->
-            <td class="table-select-box-col-td">
+            <td class="table-select-box-col-td" v-if="allowCheckBox">
                 <MCheckbox
                     v-model="rows[index]"
                     @click="handleSelectRow(item[entity], rows[index], item)"
+                    
                 ></MCheckbox>
             </td>
 
@@ -115,7 +118,9 @@
                 </div>
                 <div 
                     class="delete-icon"
-                    @click="() => {this.$emit('delete', dataAvailable[index][properties[1].name])}"
+                    @click="() => {
+                        this.$emit('delete', dataAvailable[index][properties[1].name])
+                    }"
                 >
                     <MTooltip
                         class="delete-tooltip"
@@ -539,6 +544,7 @@ export default {
         filter: String,
         entity: String,
         tableChange: Boolean,
+        tableChange2: Boolean,
         filterDepartment: String,
         filterAssetCategory: String,
         numOfActivePage: Number,
@@ -566,6 +572,8 @@ export default {
         allowEditAndDeleteCol: Boolean,
         // props cho phép paging hay ko
         allowPaging: Boolean,
+        // props cho phép checkbox hay ko
+        allowCheckBox: Boolean,
     },
     created() {
 
@@ -1113,6 +1121,15 @@ export default {
                         (this.$emit('cancelLoading'))
                     })
 
+        },
+        tableChange2: function() {
+            this.listAssetForDelete = [];
+            // Ẩn tick v của tất cả các dòng
+            for(let i=0; i < this.rows.length; i++) {
+                this.rows[i] = false;
+            }
+            // Ẩn tick v trên checkbox header
+            this.isCheckboxHeaderSelect = false;
         }
     },
     data() {

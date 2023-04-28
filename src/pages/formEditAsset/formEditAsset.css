@@ -1,0 +1,8 @@
+.form-edit-container {
+    background-color: #FFFFFF;
+    border-radius: 4px;
+    position: relative;
+    z-index: 1;
+    height: 700px;
+    width: 1050px;
+}
