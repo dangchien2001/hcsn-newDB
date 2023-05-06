@@ -137,6 +137,7 @@ export default {
                 this.$emit("result", result);
             }
             this.$emit('update:modelValue', Number(event.target.value.replaceAll('.', '')));
+            this.$emit('valueSelected');
         },
 
         /**
@@ -167,6 +168,7 @@ export default {
                 this.$emit("result", result);
             }
             this.$emit('update:modelValue', newValue);
+            
         },
 
         modelValue: function(newValue) {

@@ -51,6 +51,8 @@
                         @result="CheckDepartmentCodeEmpty"
                         entityEmit="department_id"
                         @dataEmit="autoSelect($event, 'https://localhost:7210/api/Departments/', 'DepartmentName', 'DepartmentId', 'department_name')"
+                        :positionAbsolute = "true"
+                        :msg="'Cần phải nhập thông tin'"
                     ></MCombobox>
 
                     <!-- combobox chứa mã loại tài sản -->
@@ -67,6 +69,8 @@
                         @result="CheckTypeProductCodeEmpty"
                         entityEmit="asset_category_id"
                         @dataEmit="autoSelect($event, 'https://localhost:7210/api/AssetCategories/', 'AssetCategoryName', 'TypeProductId', 'asset_category_name')"
+                        :positionAbsolute = "true"
+                        :msg="'Cần phải nhập thông tin'"
                     ></MCombobox>
 
                     <!-- input chứa số lượng -->

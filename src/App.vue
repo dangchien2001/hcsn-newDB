@@ -11,7 +11,7 @@
       <router-view 
         @cancelLoading="() => {isLoading = false}" 
         @startLoading="() => {isLoading = true}"
-        @showToast="() => {isShowToast = true, contentToast = 'Thêm chứng từ thành công'}"
+        @showToast="(data) => {isShowToast = true, contentToast = data}"
         @showPopupError="handleContentPopupAfterInsertVoucher"
         @afterDeleteSuccess="(data) => {isShowToast = true, contentToast = data}"
       ></router-view>

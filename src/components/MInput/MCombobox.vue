@@ -28,21 +28,21 @@
 
         <!-- nút mở combobox -->
         <div 
-            class="dropdown-icon"
+            :class="label == undefined ? 'dropdown-icon-without-lable' : 'dropdown-icon'"
             @click="toogleComboboxList('open')"
             v-if="!isOpen"
         ></div>
 
         <!-- nút đóng combobox -->
         <div 
-            class="dropup-icon"
+            :class="label == undefined ? 'dropup-icon-without-lable' : 'dropup-icon'"
             @click="toogleComboboxList('close')"
             v-if="isOpen"
         ></div>
 
         <!-- box chứa dữ liệu -->
         <div 
-            class="combobox-list"
+            :class="positionAbsolute ? 'combobox-list' : 'combobox-list-non-absolute'"
             v-if="isOpen"
             @mousedown="(event)=>{event.preventDefault()}"
         >
@@ -62,7 +62,7 @@
             class="warning"
             v-if="isEmpty"
         >
-            Cần phải nhập thông tin {{ label }} 
+            {{ msg }} {{ label }} 
         </div>
 
     </div>
@@ -82,6 +82,9 @@ export default {
         modelValue: String,
         isEmpty: Boolean,
         entityEmit: String,
+        dataAvailable: Array,
+        positionAbsolute: Boolean,
+        msg: String,
     },
     watch: {
 
@@ -95,7 +98,15 @@ export default {
                 const result = this.checkInputIsError(newValue);
                 this.$emit("result", result);
             }
-        }     
+        },    
+        dataAvailable: function(newValue) {
+            if(newValue != undefined) {
+                this.datas = newValue,
+                this.fullDatas = newValue,
+                this.totalIndex = newValue.length,
+                this.filterResult = newValue
+            }
+        }
     },
     methods: {
 
@@ -155,7 +166,7 @@ export default {
             this.$emit('update:modelValue', event.target.value);
             this.isOpen = true;
             if(value.target.value.length > 0) {
-                this.filterResult = this.datas.filter((data) => data[this.entity].toLowerCase().includes(value.target.value.toLowerCase()));
+                this.filterResult = this.fullDatas.filter((data) => data[this.entity].toLowerCase().includes(value.target.value.toLowerCase()));
                 this.datas = this.filterResult;
                 this.totalIndex = this.filterResult.length;
                 this.index = 0;
@@ -208,14 +219,17 @@ export default {
     created() {
 
         // gọi api được truyền vào từ props
-        try {
+            if(this.api != undefined) {
             axios
                 .get(this.api)
                 .then(res => {(this.datas = res.data), (this.fullDatas = res.data), (this.filterResult = res.data), (this.totalIndex = res.data.length)})
-        } catch (e) {
-            console.log(e);
-        }
-
+            }
+            if(this.dataAvailable != undefined) {
+                this.datas = this.dataAvailable;
+                this.fullDatas = this.dataAvailable;
+                this.totalIndex = this.dataAvailable.length;
+                this.filterResult = this.dataAvailable;
+            }
     },
     data() {
         return {

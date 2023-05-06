@@ -1,6 +1,6 @@
 <template>
     <div class="layer-voucher-detail">
-        <div class="form-voucher-detail" v-show="!isShowFormEditAsset">
+        <div class="form-voucher-detail">
             <div class="form-header-voucher-detail">
                 <div class="form-title-voucher-detail">{{ titleForm }}</div>
                 <div class="blank"></div>
@@ -81,7 +81,7 @@
                             :allowPaging="false"
                             :arrayTotal="arrayTotal"
                             :allowCheckBox = "false"
-                            @edit="isShowFormEditAsset = true"
+                            @edit="editAsset"
                         ></MTable>
                     </div>
                 </div>
@@ -91,7 +91,7 @@
                 <MButton
                     text="Hủy bỏ"
                     type="outline-button"
-                    @click="() => {this.$emit('exitForm')}"
+                    @click="cancelAfterFindChange"
                 ></MButton>
                 <MButton
                     text="Đồng ý"
@@ -102,9 +102,29 @@
             </div>           
         </div>
 
-        <MFormEditAsset
-            v-if="isShowFormEditAsset"
-        ></MFormEditAsset>
+        <div class="layer-voucher-detail" v-if="isShowFormEditAsset">
+            <MFormEditAsset            
+                @closeEditAssetForm = "isShowFormEditAsset = false"
+                :assetCode="assetCodeForEdit"
+                @editSuccess="handleAfterEditAssetSuccess"
+                :voucherCost="arrayTotal[0]"
+                :idVoucher="voucher.voucher.voucher_id"
+                :assetObject="assetObject"
+                @editAssetInAddVoucher="handleAfterEditAssetInAddVoucher"
+            ></MFormEditAsset>
+        </div>
+
+        <MPopup
+            title=""
+            :content="warning.channgeWarning"
+            v-if="isChangeVoucher"
+            @exitPopup="() => {this.isChangeVoucher = false}"
+            @save="handleSubmit"
+            @notSave="calcCostVoucherAfterCancelUpdate"
+            type="warning"
+            typeButton="fullOption"
+        ></MPopup>
+
     </div>
 </template>
 
@@ -116,11 +136,12 @@ import MButton from '@/components/MButton/MButton.vue';
 import MTable from '@/components/MTable/MTable.vue';
 import resource from '@/js/resource';
 import MFormEditAsset from '../formEditAsset/MFormEditAsset.vue';
+import MPopup from '@/components/MPopup/MPopup.vue';
 
 import axios from 'axios';
 export default {
     components: {
-        MInput, MDatetime, MInputWithIcon, MButton, MTable, MFormEditAsset
+        MInput, MDatetime, MInputWithIcon, MButton, MTable, MFormEditAsset, MPopup
     },
     props: {
         dataAvailable: Array,
@@ -136,7 +157,7 @@ export default {
      * Created by: NDCHIEN(26/4/2023)
      * Modified by: NDCHIEN(26/4/2023)
      */
-    created() {        
+    async created() {        
         // gọi maxcode nếu là form thêm
         if(this.typeOfForm == 1) {
             this.titleForm = "Thêm chứng từ ghi tăng";
@@ -145,7 +166,7 @@ export default {
         // gọi api lấy chứng từ nếu là form sửa
         if(this.typeOfForm == 2) {
             this.titleForm = "Sửa chứng từ ghi tăng";
-            this.selectVoucherByVoucherCode(this.voucherCode);
+            await this.selectVoucherByVoucherCode(this.voucherCode);  
         }
     },
     /**
@@ -157,6 +178,108 @@ export default {
         this.$emit("assetForNoActive", []);   
     },
     methods: {
+        /**
+         * Hàm sửa chứng từ thành ban đầu sau khi phát hiện sự thay đổi rồi bấm hủy
+         * Created by: NDCHIEN(6/5/2023)
+         */
+        cancelAfterFindChange() {
+            var isEqual = this.shallowObjectEqual(this.voucher, this.voucherClone);
+            if(isEqual) {
+                this.$emit('exitForm');
+            }
+            if(!isEqual) {
+                this.isChangeVoucher = true;
+            }
+            if(this.typeOfForm == 1) {
+                this.$emit('exitForm');
+            }
+        },
+
+        /**
+         * Tính lại nguyên giá chứng từ sau khi hủy update chứng từ
+         * Created by: NDCHIEN(6/5/2023)
+         */
+        calcCostVoucherAfterCancelUpdate() {
+            var voucherClone = this.voucherClone;
+            axios
+                .put("https://localhost:7210/api/Vouchers/Detail/" + voucherClone.voucher.voucher_id, {
+                    voucher: {
+                        row_index: 0,
+                        voucher_id: voucherClone.voucher.voucher_id,
+                        voucher_code: voucherClone.voucher.voucher_code,
+                        voucher_date: voucherClone.voucher.voucher_date,
+                        increment_date: voucherClone.voucher.increment_date,
+                        description: voucherClone.voucher.description,
+                        price: voucherClone.voucher.price,
+                        created_by: "",
+                        created_date: "2023-04-28T01:43:40.564Z",
+                        modified_by: "",
+                        modified_date: "2023-04-28T01:43:40.564Z"
+                    },
+                    asset_code_active: voucherClone.assetIds,
+                    asset_code_no_active: this.assetForNoActive.map(item => item.asset_id),
+                    asset_ids: voucherClone.assetIds
+                })
+                .then(() => {this.$emit('exitFormWithChange')})
+        },
+
+        /**
+         * Hàm so sánh hai đổi tượng copy trên mạng
+         * Created by: NDCHIEN(6/5/2023)
+         */
+        shallowObjectEqual(object1, object2) {
+            const keys1 = Object.keys(object1);
+            const keys2 = Object.keys(object2);
+
+            if (keys1.length !== keys2.length) {
+                return false;
+            }
+
+            for (let key of keys1) {
+                if (object1[key] !== object2[key]) {
+                return false;
+                }
+            }
+
+            return true;
+        },
+
+        /**
+         * Hàm làm thay đổi mảng tài sản truyền vào table ở phía frontend sau khi sửa 1 tài sản thành công
+         * Created by: NDCHIEN(5/5/2023)
+         */
+        handleAfterEditAssetInAddVoucher(assetObject) {
+            this.arrayForTableFixed.splice(this.assetIndex, 1, assetObject.Data);
+            this.isShowFormEditAsset = false;
+            this.totalValue(this.dataForTable);
+            this.$emit('editSuccess');
+        },
+        /**
+         * Hàm thực hiện sau khi bấm nút sửa tài sản
+         * Created by: NDCHIEN(5/5/2023)
+         */
+        editAsset(data) {
+            this.isShowFormEditAsset = true; 
+            this.assetCodeForEdit = data;
+            if(this.typeOfForm == 1) {
+                var assetObject = this.arrayForTableFixed.filter(item => item.asset_code == data);
+                this.assetObject = assetObject;
+                this.assetIndex = this.arrayForTableFixed.indexOf(this.assetObject[0]);
+            }
+        },
+        /**
+         * Hàm xử lý sau khi sửa tài sản thành công
+         * Created by: NDCHIEN(5/5/2023)
+         */
+        handleAfterEditAssetSuccess(asset) {
+            if(this.typeOfForm == 2) {
+                this.isShowFormEditAsset = false;
+                var assetForFilter = this.dataForTable.filter(item => item.asset_code == asset.Data.asset_code)[0];
+                this.dataForTable.splice(this.dataForTable.indexOf(assetForFilter), 1, asset.Data);
+                this.totalValue(this.dataForTable);
+                this.$emit('editSuccess');
+            }           
+        },
         /**
          * Hàm xử lý nút đồng ý dựa trên kiểu form
          * Created by: NDCHIEN(27/4/2023)
@@ -196,7 +319,7 @@ export default {
                     asset_code_no_active: this.assetForNoActive.map(item => item.asset_id),
                     asset_ids: this.voucher.assetIds
                 })
-                .then(res => this.$emit('closeForm', res))
+                .then(() => this.$emit('closeForm', "Sửa chứng từ thành công!"))
                 .catch(res => this.$emit('showPopupError', res.response.data))
             }
         },
@@ -224,7 +347,7 @@ export default {
          * Hàm gọi API lấy dữ liệu theo mã chứng từ
          * Created by: NDCHIEN(26/4/2023)
          */
-        selectVoucherByVoucherCode(voucher_code) {
+        async selectVoucherByVoucherCode(voucher_code) {
             this.$emit('startLoading');
             axios
             .get('https://localhost:7210/api/Vouchers/Code?voucherCode=' + voucher_code)
@@ -263,7 +386,7 @@ export default {
             if(validateResult) {
                 axios
                 .post('https://localhost:7210/api/Vouchers/Detail', this.voucher)
-                .then(res => this.$emit('closeForm', res))
+                .then(() => this.$emit('closeForm', "Thêm chứng từ thành công!"))
                 .catch(res => this.$emit('showPopupError', res.response.data))
             }
         },
@@ -347,8 +470,13 @@ export default {
          * Created by: NDCHIEN(19/4/2023)
          * Modified by: NDCHIEN(25/4/2023)
          */
-        dataAvailable: function(newValue) {
-            this.voucher.assetIds = newValue.map(item => item.asset_id);
+        
+        dataAvailable: function(newValue) {            
+            this.voucher.assetIds = newValue.map(item => item.asset_id);           
+            if(this.index == 0) {
+                this.voucherClone = {...this.voucher};
+                this.index ++;
+            }
             this.totalValue(newValue);
             if(newValue.length < 1) {
                 this.dataForTable = this.dataForTable.concat(newValue);
@@ -460,6 +588,20 @@ export default {
             assetForNoActive: [],
             // biến lưu trạng thái form sửa tài sản
             isShowFormEditAsset: false,
+            // biến lưu mã tài sản sau khi bấm sửa
+            assetCodeForEdit: "",
+            // biến lưu đối tượng tài sản sau khi bấm sửa ở form thêm chứng từ
+            assetObject: [],
+            // biến lưu vị trí của tài sản trong mảng dành cho table sau khi bấm sửa
+            assetIndex: 0,
+            // biến lưu giá trị ban đầu của chứng từ trước khi sửa phục vụ backup
+            voucherClone: {},
+            // biến dùng để tạo điều kiện clone voucher 1 lần 
+            index: 0,
+            // biến ẩn hiện popup sau khi hủy sửa chứng từ
+            isChangeVoucher: false,
+            // biến lưu resource
+            warning: resource.warning,
         }
     }
 }

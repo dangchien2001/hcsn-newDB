@@ -89,6 +89,16 @@
     cursor: pointer;
 }
 
+.dropdown-icon-without-lable {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -72px -338px;
+    width: 8px;
+    height: 5px;
+    position: absolute;
+    right: 12px;
+    top: 15px;
+    cursor: pointer;
+}
+
 .dropup-icon {
     background: url('../../assets/icons/qlts-icon.png') no-repeat -28px -338px;
 	width: 8px;
@@ -96,6 +106,16 @@
     position: absolute;
     right: 12px;
     top: 38px;
+    cursor: pointer;
+}
+
+.dropup-icon-without-lable {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -28px -338px;
+    width: 8px;
+    height: 5px;
+    position: absolute;
+    right: 12px;
+    top: 15px;
     cursor: pointer;
 }
 
@@ -110,6 +130,18 @@
     position: absolute;
     top: 100%;
     left: 0;
+    background-color: #ffffff;
+    z-index: 1;
+}
+
+.combobox-list-non-absolute {
+    width: 100%;
+    max-height: 132px;
+    border-radius: 4px;
+    outline: none;
+    padding: 12px 12px;
+    box-shadow: 0px 4px 16px rgba(23, 27, 42, 0.24);
+    overflow-y: auto;
     background-color: #ffffff;
     z-index: 1;
 }

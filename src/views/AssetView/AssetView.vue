@@ -127,7 +127,12 @@
 
         <MFormDetail 
             v-if="isShowForm"
-            @exitForm="() => {isShowForm = false; dataForFormDetail.length = 0}"
+            @exitForm="() => {isShowForm = false; dataForFormDetail.length = 0;}"
+            @exitFormWithChange="() => {
+                isShowForm = false; 
+                dataForFormDetail.length = 0;
+                voucherFilter(this.keyWord, this.pageSizeVoucher, this.currentPageVoucher);
+            }"
             @openAssetList="() => {isShowListAsset = true}"
             :dataAvailable="dataForFormDetail"
             @closeForm="handleAfterInsertVoucher"
@@ -139,6 +144,7 @@
             @assetForNoActive="(data) => {assetForNoActive = data}"
             :typeOfForm="typeOfForm"
             :voucherCode="voucherCode"
+            @editSuccess="editSuccess"
         ></MFormDetail>
 
         <MListAssetNoActive 
@@ -204,6 +210,15 @@ export default {
     },
     methods: {
         /**
+         * Hàm chạy sau khi sửa tài sản thành công
+         * Created by: NDCHIEN(6/5/2023)
+         */
+        async editSuccess() {
+            this.$emit('showToast', 'Sửa tài sản thành công');
+            await this.voucherFilter(this.keyWord, this.pageSizeVoucher, this.currentPageVoucher);
+            this.getVoucherDetail(this.dataVoucherFirst);
+        },
+        /**
          * Hàm xóa 1 chứng từ
          * Created by: NDCHIEN(28/4/2023)
          */
@@ -268,11 +283,12 @@ export default {
          * Hàm xử lý sự kiện sau khi insert chứng từ
          * Created by: NDCHIEN(24/4/2023)
          */
-        handleAfterInsertVoucher() {
+        async handleAfterInsertVoucher(msg) {
             this.isShowForm = false;
-            this.voucherFilter(this.keyWord, this.pageSizeVoucher, this.currentPageVoucher);    
+            await this.voucherFilter(this.keyWord, this.pageSizeVoucher, this.currentPageVoucher);    
+            this.getVoucherDetail(this.dataVoucherFirst);
             this.dataForFormDetail.length = 0;
-            this.$emit('showToast');       
+            this.$emit('showToast', msg);       
         },
         /**
          * Hàm tìm kiếm trong bảng voucher sau khi ấn enter
