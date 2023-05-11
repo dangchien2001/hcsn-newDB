@@ -1,27 +1,43 @@
 <template>
     <div class="content-container content-container-v2">
         <div class="asset-header">
-            <div class="title-asset">Ghi tăng tài sản</div>
+            <div class="title-asset">{{ assetView.title }}</div>
             <div class="header-asset-blank"></div>
             <MButton
                 text="Thêm"
                 type="button-container"
                 style="min-width: 100px; justify-content: center; margin-right: 17px;"
-                @click="() => {isShowForm = true; typeOfForm = 1}"
+                @click="() => {isShowForm = true; typeOfForm = assetView.typeOfForm.addForm}"
             ></MButton>
             <MIconButton
-                :tooltipText="'abc'"
                 class="icon-btn-asset"
-                @click="() => {isShowDetailTable = !isShowDetailTable}"
+                style="border-radius: 6px 0px 0px 6px;"
             >
-                <div class="icon-toggle-voucher-detail"></div>
+                <div class="icon-toggle-voucher-detail" v-if="isShowDetailTable == true"></div>
+                <div class="icon-toggle-voucher-detail-2" v-if="isShowDetailTable == false"></div>
             </MIconButton>
-            <MIconButton
-                :tooltipText="'abc'"
-                class="icon-btn-asset"
+            <div 
+                class="toggle-detail-table"                
             >
-                <div class="icon-arrow-down-header"></div>
-            </MIconButton>
+                <MIconButton
+                    class="icon-btn-asset"
+                    style="border-radius: 0px 6px 6px 0px;"
+                    @click="() => {isShowSelectBox = !isShowSelectBox}"
+                >
+                    <div class="icon-arrow-down-header" v-if="!isShowSelectBox"></div>
+                    <div class="icon-arrow-up-header" v-if="isShowSelectBox"></div>
+                </MIconButton>
+                <div class="select-toggle-detail" v-if="isShowSelectBox">
+                    <div class="select-toggle-detail-row" @click="() => {isShowDetailTable = false; isShowSelectBox = false}">
+                        <div class="open-detail-table"></div>
+                        <span class="select-toggle-detail-text" >Giao diện dọc</span>
+                    </div>
+                    <div class="select-toggle-detail-row" @click="() => {isShowDetailTable = true; isShowSelectBox = false}">
+                        <div class="close-detail-table"></div>
+                        <span class="select-toggle-detail-text" >Giao diện ngang</span>
+                    </div>
+                </div>
+            </div>            
         </div>
 
         <splitpanes  class="asset-table default-theme" horizontal>
@@ -29,9 +45,10 @@
                 <div class="function-bar-asset">
                     <div class="search-asset">
                         <MInputWithIcon
-                            :placeholder="'Tìm kiếm theo số chứng từ, nội dung'"
+                            :placeholder="assetView.placeholderText"
                             v-model="keyWord"
                             @keyup.enter="searchVoucher"
+                            :code="true"
                         >
                             <div class="icon-search-asset"></div>
                         </MInputWithIcon>              
@@ -40,7 +57,7 @@
                     <div class="header-asset-blank"></div>
 
                     <MIconButton
-                        :tooltipText="'abc'"
+                        :tooltipText="assetView.tooltipText.delete"
                         class="icon-btn-asset"
                         v-if="voucherCodeForDelete.length > 1 ? true : false"
                         @click="isShowPopUpDelete = true"
@@ -49,14 +66,12 @@
                     </MIconButton>
 
                     <MIconButton
-                        :tooltipText="'abc'"
                         class="icon-btn-asset"
                     >
                         <div class="icon-asset-print"></div>
                     </MIconButton>
 
                     <MIconButton
-                        :tooltipText="'abc'"
                         class="icon-btn-asset"
                     >
                         <div class="icon-asset-3-dot"></div>
@@ -82,7 +97,7 @@
                         :totalRecord="totalRecordVoucher"
                         :totalPageProp="totalPageVoucher"
                         :currentPageProp="currentPageVoucher"
-                        @updateCurrentPage="(e) => {currentPageVoucher = e}"
+                        @updateCurrentPage="updateCurrentPage"
                         numOfActivePage="1"
                         @updateNumberOfRecord="(e) => {pageSizeVoucher = e}"
                         :allowPaging="true"
@@ -92,21 +107,23 @@
                         @listAssetForDelete="(data) => voucherCodeForDelete = data"
                         @delete="data => {voucherCodeForDeleteOnce = data; isShowPopUpDeleteOnce = true}"
                         :tableChange2 = "tableChange2"
+                        :activeRow="activeRow"
                     ></MTable>
                 </div>
             </Pane>
             
             <Pane v-if="isShowDetailTable" :size="[isZoom ? '100' : '50']">
                 <div class="voucher-detail-header">
-                    <div class="voucher-detail-title">Thông tin chi tiết</div>
+                    <div class="voucher-detail-title">{{ assetView.subtitle }}</div>
                     <div class="header-asset-blank"></div>
                     <div class="zoom-detail-container">
-                        <div class="zoom-detail-icon" v-show="!isZoom" @click="() => {isZoom = !isZoom; size = 100}"></div>
-                        <div class="tiny-detail-icon" v-show="isZoom" @click="() => {isZoom = !isZoom; size = 50}"></div>
+                        <div class="zoom-detail-icon" v-show="!isZoom" @click="() => {isZoom = !isZoom; size = 100; textTooltipZoom = 'Thu nhỏ'}"></div>
+                        <div class="tiny-detail-icon" v-show="isZoom" @click="() => {isZoom = !isZoom; size = 50; textTooltipZoom = 'Phóng to'}"></div>
+                        <MTooltip :text="textTooltipZoom" class="zoom-tooltip"></MTooltip>
                     </div>
                 </div>
 
-                <div class="voucher-detail-table-container">
+                <div class="voucher-detail-table-container" v-if="!isLoading">
                     <MTable
                         :tableTh="voucherDetailTh"
                         :footer="''"                       
@@ -119,15 +136,26 @@
                         :boldRow="true"
                         :allowFunctionCol="false"                        
                         :dataAvailable="dataVoucherDetail"  
-                        :allowCheckBox = "false"                 
+                        :allowCheckBox = "false"      
+                                   
                     ></MTable>
+                    
+                </div>
+
+                <div class="voucher-detail-loading" v-if="isLoading">
+                    <MLoadingTiny></MLoadingTiny>
                 </div>
             </Pane>
         </splitpanes >
 
         <MFormDetail 
             v-if="isShowForm"
-            @exitForm="() => {isShowForm = false; dataForFormDetail.length = 0;}"
+            @exitForm="() => {
+                if(isShowListAsset == false) {
+                    isShowForm = false; 
+                    dataForFormDetail.length = 0;
+                }              
+            }"
             @exitFormWithChange="() => {
                 isShowForm = false; 
                 dataForFormDetail.length = 0;
@@ -166,7 +194,7 @@
             typeButton="deleteOption"
             @deleteAction="deleteMore"
         >
-            <span style="font-family: Roboto Bold;">{{ this.voucherCodeForDelete.length < 10 ? "0" + this.voucherCodeForDelete.length : this.voucherCodeForDelete.length }} </span> chứng từ đã được chọn. Bạn có muốn xóa các chứng từ này khỏi danh sách?
+            <span style="font-family: Roboto Bold;">{{ this.voucherCodeForDelete.length < 10 ? "0" + this.voucherCodeForDelete.length : this.voucherCodeForDelete.length }} </span> {{assetView.popupText.deleteMoreText}}
         </MPopup>
 
         <MPopup
@@ -177,7 +205,7 @@
             typeButton="deleteOption"
             @deleteAction="deleteOnce"
         >
-            Bạn có muốn xóa chứng từ có mã <span style="font-family: Roboto Bold;">{{ voucherCodeForDeleteOnce }}</span>?
+            {{assetView.popupText.deleteOnce}} <span style="font-family: Roboto Bold;">{{ voucherCodeForDeleteOnce }}</span>?
         </MPopup>
 
     </div>
@@ -191,15 +219,18 @@ import { Splitpanes, Pane } from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
 import MTable from '@/components/MTable/MTable.vue';
 import resource from '@/js/resource';
+import config from '@/js/config';
 import MFormDetail from '../../pages/formDetail/MFormDetail.vue'
 import MListAssetNoActive from '@/pages/listAssetNoActive/MListAssetNoActive.vue'
 import MPopup from '@/components/MPopup/MPopup.vue'
 import axios from 'axios'
+import MLoadingTiny from '@/components/MLoading/MLoadingTiny.vue'
+import MTooltip from '@/components/MTooltip/MTooltip.vue'
 
 export default {
     name: 'AssetView',
     components: {
-        MButton, MIconButton, MInputWithIcon, Splitpanes, Pane, MTable, MFormDetail, MListAssetNoActive, MPopup
+        MButton, MIconButton, MInputWithIcon, Splitpanes, Pane, MTable, MFormDetail, MListAssetNoActive, MPopup, MLoadingTiny, MTooltip
     },
     async created() {
         // gọi api phân trang bảng voucher đổ chứng từ vào table
@@ -210,13 +241,21 @@ export default {
     },
     methods: {
         /**
+         * Hàm xử lí sau khi chuyển trang
+         * Created by: NDCHIEN(7/5/2023)
+         */
+        updateCurrentPage(currentPage) {
+            this.currentPageVoucher = currentPage;
+        },
+        /**
          * Hàm chạy sau khi sửa tài sản thành công
          * Created by: NDCHIEN(6/5/2023)
          */
-        async editSuccess() {
-            this.$emit('showToast', 'Sửa tài sản thành công');
+        async editSuccess(data) {
+            this.$emit('showToast', this.assetView.emitText.editSuccess);
             await this.voucherFilter(this.keyWord, this.pageSizeVoucher, this.currentPageVoucher);
-            this.getVoucherDetail(this.dataVoucherFirst);
+            this.getVoucherDetail(data);
+            this.idVoucher = data;
         },
         /**
          * Hàm xóa 1 chứng từ
@@ -242,14 +281,16 @@ export default {
          */
         deleteVoucher(listVoucherCode) {
             axios
-            .delete("https://localhost:7210/api/Vouchers/List", {
+            .delete(this.voucherAPI.deleteVoucher, {
                 data: Object.values(listVoucherCode)
             })
-            .then(() => {
+            .then(async () => {
                 this.isShowPopUpDelete = false,
                 this.isShowPopUpDeleteOnce = false,
-                this.$emit('afterDeleteSuccess', 'Xóa chứng từ thành công !'),
-                this.voucherFilter(this.keyWord, this.pageSizeVoucher, this.currentPageVoucher);
+                this.$emit('afterDeleteSuccess', this.assetView.emitText.deleteVoucherSuccess),
+                await this.voucherFilter(this.keyWord, this.pageSizeVoucher, this.currentPageVoucher);
+                this.getVoucherDetail(this.dataVoucherFirst);
+                this.idVoucher = this.dataVoucherFirst;
                 this.tableChange2 = !this.tableChange2;
                 this.voucherCodeForDelete = [];
             })
@@ -275,7 +316,7 @@ export default {
          * @param {*} voucher_code 
          */
         handleEdit(voucher_code) {
-            this.typeOfForm = 2;
+            this.typeOfForm = this.assetView.typeOfForm.editForm;
             this.voucherCode = voucher_code;
             this.isShowForm = true;
         },
@@ -286,16 +327,21 @@ export default {
         async handleAfterInsertVoucher(msg) {
             this.isShowForm = false;
             await this.voucherFilter(this.keyWord, this.pageSizeVoucher, this.currentPageVoucher);    
+            this.idVoucher = this.dataVoucherFirst;
             this.getVoucherDetail(this.dataVoucherFirst);
             this.dataForFormDetail.length = 0;
-            this.$emit('showToast', msg);       
+            this.$emit('showToast', msg); 
+            this.activeRow = 0;      
         },
         /**
          * Hàm tìm kiếm trong bảng voucher sau khi ấn enter
          * Created by: NDCHIEN(19/4/2023)
          */
-        searchVoucher() {
-            this.voucherFilter(this.keyWord, this.pageSizeVoucher, this.currentPageVoucher);
+        async searchVoucher() {
+            await this.voucherFilter(this.keyWord, this.pageSizeVoucher, this.currentPageVoucher);
+            this.getVoucherDetail(this.dataVoucherFirst);
+            this.idVoucher = this.dataVoucherFirst;
+            this.activeRow = 0;
         },
 
         /**
@@ -304,6 +350,12 @@ export default {
          */
         handleVoucherIdAfterClickRow(object) {
             this.idVoucher = object.voucher_id;
+            if(object.row_index <= this.pageSizeVoucher) {
+                this.activeRow = object.row_index - 1;
+            }
+            if(object.row_index > this.pageSizeVoucher) {
+                this.activeRow = object.row_index - this.pageSizeVoucher*(this.currentPageVoucher - 1) - 1;
+            }
         },
 
         /**
@@ -313,7 +365,7 @@ export default {
         async voucherFilter(keyWord, pageSize, pageNumber) {
             this.$emit('startLoading');
             await axios       
-            .get(`https://localhost:7210/api/Vouchers/filter?voucherFilter=${keyWord}&pageSize=${pageSize}&pageNumber=${pageNumber}`)
+            .get(this.voucherAPI.filterVoucher(keyWord, pageSize, pageNumber))
             .then(res => {
                 this.dataVoucher = res.data.Data;
                 this.dataTotalVoucher = res.data.MoreInfo;
@@ -321,9 +373,14 @@ export default {
                 this.totalPageVoucher = res.data.TotalPage;
                 this.currentPageVoucher = res.data.CurrentPage;
                 
-                this.dataVoucherFirst = this.dataVoucher[0].voucher_id;
+                if(this.dataVoucher.length > 0) {
+                    this.dataVoucherFirst = this.dataVoucher[0].voucher_id;
+                }
 
                 this.$emit('cancelLoading');
+                if(this.dataVoucher.length == 0) {
+                    this.dataVoucherFirst = '';
+                }
             })
             .catch(res => {
                 console.log(res);
@@ -335,12 +392,12 @@ export default {
          * Created by: NDCHIEN(21/4/2023)
          */
         getVoucherDetail(voucherID) {
-            this.$emit('startLoading');
+            this.isLoading = true;
             axios
-            .get('https://localhost:7210/api/VoucherDetails/filter?voucherId=' + voucherID)
+            .get(this.voucherAPI.getVoucherDetail(voucherID))
             .then(res => {
                 this.dataVoucherDetail = res.data;
-                this.$emit('cancelLoading');
+                this.isLoading = false;
             })
             .catch(res => {
                 console.log(res);
@@ -360,8 +417,11 @@ export default {
          * Gọi api sau khi biến currentPageVoucher thay đổi (sau khi bấm chuyển trang)
          * Created by: NDCHIEN(19/4/2023) 
          */
-        currentPageVoucher: function(newValue) {
-            this.voucherFilter(this.keyWord, this.pageSizeVoucher, newValue);
+        currentPageVoucher: async function(newValue) {
+            await this.voucherFilter(this.keyWord, this.pageSizeVoucher, newValue);
+            this.getVoucherDetail(this.dataVoucherFirst);
+            this.idVoucher = this.dataVoucherFirst;
+            this.activeRow = 0;
         },
 
         /**
@@ -376,16 +436,21 @@ export default {
          * Created by: NDCHIEN(20/4/2023)
          * @param {*} newValue 
          */
-        keyWord: function(newValue) {
+        keyWord: async function(newValue) {
             if(newValue.length == 0) {
-                this.voucherFilter(this.keyWord, newValue, 1);
+                await this.voucherFilter(newValue, this.pageSizeVoucher, 1);
+                this.getVoucherDetail(this.dataVoucherFirst);
+                this.idVoucher = this.dataVoucherFirst;
+                this.activeRow = 0;
             }
         }
     },
     data() {
         return {
+            voucherAPI: config.voucherAPI,
             voucherTh: resource.voucherTh,
             voucherDetailTh: resource.voucherDetailTh,
+            assetView: resource.assetView,
             api: resource.API,
             assetFooter: resource.assetFooter,
             isShowDetailTable: true,
@@ -439,6 +504,14 @@ export default {
             isShowPopUpDeleteOnce: false,
             // biến dùng để bỏ checkbox
             tableChange2: true,
+            // biến dùng để lưu dòng active
+            activeRow: 0,
+            // biến lưu trạng thái ẩn hiện loading
+            isLoading: false,
+            // biến lưu trạng thái hộp ẩn hiện detail
+            isShowSelectBox: false,
+            // biến lưu nội dung tooltip zoom
+            textTooltipZoom: "Phóng to"
         }
     }
 }

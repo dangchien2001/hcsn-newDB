@@ -263,6 +263,17 @@
     cursor: pointer;
 }
 
+.side-bar-item-bonus-active {
+    height: 40px;
+    width: calc(100% + 10px);
+    display: flex;
+    align-items: center;
+    padding-left: 43px;
+    color: #FFFFFF;
+    background-color: rgb(22, 55, 90);
+    cursor: pointer;
+}
+
 .toggle-item-bonus {
     background: url('../../assets/icons/qlts-icon.png') no-repeat -158px -293px;
 	width: 11px;

@@ -2,17 +2,26 @@
     <div class="layer-list-asset">
         <div class="list-asset-box">
             <div class="header-list-asset">
-                <div class="title-list-asset">Chọn tài sản ghi tăng</div>
+                <div class="title-list-asset">{{listAssetNoActive.title}}</div>
                 <div class="blank"></div>
-                <div class="exit-icon" @click="() => {this.$emit('exitListAsset')}"></div>
+                <div class="exit-with-tooltip">
+                    <div class="exit-icon" 
+                        @click="() => {this.$emit('exitListAsset')}"
+                    ></div>
+                    <MTooltip 
+                        :text="'Đóng (Esc)'"
+                        class="exit-with-tooltip-tooltip"
+                    ></MTooltip>
+                </div>
             </div>
             <div class="body-list-asset">
                 <div class="body-list-asset-row-1">
                     <div class="search-asset-container">
                         <MInputWithIcon
-                            placeholder="Tìm kiếm theo mã, tên tài sản"
+                            :placeholder="listAssetNoActive.placeholder"
                             @keyup.enter="searchAsset"
                             v-model="keyWord"
+                            :code="isForcusVoucherCode"
                         >
                             <div class="icon-search-asset"></div>
                         </MInputWithIcon>
@@ -46,12 +55,12 @@
             <div class="footer-list-asset">
                 <div class="blank"></div>
                 <MButton
-                    text="Hủy bỏ"
+                    :text="listAssetNoActive.buttonText.cancel"
                     type="outline-button"
                     @click="() => {this.$emit('exitListAsset')}"
                 ></MButton>
                 <MButton
-                    text="Đồng ý"
+                    :text="listAssetNoActive.buttonText.accept"
                     type="button-container"
                     style="width: 100px; justify-content: center;margin-right: 17px;"
                     @click="selectAssetForEmit"
@@ -69,6 +78,8 @@ import MButton from '@/components/MButton/MButton.vue';
 import MTable from '@/components/MTable/MTable.vue';
 import resource from '@/js/resource';
 import axios from 'axios';
+import MTooltip from '@/components/MTooltip/MTooltip.vue';
+
 export default {
     props: {
         // props chứa data được truyền từ ngoài vào
@@ -77,7 +88,7 @@ export default {
         assetForNoActive: Array,
     },
     components: {
-        MInputWithIcon, MButton, MTable
+        MInputWithIcon, MButton, MTable, MTooltip
     },
     created() {
         this.assetFilter(this.keyWord, this.pageSize, this.currentPage);        
@@ -155,6 +166,8 @@ export default {
     },
     data() {
         return {
+            // biến lưu text réource
+            listAssetNoActive: resource.listAssetNoActive,
             // biến lưu tên các cột trong bảng
             voucherDetailTh: resource.voucherDetailTh,
             // biến lưu dữ liệu sau khi filter
@@ -173,6 +186,8 @@ export default {
             totalRecord: 0,
             // biến lưu tổng số trang sau khi flter
             totalPage: 0,
+            // biến lưu trạng thái forcus input đầu tiên
+            isForcusVoucherCode: true,
         }
     }
 }

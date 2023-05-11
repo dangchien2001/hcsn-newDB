@@ -17,8 +17,8 @@
         <!-- input -->
         <input 
             type="text" 
-            :class="[paddingInput, isEqualZero ? 'number-input-container-input-error' : 'number-input-container-input']"
-            :value="this.formatMoney(this.modelValue) < 10 ? '0' + this.formatMoney(this.modelValue) : this.formatMoney(this.modelValue)"
+            :class="[paddingInput, isEqualZero ? 'number-input-container-input-error' : isDisable ? 'number-input-container-input-disable' : 'number-input-container-input']"
+            :value="(this.formatMoney(this.modelValue) < 10 && this.formatMoney(this.modelValue) > 0) ? '0' + this.formatMoney(this.modelValue) : this.formatMoney(this.modelValue)"
             :disabled="isDisable"
             @input="handleInput"
             @keypress="onlyNumberKey($event)"

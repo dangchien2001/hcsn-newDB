@@ -126,3 +126,20 @@
     width: 140px;
     margin-left: 10px;
 }
+
+.exit-with-tooltip {
+    position: relative
+}
+
+.exit-with-tooltip-tooltip {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: 100px;
+    text-align: center;
+    display: none;
+}
+
+.exit-with-tooltip:hover .exit-with-tooltip-tooltip {
+    display: block;
+}

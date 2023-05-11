@@ -7,7 +7,8 @@ var resource = {
                     name: "overview",
                     class: "overview-icon",
                     active: "",
-                    text: "Tổng quan"
+                    text: "Tổng quan",
+                    link: "",
                 },
                 {
                     // icon tài sản
@@ -16,50 +17,80 @@ var resource = {
                     active: "active-icon",
                     text: "Tài sản",
                     items: [
-                        "Ghi tăng",
-                        "Thay đổi thông tin",
-                        "Đánh giá lại",
-                        "Tính hao mòn",
-                        "Điều chuyển tài sản",
-                        "Ghi giảm",
-                        "Kiểm kê",
-                        "Khác"
-                    ]
+                        {
+                            text: "Ghi tăng",
+                            link: "/Asset",
+                        },
+                        {
+                            text: "Thay đổi thông tin",
+                            link: "/ChangeInfomation",
+                        },
+                        {
+                            text: "Đánh giá lại",
+                            link: "/CheckAgain",
+                        },
+                        {
+                            text: "Tính hao mòn",
+                            link: "/Reuduce",
+                        },
+                        {
+                            text: "Điều chuyển tài sản",
+                            link: "/TranformAsset",
+                        },
+                        {
+                            text: "Ghi giảm",
+                            link: "/ReduceWrite",
+                        },
+                        {
+                            text: "Kiểm kê",
+                            link: "/Check",
+                        },
+                        {
+                            text: "Khác",
+                            link: "/Other",
+                        },                       
+                    ],
+                    link: "/"
                 },
                 {
                     // icon tài sản đảm bảo
                     name: "collateral",
                     class: "collateral-icon",
                     active: "",
-                    text: "Tài sản HT - ĐB"
+                    text: "Tài sản HT - ĐB",
+                    link: "",
                 },
                 {
                     // icon công cụ, dụng cụ
                     name: "tool",
                     class: "tool-icon",
                     active: "",
-                    text: "Công cụ dụng cụ"
+                    text: "Công cụ dụng cụ",
+                    link: "",
                 },
                 {
                     // icon danh mục
                     name: "category",
                     class: "category-icon",
                     active: "",
-                    text: "Danh mục"
+                    text: "Danh mục",
+                    link: "",
                 },
                 {
                     // icon tra cứu
                     name: "search",
                     class: "search-icon",
                     active: "",
-                    text: "Tra cứu"
+                    text: "Tra cứu",
+                    link: "",
                 },
                 {
                     // icon báo cáo
                     name: "report",
                     class: "report-icon",
                     active: "",
-                    text: "Báo cáo"
+                    text: "Báo cáo",
+                    link: "",
                 },
     ],
     
@@ -83,7 +114,7 @@ var resource = {
         },
         {
             colName: "Bộ phận sử dụng",
-            style: "text-align: left; min-width: 177px",
+            style: "text-align: left; min-width: 130px",
         },
         {
             colName: "Số lượng",
@@ -100,6 +131,10 @@ var resource = {
         {
             colName: "Giá trị còn lại",
             style: "text-align: right; min-width: 111px",
+        },
+        {
+            colName: "Trạng thái",
+            style: "text-align: left; min-width: 130px; padding-left: 30px;",
         },
         {
             colName: "Chức năng",
@@ -308,10 +343,14 @@ var resource = {
         {
             name: "depreciation_value",
             style: "text-align: right;"
-        },
+        },       
         {
             name: "residual_value",
             style: "text-align: right;"
+        },
+        {
+            name: "active",
+            style: "text-align: left; padding-left: 30px"
         },
     ],
 
@@ -323,7 +362,7 @@ var resource = {
         },
         {
             name: "voucher_code",
-            style: "text-align: left"
+            style: "text-align: left; color: #1aa4c8"
         },
         {
             name: "voucher_date",
@@ -432,7 +471,120 @@ var resource = {
         deleteZero: "Không có tài sản nào được chọn để xóa."
     },
 
+    /**
+     * Form thêm, sửa chứng từ
+     * Created by: NDCHIEN(8/5/2023)
+     */
+    voucherForm: {
+        titleForm: {
+            addVoucherTitle: "Thêm chứng từ ghi tăng",
+            editVoucherTitle: "Sửa chứng từ ghi tăng"
+        },
+        subTitle: {
+            voucherInfomation: "Thông tin chứng từ",
+            voucherInformationDetail: "Thông tin chi tiết"
+        },
+        inputLabel: {
+            voucherCode: "Mã chứng từ",
+            startUseDate: "Ngày bắt đầu sử dụng",
+            startCreateVoucher: "Ngày ghi tăng",
+            note: "Ghi chú"
+        },
+        placeholderText: {
+            searchPlaceholderText: "Tìm kiếm theo mã, tên tài sản"
+        },
+        buttonText: {
+            selectAsset: "Chọn tài sản",
+            cancelForm: "Hủy",
+            accept: "Lưu"
+        },
+        typeOfForm: {
+            addForm: 1,
+            editForm: 2
+        }
+    },
 
+    /**
+     * Màn hình ghi tăng tài sản
+     * Created by: NDCHIEN(8/5/2023)
+     */
+    assetView: {
+        title: "Ghi tăng tài sản",
+        subtitle: "Thông tin chi tiết",
+        placeholderText: "Tìm kiếm theo số chứng từ, nội dung",
+        buttonText: "Thêm",
+        tooltipText: {
+            delete: "Xóa chứng từ"
+        },
+        typeOfForm: {
+            addForm: 1,
+            editForm: 2
+        },
+        popupText: {
+            deleteMoreText: "chứng từ đã được chọn. Bạn có muốn xóa các chứng từ này khỏi danh sách?",
+            deleteOnce: "Bạn có muốn xóa chứng từ có mã",
+        },
+        emitText: {
+            editSuccess: "Sửa tài sản thành công!",
+            deleteVoucherSuccess: "Xóa chứng từ thành công !"
+        }
+    },
+
+    /**
+     * Table
+     * Created by: NDCHIEN(8/5/2023)
+     */
+    table: {
+        iconTooltip: {
+            edit: "Sửa",
+            delete: "Xóa"
+        }
+    },
+
+    /**
+     * FormDetail
+     * Created by: NDCHIEN(8/5/2023)
+     */
+    formDetail: {
+        editSuccess: "Sửa chứng từ thành công!",
+        addSuccess: "Thêm chứng từ thành công!",
+        validate: {
+            emptyCode: "Mã chứng từ không được bỏ trống!",
+            needChooseAsset: "Chọn ít nhất 1 tài sản!"
+        }
+    },
+
+    /**
+     * Form sửa tài sản trong chứng từ
+     * Created by: NDCHIEN(8/5/2023)
+     */
+    formEditAsset: {
+        title: function(assetName) {
+            return `Sửa tài sản ${assetName}`
+        },
+        departmentLabel: "Bộ phận sử dụng",
+        priceSubTitle: "Nguyên giá",
+        budgetPlace: "Nguồn hình thành",
+        value: "Giá trị",
+        totalCost: "Tổng",
+        buttonText: {
+            cancel: "Hủy",
+            accept: "Lưu"
+        }
+    },
+
+    /**
+     * Form tài sản chưa active
+     * Created by: NDCHIEN(10/5/2023)
+     */
+    listAssetNoActive: {
+        title: "Chọn tài sản ghi tăng",
+        placeholder: "Tìm kiếm theo mã, tên tài sản",
+        buttonText: {
+            cancel: "Hủy bỏ",
+            accept: "Đồng ý"
+        }
+    },
 
 }
 

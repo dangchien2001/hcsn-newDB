@@ -1,6 +1,8 @@
 <template>
 
-<div style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;">
+<div 
+    style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;" 
+>
     <!-- table -->
     <table :class="typeTable">
 
@@ -49,13 +51,15 @@
         <!-- body -->
         
         <tr
-            :class="['table-body-row', {'table-body-row-active' : rows[index]}]"
+            :class="[activeRow == index ? 'row-active' : 'table-body-row', {'table-body-row-active' : rows[index]}]"
             v-for="(item, index) in datas"
             :key="index"
             @dblclick="editProduct(item.asset_id)"
             @click="() => {
                 this.$emit('objectAfterClickRow', item);                
             }"
+            @keyup.up="handleKeyUpDown(datas[index - 1])"
+            @keyup.down="handleKeyUpDown(datas[index + 1])"
         >
 
             <!-- checkbox col -->
@@ -113,7 +117,7 @@
                 >
                     <MTooltip
                         class="edit-tooltip" 
-                        text="abc"
+                        :text="table.iconTooltip.edit"
                     ></MTooltip>
                 </div>
                 <div 
@@ -124,7 +128,7 @@
                 >
                     <MTooltip
                         class="delete-tooltip"
-                        text="abc"
+                        :text="table.iconTooltip.delete"
                     ></MTooltip>
                 </div>
             </td>
@@ -148,7 +152,7 @@
                     <div class="text-of-data">{{ paging.record }}</div>
 
                     <!-- số bản ghi trên 1 trang -->
-                    <div class="number-of-data-in-page">
+                    <div class="number-of-data-in-page" @click="handleNumberOfRecordList">
 
                         <!-- số hiển thị -->
                         <div class="number-of-data-select">{{ PageSize }}</div>
@@ -315,9 +319,15 @@
             <!-- ô trống -->
             <td></td>
 
+            <td></td>
+
         </tr>
 
     </table>
+
+    <div class="nullData" v-if="datas != undefined && datas.length == 0">
+        <span style="position: relative; top: 50px">Không có dữ liệu!</span>
+    </div>
 
     <!-- footer-->
     <table v-if="footer == 'newFooter'" style="" :class="['footer-table-v2', boldRow ? 'bold-row' : '']">
@@ -333,6 +343,8 @@
                 <!-- thẻ div chỉ dùng để display flex -->
                 <div class="footer-content-function">
 
+                    <div v-if="!allowPaging" style="margin-left: 10px; font-family: 'Roboto Bold';">Tổng</div>
+
                     <!-- Tổng số bản ghi -->
                     <div class="total-data" v-if="allowPaging">{{ paging.total }}</div>&nbsp;
 
@@ -341,7 +353,7 @@
                     <div class="text-of-data" v-if="allowPaging">{{ paging.record }}</div>
 
                     <!-- số bản ghi trên 1 trang -->
-                    <div class="number-of-data-in-page" v-if="allowPaging">
+                    <div class="number-of-data-in-page" v-if="allowPaging" @click="handleNumberOfRecordList">
 
                         <!-- số hiển thị -->
                         <div class="number-of-data-select">{{ PageSize }}</div>
@@ -393,7 +405,8 @@
                     <div class="list-page" v-if="allowPaging">
 
                         <!-- pre button -->
-                        <div class="list-page-pre-button" @click="NextAndReturnPage('pre')">
+                        <div 
+                        :class="[activePage == 1 ? 'list-page-pre-button-disable' : 'list-page-pre-button']" @click="NextAndReturnPage('pre')">
 
                             <!-- pre button icon -->
                             <div class="list-page-pre-button-icon"></div>                            
@@ -478,7 +491,7 @@
                         </div>
                         
                         <!-- next button -->
-                        <div class="list-page-next-button" @click="NextAndReturnPage('next')">
+                        <div :class="[activePage == totalPage ? 'list-page-next-button-disable' : 'list-page-next-button']" @click="NextAndReturnPage('next')">
 
                             <!-- next button icon -->
                             <div class="list-page-next-button-icon"></div>
@@ -501,7 +514,7 @@
         :dataForEdit="data"
         v-if="isShowForm"
         @closeForm="closeForm"
-        @showEditSuccessToast=showEditSuccessToast
+        @showEditSuccessToast="showEditSuccessToast"
         typeForm="edit"
         @startLoading="() => {this.$emit('startLoading')}"
         @cancelLoading="() => {this.$emit('cancelLoading')}"
@@ -514,7 +527,7 @@
         :dataForClone="data"
         v-if="isShowCloneForm"
         @closeForm="closeCloneForm"
-        @showEditSuccessToast=showCloneSuccessToast       
+        @showEditSuccessToast="showCloneSuccessToast"       
         typeForm="clone"
         @cloneSuccess="() => {console.log('abc')}"
         @startLoading="() => {this.$emit('startLoading')}"
@@ -574,6 +587,8 @@ export default {
         allowPaging: Boolean,
         // props cho phép checkbox hay ko
         allowCheckBox: Boolean,
+        // props lưu dòng đang active
+        activeRow: Number,
     },
     created() {
 
@@ -584,8 +599,8 @@ export default {
                 .then(res => {
                     (this.totalPage = res.data.TotalPage),
                     (this.currentPage = res.data.CurrentPage),
-                    (this.datas = this.mappingArray(res.data.Data)),
-                    (this.data2 = res.data.Data),
+                    (this.datas = this.mappingArray(res.data.Data)),                    
+                    (this.data2 = this.mappingArray(res.data.Data)),
                     (this.$emit("emitData", this.datas)),
                     (this.TotalData = res.data.TotalRecord), 
                     (this.TotalQuantity = res.data.TotalQuantity),
@@ -611,7 +626,17 @@ export default {
 
 
     methods: {
-
+        /**
+         * Hàm thực hiện lên xuống bản ghi active khi bấm hai phím mũi tên
+         * Created by: NDCHIEN(8/5/2023)
+         */
+        handleKeyUpDown(item) {
+            this.$emit('objectAfterClickRow', item);   
+        },
+        /**
+         * Hàm chuyển trang bằng mũi tên
+         * Created by: NDCHIEN(8/5/2023)
+         */
         NextAndReturnPage(type) {
             if(type == "pre" && this.PageIndex > 1) {
                 this.PageIndex --; 
@@ -836,7 +861,9 @@ export default {
                 axios
                     .get(this.api + '?PageNumber=' + 1 + '&PageSize=' + this.PageSize)
                     .then(res => {
+                        (console.log(res.data.Data)),
                         (this.datas = this.mappingArray(res.data.Data)),
+                        (this.data2 = this.mappingArray(res.data.Data)),
                         (this.$emit("emitData", this.datas)),
                         (this.TotalData = res.data.TotalRecord),
                         (this.TotalQuantity = res.data.TotalQuantity),
@@ -857,9 +884,11 @@ export default {
                 axios
                     .get(this.api + '?assetFilter=' + this.filter + '&PageNumber=' + this.PageIndex + '&PageSize=' + this.PageSize + '&departmentFilter=' + this.filterDepartment + '&assetCategoryFilter=' + this.filterAssetCategory)
                     .then(res => {
+                        (console.log(res.data.Data)),
                         (this.totalPage = res.data.TotalPage),
                         (this.currentPage = res.data.CurrentPage),
                         (this.datas = this.mappingArray(res.data.Data)),
+                        (this.data2 = this.mappingArray(res.data.Data)),
                         (this.$emit("emitData", this.datas)),
                         (this.TotalData = res.data.TotalRecord),
                         (this.TotalQuantity = res.data.TotalQuantity),
@@ -1021,6 +1050,7 @@ export default {
                             (this.totalPage = res.data.TotalPage),
                             (this.currentPage = res.data.CurrentPage),
                             (this.datas = this.mappingArray(res.data.Data)),
+                            (this.data2 = this.mappingArray(res.data.Data)),
                             (this.$emit("emitData", this.datas)),
                             (this.TotalData = res.data.TotalRecord),
                             (this.TotalQuantity = res.data.TotalQuantity),
@@ -1057,6 +1087,7 @@ export default {
                             (this.totalPage = res.data.TotalPage),
                             (this.currentPage = res.data.CurrentPage),
                             (this.datas = this.mappingArray(res.data.Data)),
+                            (this.data2 = this.mappingArray(res.data.Data)),
                             (this.$emit("emitData", this.datas)),
                             (this.TotalData = res.data.TotalRecord),
                             (this.TotalQuantity = res.data.TotalQuantity),
@@ -1109,7 +1140,8 @@ export default {
                         (this.totalPage = res.data.TotalPage),
                         (this.currentPage = res.data.CurrentPage), 
                         (this.datas = this.mappingArray(res.data.Data)),
-                        (this.$emit("emitData", this.datas)),
+                        (this.data2 = this.mappingArray(res.data.Data)),
+                        (this.$emit("emitData", this.datas)),                       
                         (this.TotalData = res.data.TotalRecord),
                         (this.TotalQuantity = res.data.TotalQuantity),
                         (this.TotalPrice = res.data.TotalCost),
@@ -1134,7 +1166,7 @@ export default {
     },
     data() {
         return {    
-
+            table: resource.table,
             tableInfo: this.tableTh,
             properties: resource[this.model],
             formType: resource.formType,

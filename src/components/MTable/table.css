@@ -193,6 +193,7 @@ td {
     display: flex;
     align-items: center;
     position: relative;
+    cursor: pointer;
 }
 
 .number-of-data-select {
@@ -261,6 +262,19 @@ td {
     align-items: center;
     justify-content: center;
     cursor: pointer;
+}
+
+.list-page-pre-button-disable {
+    /* background-color: #ffffff; */
+    border-radius: 6px;
+    width: 20px;
+    height: 20px;
+    overflow: hidden;
+    margin-left: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: no-drop;
 }
 
 .list-page-pre-button-icon {
@@ -334,6 +348,19 @@ td {
     align-items: center;
     justify-content: center;
     cursor: pointer;
+}
+
+.list-page-next-button-disable {
+    /* background-color: #ffffff; */
+    border-radius: 6px;
+    width: 20px;
+    height: 20px;
+    overflow: hidden;
+    margin-left: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: no-drop;
 }
 
 .list-page-next-button-icon {
@@ -419,4 +446,27 @@ td {
 
 .bold-row {
     background-color: rgb(236, 234, 234);
+}
+
+.row-active {
+    background: rgba(26, 164, 200, .3);
+    height: 39px;
+    color: #1F1F1F;
+    cursor: pointer;
+}
+
+.row-active:nth-child(2) td {
+    border: 0px;
+}
+
+.nullData {
+    width: 100%;
+    height: 100%;
+    background: url('../../assets/icons/ko-co-du-lieu.svg');
+    background-repeat: no-repeat;
+    background-position: 50% 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: rgba(0, 0, 0, .46);
 }

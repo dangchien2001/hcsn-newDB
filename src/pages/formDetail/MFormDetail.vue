@@ -1,35 +1,54 @@
 <template>
     <div class="layer-voucher-detail">
-        <div class="form-voucher-detail">
+        <div 
+            class="form-voucher-detail" 
+            v-esc="() => {
+                if(isShowFormEditAsset == false) {
+                    this.$emit('exitForm')
+                } 
+            }"
+        >
             <div class="form-header-voucher-detail">
                 <div class="form-title-voucher-detail">{{ titleForm }}</div>
                 <div class="blank"></div>
-                <div class="icon-exit" @click="() => {this.$emit('exitForm')}"></div>
+                <div class="exit-icon-form-detail">
+                    <div 
+                        class="icon-exit" 
+                        @click="() => {this.$emit('exitForm')}"
+                    ></div>
+                    <MTooltip 
+                        :text="'Đóng (Esc)'" class="exit-tooltip-form-detail"
+                    ></MTooltip>
+                </div>               
             </div>
             <div class="form-body-voucher-detail">
-                <div class="title-form-body-voucher-detail">Thông tin chứng từ</div>
+                <div class="title-form-body-voucher-detail">{{voucherForm.subTitle.voucherInfomation}}</div>
                 <div class="voucher-info">
                     <div class="voucher-info-row-1">                    
                         <div class="form-input-voucher-detail">
                             <MInput
-                                fieldLabel="Mã chứng từ"
+                                :fieldLabel="voucherForm.inputLabel.voucherCode"
                                 :important="true"
                                 v-model="voucher.voucher.voucher_code"   
-                                :isEmpty="isNullVoucherCode"                             
+                                :isEmpty="isNullVoucherCode" 
+                                :code="isForcusVoucherCode"
+                                @unForcus="() => {isForcusVoucherCode = false}"
                             ></MInput>
                         </div>
                         <div class="form-input-voucher-detail">
-                            <div class="text-input-voucher-detail">Ngày bắt đầu sử dụng <span class="important-input">*</span></div>
+                            <div class="text-input-voucher-detail">{{voucherForm.inputLabel.startUseDate}} <span class="important-input">*</span></div>
                             <MDatetime
                                 v-model="voucher.voucher.voucher_date"
                                 :key="componentKey"
+                                :bottom="true"
                             ></MDatetime>
                         </div>
                         <div class="form-input-voucher-detail">
-                            <div class="text-input-voucher-detail">Ngày ghi tăng <span class="important-input">*</span></div>
+                            <div class="text-input-voucher-detail">{{voucherForm.inputLabel.startCreateVoucher}} <span class="important-input">*</span></div>
                             <MDatetime
                                 v-model="voucher.voucher.increment_date"
                                 :key="componentKey"
+                                :bottom="true"
                             ></MDatetime>
                         </div>
                     </div>
@@ -37,18 +56,18 @@
                     <div class="voucher-info-row-2">
                         <div class="note-input-voucher-detail">
                             <MInput
-                                fieldLabel="Ghi chú"
+                                :fieldLabel="voucherForm.inputLabel.note"
                                 v-model="voucher.voucher.description"
                             ></MInput>
                         </div>
                     </div>
                 </div>
-                <div class="title-form-body-voucher-detail-2">Thông tin chi tiết</div>
+                <div class="title-form-body-voucher-detail-2">{{voucherForm.subTitle.voucherInformationDetail}}</div>
                 <div class="voucher-info-with-table-and-filter">
                     <div class="filter-input-voucher-detail-container">
                         <div class="filter-input-voucher-detail">
                             <MInputWithIcon
-                                placeholder="Tìm kiếm theo mã, tên tài sản"
+                                :placeholder="voucherForm.placeholderText.searchPlaceholderText"
                                 @keyup.enter="filterAsset"
                                 v-model="keyWord"
                             >
@@ -57,7 +76,7 @@
                         </div>
                         <div class="blank"></div>
                         <MButton
-                            text="Chọn tài sản"
+                            :text="voucherForm.buttonText.selectAsset"
                             type="outline-button"
                             style="width: 130px"
                             @click="() => {this.$emit('openAssetList')}"
@@ -89,12 +108,12 @@
             <div class="form-footer-voucher-detail">
                 <div class="blank"></div>
                 <MButton
-                    text="Hủy bỏ"
+                    :text="voucherForm.buttonText.cancelForm"
                     type="outline-button"
                     @click="cancelAfterFindChange"
                 ></MButton>
                 <MButton
-                    text="Đồng ý"
+                    :text="voucherForm.buttonText.accept"
                     type="button-container"
                     style="width: 100px; justify-content: center;margin-right: 17px;"
                     @click="handleSubmit"
@@ -135,13 +154,15 @@ import MInputWithIcon from '@/components/MInput/MInputWithIcon.vue';
 import MButton from '@/components/MButton/MButton.vue';
 import MTable from '@/components/MTable/MTable.vue';
 import resource from '@/js/resource';
+import config from '@/js/config';
 import MFormEditAsset from '../formEditAsset/MFormEditAsset.vue';
 import MPopup from '@/components/MPopup/MPopup.vue';
+import MTooltip from '@/components/MTooltip/MTooltip.vue'
 
 import axios from 'axios';
 export default {
     components: {
-        MInput, MDatetime, MInputWithIcon, MButton, MTable, MFormEditAsset, MPopup
+        MInput, MDatetime, MInputWithIcon, MButton, MTable, MFormEditAsset, MPopup, MTooltip
     },
     props: {
         dataAvailable: Array,
@@ -159,16 +180,26 @@ export default {
      */
     async created() {        
         // gọi maxcode nếu là form thêm
-        if(this.typeOfForm == 1) {
-            this.titleForm = "Thêm chứng từ ghi tăng";
+        if(this.typeOfForm == this.voucherForm.typeOfForm.addForm) {
+            this.titleForm = this.voucherForm.titleForm.addVoucherTitle;
             this.getMaxCode();
+            // forcus input đầu tiên
+            this.isForcusVoucherCode = true;
         }
         // gọi api lấy chứng từ nếu là form sửa
-        if(this.typeOfForm == 2) {
-            this.titleForm = "Sửa chứng từ ghi tăng";
+        if(this.typeOfForm == this.voucherForm.typeOfForm.editForm) {
+            // forcus input đầu tiên
+            this.isForcusVoucherCode = true;
+            this.titleForm = this.voucherForm.titleForm.editVoucherTitle;
             await this.selectVoucherByVoucherCode(this.voucherCode);  
-        }
+            
+        }       
     },
+
+    mounted() {
+        
+    },
+    
     /**
      * Làm rỗng mảng dữ liệu dùng để truyền cho danh sách tài sản chưa active sau khi hủy form
      * Created by: NDCHIEN(26/4/2023)
@@ -190,7 +221,7 @@ export default {
             if(!isEqual) {
                 this.isChangeVoucher = true;
             }
-            if(this.typeOfForm == 1) {
+            if(this.typeOfForm == this.voucherForm.typeOfForm.addForm) {
                 this.$emit('exitForm');
             }
         },
@@ -202,7 +233,7 @@ export default {
         calcCostVoucherAfterCancelUpdate() {
             var voucherClone = this.voucherClone;
             axios
-                .put("https://localhost:7210/api/Vouchers/Detail/" + voucherClone.voucher.voucher_id, {
+                .put(this.voucherAPI.updateVoucher(voucherClone.voucher.voucher_id), {
                     voucher: {
                         row_index: 0,
                         voucher_id: voucherClone.voucher.voucher_id,
@@ -224,7 +255,7 @@ export default {
         },
 
         /**
-         * Hàm so sánh hai đổi tượng copy trên mạng
+         * Hàm so sánh hai đổi tượng (copy trên mạng)
          * Created by: NDCHIEN(6/5/2023)
          */
         shallowObjectEqual(object1, object2) {
@@ -261,7 +292,7 @@ export default {
         editAsset(data) {
             this.isShowFormEditAsset = true; 
             this.assetCodeForEdit = data;
-            if(this.typeOfForm == 1) {
+            if(this.typeOfForm == this.voucherForm.typeOfForm.addForm) {
                 var assetObject = this.arrayForTableFixed.filter(item => item.asset_code == data);
                 this.assetObject = assetObject;
                 this.assetIndex = this.arrayForTableFixed.indexOf(this.assetObject[0]);
@@ -272,12 +303,12 @@ export default {
          * Created by: NDCHIEN(5/5/2023)
          */
         handleAfterEditAssetSuccess(asset) {
-            if(this.typeOfForm == 2) {
+            if(this.typeOfForm == this.voucherForm.typeOfForm.editForm) {
                 this.isShowFormEditAsset = false;
                 var assetForFilter = this.dataForTable.filter(item => item.asset_code == asset.Data.asset_code)[0];
                 this.dataForTable.splice(this.dataForTable.indexOf(assetForFilter), 1, asset.Data);
                 this.totalValue(this.dataForTable);
-                this.$emit('editSuccess');
+                this.$emit('editSuccess', this.voucher.voucher.voucher_id);
             }           
         },
         /**
@@ -285,10 +316,10 @@ export default {
          * Created by: NDCHIEN(27/4/2023)
          */
         handleSubmit() {
-            if(this.typeOfForm == 1) {
+            if(this.typeOfForm == this.voucherForm.typeOfForm.addForm) {
                 this.insertVoucher();
             }
-            if(this.typeOfForm == 2) {
+            if(this.typeOfForm == this.voucherForm.typeOfForm.editForm) {
                 this.editVoucher();
             }
         },
@@ -301,7 +332,7 @@ export default {
             var validateResult = this.validate();
             if(validateResult) {            
                 axios
-                .put("https://localhost:7210/api/Vouchers/Detail/" + this.voucher.voucher.voucher_id, {
+                .put(this.voucherAPI.updateVoucher(this.voucher.voucher.voucher_id), {
                     voucher: {
                         row_index: 0,
                         voucher_id: this.voucher.voucher.voucher_id,
@@ -319,7 +350,7 @@ export default {
                     asset_code_no_active: this.assetForNoActive.map(item => item.asset_id),
                     asset_ids: this.voucher.assetIds
                 })
-                .then(() => this.$emit('closeForm', "Sửa chứng từ thành công!"))
+                .then(() => this.$emit('closeForm', this.formDetail.editSuccess))
                 .catch(res => this.$emit('showPopupError', res.response.data))
             }
         },
@@ -344,13 +375,13 @@ export default {
             return ++this.componentKey;
         },
         /**
-         * Hàm gọi API lấy dữ liệu theo mã chứng từ
+         * Hàm gọi API lấy dữ liệu chi tiết chứng từ theo mã chứng từ
          * Created by: NDCHIEN(26/4/2023)
          */
         async selectVoucherByVoucherCode(voucher_code) {
             this.$emit('startLoading');
             axios
-            .get('https://localhost:7210/api/Vouchers/Code?voucherCode=' + voucher_code)
+            .get(this.voucherAPI.getVoucherByCode(voucher_code))
             .then(res => { 
                 this.voucher = {
                     assetIds: [],
@@ -385,8 +416,8 @@ export default {
             var validateResult = this.validate();
             if(validateResult) {
                 axios
-                .post('https://localhost:7210/api/Vouchers/Detail', this.voucher)
-                .then(() => this.$emit('closeForm', "Thêm chứng từ thành công!"))
+                .post(this.voucherAPI.insertVoucher(), this.voucher)
+                .then(() => this.$emit('closeForm', this.formDetail.addSuccess))
                 .catch(res => this.$emit('showPopupError', res.response.data))
             }
         },
@@ -398,7 +429,7 @@ export default {
         getMaxCode() {
             this.$emit('startLoading');
             axios
-            .get('https://localhost:7210/api/Vouchers/maxCode')
+            .get(this.voucherAPI.getMaxCode())
             .then(res => {this.voucher.voucher.voucher_code = res.data; this.$emit('cancelLoading');});
         },
 
@@ -439,12 +470,13 @@ export default {
         validate() {
             // mã chứng từ không được để trống
             if(this.voucher.voucher.voucher_code.length < 1) {
-                this.$emit('showPopupError', {UserMsg: "Mã chứng từ không được bỏ trống"});
+                this.isForcusVoucherCode = true;
+                // this.$emit('showPopupError', {UserMsg: this.formDetail.validate.emptyCode});
                 return false;
             }
             // phải chọn ít nhất 1 tài sản trong 1 chứng từ
             else if(this.voucher.assetIds.length < 1) {
-                this.$emit('showPopupError', {UserMsg: "Chọn ít nhất 1 tài sản"});
+                this.$emit('showPopupError', {UserMsg: this.formDetail.validate.needChooseAsset});
                 return false;
             }
             else return true;
@@ -539,7 +571,7 @@ export default {
                 return index === newValue.findIndex(o => obj.asset_id === o.asset_id && obj.asset_code === o.asset_code);
             });
             this.assetForNoActive = unique2;
-            if(this.typeOfForm == 2) {
+            if(this.typeOfForm == this.voucherForm.typeOfForm.editForm) {
                 this.$emit('assetForNoActive', this.assetForNoActive);  
             }         
         }
@@ -547,8 +579,11 @@ export default {
     },
     data() {
         return {
+            formDetail: resource.formDetail,
+            voucherAPI: config.voucherAPI,
             voucherTh: resource.voucherTh,
             voucherDetailThForm: resource.voucherDetailThForm,
+            voucherForm: resource.voucherForm,
             // biến hứng data được truyền tù ngoài vào
             dataForTest: [],
             // đối tượng voucher phục vụ xóa, sửa
@@ -602,6 +637,9 @@ export default {
             isChangeVoucher: false,
             // biến lưu resource
             warning: resource.warning,
+            // biến lưu trạng thái forcus input đầu tiên
+            isForcusVoucherCode: false,
+
         }
     }
 }

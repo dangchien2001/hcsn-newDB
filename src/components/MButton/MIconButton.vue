@@ -4,6 +4,7 @@
         <MTooltip
             class="icon-btn-tooltip"
             :text="tooltipText"
+            v-if="tooltipText != undefined"
         ></MTooltip>
     </button>
 </template>

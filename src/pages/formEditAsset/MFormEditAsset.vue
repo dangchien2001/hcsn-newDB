@@ -1,25 +1,31 @@
 <template>
     <div class="form-edit-container">
         <div class="form-edit-header">
-            <div class="form-edit-title">Sửa tài sản {{ assetName }}</div>
+            <div class="form-edit-title">{{resource.formEditAsset.title(assetName)}}</div>
             <div class="blank"></div>
-            <div 
-                class="icon-exit"
-                @click="this.$emit('closeEditAssetForm')"
-            ></div>
+            <div class="exit-with-tooltip">
+                <div 
+                    class="icon-exit"
+                    @click="this.$emit('closeEditAssetForm')"
+                ></div>
+                <MTooltip 
+                        :text="'Đóng (Esc)'"
+                        class="exit-with-tooltip-tooltip"
+                    ></MTooltip>
+            </div>
         </div>
         <div class="form-edit-body">
             <div class="department-name">
                 <MInput
                     :alowDisabled="true"
-                    fieldLabel="Bộ phận sử dụng"
+                    :fieldLabel="resource.formEditAsset.departmentLabel"
                     v-model="departmentName"
                 ></MInput>               
             </div> 
-            <div class="price">Nguyên giá</div>
+            <div class="price">{{resource.formEditAsset.priceSubTitle}}</div>
             <div class="budget-container">
-                <div class="budget-place">Nguồn hình thành</div>
-                <div class="value">Giá trị</div>
+                <div class="budget-place">{{resource.formEditAsset.budgetPlace}}</div>
+                <div class="value">{{resource.formEditAsset.value}}</div>
             </div>
             <div class="buget-list" :key="key">
                 <MRowEditAsset 
@@ -36,14 +42,15 @@
                     }"
                     :budgetPlaceIdProp="item.budget_place_id" 
                     :change="change"   
-                    :isEmpty="rowError == index"             
+                    :isEmpty="rowError == index"   
+                    :code="index == 0 ? true : false"          
                 ></MRowEditAsset>
             </div>   
             <div class="total-container">
                 <div class="left-input">
                     <MInput
                         :alowDisabled = "true"
-                        modelValue="Tổng"
+                        :modelValue="resource.formEditAsset.totalCost"
                     ></MInput>
                 </div>
                 <div class="right-input">
@@ -57,12 +64,12 @@
         <div class="form-edit-footer">
             <div class="blank"></div>
             <MButton
-                text="Hủy bỏ"
+                :text="resource.formEditAsset.buttonText.cancel"
                 type="outline-button"
                 @click="() => {this.$emit('closeEditAssetForm')}"
             ></MButton>
             <MButton
-                text="Đồng ý"
+                :text="resource.formEditAsset.buttonText.accept"
                 type="button-container"
                 style="width: 100px; justify-content: center;margin-right: 17px;"
                 @click="handleSaveAsset"
@@ -77,6 +84,9 @@ import MInput from '@/components/MInput/MInput.vue';
 import MRowEditAsset from './MRowEditAsset.vue';
 import axios from 'axios';
 import MNumberInput from '@/components/MInput/MNumberInput.vue';
+import resource from '@/js/resource';
+import config from '@/js/config';
+import MTooltip from '@/components/MTooltip/MTooltip.vue';
 
 export default {
     props: {
@@ -86,7 +96,7 @@ export default {
         assetObject: Array
     },
     components: {
-        MButton, MInput, MRowEditAsset, MNumberInput
+        MButton, MInput, MRowEditAsset, MNumberInput, MTooltip
     },
     watch: {
         /**
@@ -134,7 +144,7 @@ export default {
                 }
                 var dataForUpdate = JSON.stringify(this.listBudgetAfterUpdateOnce);
                 axios
-                .put('https://localhost:7210/api/Assets/CostAsset/' + this.assetCode, {
+                .put(config.editAssetAPI.editAsset(this.assetCode), {
                     "json": dataForUpdate,
                     "total_cost": this.totalCost,
                     "voucher_id": this.idVoucher,
@@ -202,14 +212,14 @@ export default {
          * Created by: NDCHIEN(4/5/2023)
          */
         axios
-        .get('https://localhost:7210/api/BudgetPlaces') 
+        .get(this.config.editAssetAPI.getBudgetPlace) 
         .then(res => this.budgetPlaceList = res.data);
         /**
          * Lấy dữ liệu tài sản được truyền vào
          * Created by: NDCHIEN(4/5/2023)
          */
         axios
-        .get('https://localhost:7210/api/Assets/Budget?assetCode=' + this.assetCode)
+        .get(this.config.editAssetAPI.getAsset(this.assetCode))
         .then(res => {
             this.assetName = res.data[0].asset_name;
             this.departmentName = res.data[0].department_name;
@@ -222,6 +232,8 @@ export default {
     },
     data() {
         return {
+            resource: resource,
+            config: config,
             listBudget: [],
             budgetPlaceList: [],
             assetName: "",

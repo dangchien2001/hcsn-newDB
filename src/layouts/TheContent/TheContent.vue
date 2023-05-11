@@ -72,7 +72,9 @@
             >               
                 <MIconButton
                     :tooltipText="tooltip.delete"
-                    @click="() => (this.isShowPopup = true)"
+                    @click="() => {
+                        this.isShowPopup = true;
+                    }"
                 >
                     <div class="delete-icon-button"></div>
                 </MIconButton>
@@ -105,6 +107,7 @@
                 typeTable="table-container"
                 :allowFunctionCol="true"
                 :allowCheckBox = "true"
+                @listRowForEmit="validateActive"
             ></MTable>
         </div>
         
@@ -149,6 +152,23 @@
             </span>
         </MPopup>
 
+        <MPopup
+            content=""
+            v-if="isShowPopupDeleteError"
+            type="warning"
+            typeButton="closeOption"
+            @exitPopup="() => {isShowPopupDeleteError = false, isShowPopup = false}"
+        >
+        <span v-if="listActive > 1 && listActive == listAssetForDelete.length">
+            <span style="font-family: Roboto Bold;">{{msgPopupDeleteErrorNumber < 10 ? `0${msgPopupDeleteErrorNumber}` : `${msgPopupDeleteErrorNumber}`}}</span> {{msgPopupDeleteErrorText}}
+        </span>
+        <span v-if="listActive > 0 && listActive < listAssetForDelete.length">
+            <span style="font-family: Roboto Bold;">{{msgPopupDeleteErrorNumber < 10 ? `0${msgPopupDeleteErrorNumber}` : `${msgPopupDeleteErrorNumber}`}}</span> {{msgPopupDeleteErrorText}}
+        </span>
+        <span v-if="listActive == 1 && listAssetForDelete.length == 1">
+            Tài sản có mã <span style="font-family: Roboto Bold;">{{assetCodeForDeleteOnceError}}</span> đã phát sinh chứng từ ghi tăng có mã <span style="font-family: Roboto Bold;">{{voucherCodeForDeleteOnceError}}</span>
+        </span>
+        </MPopup>
         
     </div>
 
@@ -173,12 +193,41 @@ export default {
         MInputWithIcon, MComboboxWithIcon, MButton, MIconButton,MTable ,MProductDetail, MToast, MPopup
     },
     methods: {
+        /**
+         * Hàm thực hiện kiểm tra phát sinh chứng từ phía front end sau khi bấm nút xóa trước khi bật popup xóa
+         * Created by: NDCHIEN(9/5/2023)
+         */
+        deleteAssetAction() {
+            if(this.listActive > 0){
+                this.msgPopupDeleteErrorNumber = this.listAssetForDelete.length;
+                this.msgPopupDeleteErrorText = "tài sản được chọn không thể xóa. Vui lòng kiểm tra lại tài sản trước khi thực hiện xóa";
+                this.isShowPopupDeleteError = true;
+                return;
+            }
+            else {
+                this.isShowPopup = true;
+            }            
+        },
+        /**
+         * Hàm kiểm tra có bao nhiêu tài sản phát sinh chứng từ 
+         * Created by: NDCHIEN(9/5/2023)
+         */
+        validateActive(data) {
+            this.listActive = data.filter(item => item.active == 1 || item.active == "Đã sử dụng").length;
+            if(data.length == 1) {
+                this.voucherCodeForDeleteOnceError = data.filter(item => item.active == 1 || item.active == "Đã sử dụng").map(item => item.voucher_code)[0];
+                this.assetCodeForDeleteOnceError = data.filter(item => item.active == 1 || item.active == "Đã sử dụng").map(item => item.asset_code)[0];
+            }
+            else {
+                this.assetCodeForDeleteOnceError = "";
+                this.voucherCodeForDeleteOnceError = "";
+            }
+        },
 
         returnActiveIndex() {
             this.activePage = 2;
             this.activeChange = !this.activeChange;
             this.addKey();
-            console.log("this.activePage: ", this.activePage)
         },
 
         addKey() {
@@ -210,6 +259,7 @@ export default {
          */
         deleteAsset() {
             if(this.listAssetForDelete.length > 0) {
+                this.deleteAssetAction();
                 this.$emit('startLoading');
                     axios.delete("https://localhost:7210/api/Assets", {
                         data: Object.values(this.listAssetForDelete)
@@ -224,6 +274,11 @@ export default {
                         (this.showEditSuccessToast('Xóa tài sản thành công')),
                         (this.listAssetForDelete.length = 0),
                         (this.$emit('cancelLoading'))
+                    })
+                    .catch(res => {
+                        this.msgPopupDeleteError = res.response.data;
+                        this.isShowPopupDeleteError = true;
+                        this.$emit('cancelLoading');
                     })
             }
         },
@@ -294,6 +349,16 @@ export default {
                 axios.get("https://localhost:7210/api/Assets/" + newValue[0])
                 .then(res => {this.assetForDeleteOne = res.data});
             }
+        },
+        /**
+         * Convert res msg sau khi xóa tài sản phát sinh chứng từ
+         * Created by: NDCHIEN(9/5/2023)
+         */
+        msgPopupDeleteError: function(newValue) {
+            var number = newValue.charAt(0);
+            var text = newValue.slice(1);
+            this.msgPopupDeleteErrorNumber = number;
+            this.msgPopupDeleteErrorText = text;
         }
     },
 
@@ -353,6 +418,18 @@ export default {
 
             // biến dùng để hứng watch bên table
             activeChange: true,
+
+            // biến ẩn hiện popup xóa phát sinh chứng từ
+            isShowPopupDeleteError: false,
+            // biến lưu msg xóa phát sinh chứng từ
+            msgPopupDeleteError: "",
+            msgPopupDeleteErrorNumber: "",
+            msgPopupDeleteErrorText: "",
+            // biến lưu số tài sản phát sinh chứng từ
+            listActive: 0,
+            // biến lưu mã chứng từ nếu chỉ xóa 1 tài sản có phát sinh chứng từ
+            voucherCodeForDeleteOnceError: "",
+            assetCodeForDeleteOnceError: ""
         }
     }
 }

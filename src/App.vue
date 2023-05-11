@@ -32,9 +32,10 @@
       v-if="isShowPopUp"
       :content="contentPopup"
       typeButton="closeOption"
-      @exitPopup="() => {isShowPopUp = false}"
+      @exitPopup="exitPopup"
       :title="titlePopUp"
       :listContent="listContentPopup"
+      :forcus="true"
     ></MPopup>
     
   </div>
@@ -56,6 +57,13 @@ export default {
     MLoading, MToast, MPopup
   },
   methods: {
+    /**
+     * Hàm gọi sau khi bấm đóng popup
+     * Created by: NDCHIEN(10/5/2023)
+     */
+    exitPopup() {
+      this.isShowPopUp = false;
+    },
     /**
      * Hàm xử lí nội dung popup sau khi thêm chứng từ
      * Created by: NDCHIEN(25/4/2023)

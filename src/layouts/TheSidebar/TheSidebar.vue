@@ -21,11 +21,13 @@
         </router-link>
 
         <!-- side-bar-items -->
-        <div             
+        <router-link              
             v-for="(sidebarItemIcon, index) in sidebarItemIcons"
             :key="index"
             :class="sidebarItemIcon.active + ' sidebar-item ' 
             + sidebarStatus.sidebarItemWidth" 
+            :to="sidebarItemIcon.link"
+            style="display: block"
         >
             
                 <div style="display: flex; height: 100%; align-items: center; height: 40px; cursor: pointer;">
@@ -51,20 +53,16 @@
             
 
             <div class="side-bar-item-bonus-container" v-if="isOpen">
-                <router-link to="/Asset">
-                    <div 
-                        class="side-bar-item-bonus" 
-                        v-for="(item, index) in sidebarItemIcon.items"
-                        :key="index"
-                    >
-                        {{ item }}
-                    </div>
-                </router-link>
-            </div>
-
-            
-        
-        </div>
+                <router-link 
+                    :class="[this.$route.path == item.link ? 'side-bar-item-bonus-active' : 'side-bar-item-bonus']" 
+                    v-for="(item, index) in sidebarItemIcon.items"
+                    :key="index"
+                    :to="item.link"
+                >
+                    {{ item.text }}
+                </router-link>                
+            </div>        
+        </router-link >
 
         
 
@@ -104,7 +102,7 @@ export default {
             this.sidebarStatus.hide = true;
             this.sidebarStatus.sidebarWidth = "long-sidebar";
             this.sidebarStatus.sidebarItemWidth = "sidebar-item-long";
-        }
+        },
     },
     data() {
         return {

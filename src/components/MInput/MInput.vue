@@ -9,7 +9,7 @@
         </div>
         <input 
             type="text" 
-            :class="[isEmpty ? 'error' : '', 'input']" 
+            :class="[isEmpty ? 'error' : '', isDisabled ? 'input-disable' : 'input']" 
             :placeholder="placeholder"
             :disabled="isDisabled"
             @click="selectAllText"
@@ -17,6 +17,7 @@
             :value="modelValue"
             :style="'text-align:' + textAlign"     
             ref='focusMe'    
+            @blur="unForcus"
         >
         <div 
             class="warning"
@@ -46,6 +47,13 @@ export default {
         }
     },
     methods: {
+        /**
+         * làm cho biến được truyền vào từ bên ngoài qua prop code thành false
+         * Created by: NDCHIEN(10/5/2023)
+         */
+        unForcus() {
+            this.$emit("unForcus");
+        },
 
         /**
          * Hàm dùng để check lỗi bỏ trống
@@ -86,7 +94,17 @@ export default {
                 const result = this.checkInputIsError(newValue);
                 this.$emit("result", result);
             }
-        }     
+        },
+        /**
+         * Forcus lại sau khi props code thay đổi
+         * Created by: NDCHIEN(10/5/2023)
+         */
+        code: function(newValue) {
+            if(newValue == true) {
+                this.$refs.focusMe.focus();
+                this.$refs.focusMe.select();
+            }
+        }
     },
     data() {
         return {

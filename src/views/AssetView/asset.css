@@ -85,6 +85,7 @@
 }
 
 .voucher-detail-table-container {
+    z-index: 0;
     height: calc(100% - 43px);
     overflow-x: auto;
     overflow-y: auto;
@@ -125,6 +126,8 @@
 .zoom-detail-container {
     margin-right: 33px;
     cursor: pointer;
+    position: relative;
+    z-index: 1;
 }
 
 .zoom-detail-icon {
@@ -137,4 +140,80 @@
     background: url('../../assets/icons/qlts-icon.png') no-repeat -289px -333px;
 	width: 14px;
 	height: 14px;
+}
+
+.voucher-detail-loading {
+    width: 100%;
+    height: 100%;
+}
+
+.toggle-detail-table {
+    position: relative;
+    z-index: 2;
+}
+
+.select-toggle-detail {
+    position: absolute;
+    top: 100%;
+    right: 0;
+    border: 1px solid rgba(0, 0, 0, .16);
+}
+
+.select-toggle-detail-row {
+    height: 40px;
+    width: 160px;   
+    background-color: #FFFFFF;
+    align-items: center;
+    display: flex;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.select-toggle-detail-row:nth-child(1) {
+    border-bottom: 1px solid rgba(0, 0, 0, .16);
+}
+
+.select-toggle-detail-row:hover {
+    background-color: #d6ebee;
+}
+
+.open-detail-table {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -22px -421px;
+	width: 20px;
+	height: 15px;
+}
+
+.close-detail-table {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -110px -420px;
+	width: 20px;
+	height: 15px;
+}
+
+.select-toggle-detail-text {
+    margin-left: 10px;
+}
+
+.icon-arrow-up-header {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -114px -249px;
+	width: 11px;
+	height: 7px;
+}
+
+.icon-toggle-voucher-detail-2 {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -22px -421px;
+	width: 20px;
+	height: 14px;
+}
+
+.zoom-tooltip {
+    position: absolute; 
+    top: 100%; 
+    right: 0;
+    display: none;
+    width: 70px;
+    text-align: center;
+}
+
+.zoom-detail-container:hover .zoom-tooltip {
+    display: block;
 }

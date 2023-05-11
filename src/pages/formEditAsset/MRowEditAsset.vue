@@ -17,6 +17,7 @@
                             :positionAbsolute="false"
                             :isEmpty="isEmpty"
                             :msg="'Nguồn chi phí đã tồn tại'"
+                            :code="code"
                         ></MCombobox>
                     </div>
                     <div class="budget-value">
@@ -47,6 +48,7 @@ export default {
         budgetPlaceIdProp: String,
         change: Boolean,
         isEmpty: Boolean,
+        code: Boolean,
     },
     components: {
         MCombobox, MNumberInput

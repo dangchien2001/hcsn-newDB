@@ -33,6 +33,15 @@
     background-color: #EBEBEB;
 }
 
+.input-disable {
+    height: 36px;
+    width: 100%;
+    border-radius: 4px;
+    border: 1px solid #afafaf;
+    outline: none;
+    padding: 0px 12px;
+}
+
 .error {
     border:1px solid #E61D1D;
 }
@@ -358,6 +367,16 @@
 }
 
 .number-input-container-input {
+    height: 36px;
+    width: 100%;
+    border-radius: 4px;
+    border: 1px solid #afafaf;
+    outline: none;
+    padding: 0px 30px;
+    text-align: right;
+}
+
+.number-input-container-input-disable {
     height: 36px;
     width: 100%;
     border-radius: 4px;

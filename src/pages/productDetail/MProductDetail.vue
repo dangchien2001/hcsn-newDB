@@ -620,7 +620,6 @@ export default {
          */
         cloneAsset() {
             this.newAsset.tracked_year = "2023-03-17T00:00:00";
-            console.log(this.newAsset);
                 this.$emit('startLoading');
                 axios.post(this.api.asset, this.newAsset)
                 .then(res => {
@@ -737,7 +736,7 @@ export default {
                     "tracked_year": this.trackedYear,
                     "life_time": this.ProductInfo.UseYear,
                     "production_year": this.ProductInfo.DayStartedUsing,
-                    "active": 1,
+                    "active": 0,
                     "created_by": "NDCHIEN",
                     "created_date": "2023-03-16T22:16:44",
                     "modified_by": "NDCHIEN",
@@ -786,7 +785,7 @@ export default {
                     "tracked_year": this.trackedYear,
                     "life_time": this.ProductInfo.UseYear,
                     "production_year": this.ProductInfo.DayStartedUsing,
-                    "active": 1,
+                    "active": 0,
                     "created_by": "NDCHIEN",
                     "created_date": "2023-03-16T22:16:44",
                     "modified_by": "NDCHIEN",
@@ -904,7 +903,7 @@ export default {
                                 "tracked_year": this.trackedYear,
                                 "life_time": this.ProductInfo.UseYear,
                                 "production_year": this.ProductInfo.DayStartedUsing,
-                                "active": 1,
+                                "active": 0,
                                 "created_by": "NDCHIEN",
                                 "created_date": "2023-03-16T22:16:44",
                                 "modified_by": "NDCHIEN",
@@ -961,7 +960,7 @@ export default {
                                 "tracked_year": this.trackedYear,
                                 "life_time": this.ProductInfo.UseYear,
                                 "production_year": this.ProductInfo.DayStartedUsing,
-                                "active": 1,
+                                "active": 0,
                                 "created_by": "NDCHIEN",
                                 "created_date": "2023-03-16T22:16:44",
                                 "modified_by": "NDCHIEN",
@@ -1089,7 +1088,7 @@ export default {
                                 "tracked_year": "",
                                 "life_time": 0,
                                 "production_year": "",
-                                "active": 1,
+                                "active": 0,
                                 "created_by": "NDCHIEN",
                                 "created_date": "2023-03-16T22:16:44",
                                 "modified_by": "NDCHIEN",

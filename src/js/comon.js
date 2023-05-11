@@ -86,8 +86,10 @@ var comon = {
             department_name: asset.department_name,
             quantity: asset.quantity,
             cost: asset.cost,
-            AccumulatedDepreciation: asset.depreciation_rate * asset.cost / 100, 
-            ResidualValue: asset.cost - (asset.depreciation_rate * asset.cost / 100)
+            depreciation_value: asset.depreciation_value, 
+            residual_value: asset.residual_value,
+            active: asset.active == 1 ? "Đã sử dụng" : "Chưa sử dụng",
+            voucher_code: asset.voucher_code
         }))
     },
 };

@@ -1,0 +1,15 @@
+<template>
+    <div class="loader-container-tiny">
+        <div class="loader"></div>
+    </div>
+</template>
+
+<script>
+export default {
+    
+}
+</script>
+
+<style scoped>
+@import url(./loading.css);
+</style>

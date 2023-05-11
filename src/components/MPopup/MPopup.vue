@@ -70,6 +70,7 @@
                         class="main-button"
                         v-if="fullOption"
                         @click="() => {this.$emit('save')}"
+                        :code="true"
                     ></MButton>
 
                     <!-- main button đồng ý -->
@@ -78,6 +79,7 @@
                         type="button-container"
                         class="main-button"
                         v-if="acceptOption"
+                        :code="true"
                     ></MButton>
 
                     <!-- close button -->
@@ -87,6 +89,7 @@
                         class="main-button"
                         v-if="closeOption"
                         @click="exitPopup"
+                        :code="true"
                     ></MButton>
 
                     <!-- deleteOption -->
@@ -98,6 +101,7 @@
                         class="sub-button"
                         v-if="deleteOption && !isEmpty"
                         @click="exitPopup"
+                        tabIndex=2
                     ></MButton>
 
                     <MButton
@@ -106,6 +110,8 @@
                         class="main-button"
                         v-if="deleteOption && !isEmpty"
                         @click="() => {this.$emit('deleteAction')}"
+                        :code="true"
+                        tabIndex=1
                     ></MButton>
 
                     <MButton
@@ -114,6 +120,7 @@
                         class="main-button"
                         v-if="isEmpty"
                         @click="exitPopup"
+                        :code="true"
                     ></MButton>
 
                     <!-- outline-main option -->
@@ -131,6 +138,7 @@
                         class="main-button"
                         v-if="cancelOption"
                         @click="() => {this.$emit('cancel')}"
+                        :code="true"
                     ></MButton>
 
                 </div>
@@ -158,7 +166,7 @@ export default {
         typeButton: String,
         type: String,
         listContent: Array,
-        isEmpty: Boolean
+        isEmpty: Boolean,
     },
     components: {
         MButton,

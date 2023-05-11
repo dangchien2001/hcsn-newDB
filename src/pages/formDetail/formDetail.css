@@ -144,3 +144,20 @@
 .voucher-info-with-table-and-filter {
     height: calc(100% - 40px - 164px - 30px);
 }
+
+.exit-icon-form-detail {
+    position: relative
+}
+
+.exit-icon-form-detail:hover .exit-tooltip-form-detail {
+    display: block;
+}
+
+.exit-tooltip-form-detail {
+    position: absolute; 
+    top: calc(100% + 10px); 
+    right: 0; 
+    width: 100px; 
+    text-align: center;
+    display: none;
+}

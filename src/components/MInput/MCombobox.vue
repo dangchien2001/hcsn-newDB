@@ -85,8 +85,19 @@ export default {
         dataAvailable: Array,
         positionAbsolute: Boolean,
         msg: String,
+        code: Boolean,
     },
     watch: {
+        /**
+         * Forcus lại sau khi props code thay đổi
+         * Created by: NDCHIEN(10/5/2023)
+         */
+        code: function(newValue) {
+            if(newValue == true) {
+                this.$refs.input.focus();
+                this.$refs.input.select();
+            }
+        },
 
         /**
          * Hàm kiểm tra sự thay đổi của value để phục vụ validate, hàm chỉ được thực hiện khi props allowNull là false
@@ -213,6 +224,7 @@ export default {
          */
         hideDropDown() {
             this.isOpen = false;
+            this.$emit("unForcus");
         }
 
     },
@@ -230,6 +242,11 @@ export default {
                 this.totalIndex = this.dataAvailable.length;
                 this.filterResult = this.dataAvailable;
             }
+    },
+    mounted() {
+        if(this.code) {
+            this.$refs.input.focus();
+        }
     },
     data() {
         return {

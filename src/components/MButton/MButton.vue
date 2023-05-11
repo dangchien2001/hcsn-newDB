@@ -6,6 +6,8 @@
             { 'button-container': isButtonContainer == type },
             { 'outline-button': isOutlineButton == type }, 
         ]"
+        ref='focusMe'
+        :tabindex="tabIndex"
     >
         <div class="text-button">{{ text }}</div>
     </button>
@@ -16,7 +18,14 @@ export default {
     props: {
         text: String,
         type: String,
+        code: Boolean,
+        tabIndex: Number,
     }, 
+    mounted() {
+        if(this.code) {
+            this.$refs.focusMe.focus();
+        }
+    },
     data() {
         return {
             isSubButton: "sub-button",

@@ -23,18 +23,22 @@
             class="input-datetime-picker-year"
             v-model="year"
             placeholder="YYYY"
+            @blur="hideDateSelectBox"
         >
 
         <!-- icon datetime picker -->
         <div 
             class="datetime-picker-icon"
             @click="handleDatetimeSelectBox"
+            
         ></div>
 
         <!-- hộp chọn ngày tháng -->
         <div 
-            class="datetime-picker-select-box"
-            v-if="isHide"
+            :class="[bottom ? 'datetime-picker-select-box-bottom' : 'datetime-picker-select-box']"
+            v-if="isHide"   
+            @mousedown="(event)=>{event.preventDefault()}"  
+            v-outside="() => {isHide = false}"       
         >
 
             <!-- phần header của hộ chọn ngày tháng -->
@@ -125,6 +129,7 @@ export default {
         label: String,
         alowNull: Boolean,
         modelValue: String,
+        bottom: Boolean,
     },
     mounted() {
         /**
@@ -263,6 +268,13 @@ export default {
 
     },
     methods: {
+        /**
+         * Hàm tắt hộp chọn ngày tháng sau khi bấm ra ngoài
+         * Created by: NDCHIEN(9/5/2023)
+         */
+        hideDateSelectBox() {
+            this.isHide = false;
+        },
 
         /**
          * Hàm dùng để check lỗi bỏ trống
