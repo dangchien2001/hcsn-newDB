@@ -16,18 +16,26 @@
                             }"
                             :positionAbsolute="false"
                             :isEmpty="isEmpty"
-                            :msg="'Nguồn chi phí đã tồn tại'"
+                            :msg="'Nguồn kinh phí đã tồn tại'"
                             :code="code"
+                            :refProp="refComboboxProp"
+                            :ref="refComboboxProp"
                         ></MCombobox>
                     </div>
                     <div class="budget-value">
                         <MNumberInput
                             v-model="budgetPlace.value"
-                            @valueSelected="() => {$emit('budgetPlace', {
-                                    budget_place_id: this.budgetPlace.budgetPlaceId,
-                                    budget_place_name: this.budgetPlace.budgetPlaceName,
-                                    value: this.budgetPlace.value.toString()
-                                })}"
+                            @valueSelected="() => 
+                            {
+                                $emit('budgetPlace', {
+                                budget_place_id: this.budgetPlace.budgetPlaceId,
+                                budget_place_name: this.budgetPlace.budgetPlaceName,
+                                value: this.budgetPlace.value.toString()
+                            })}"
+                            :isEqualZero="false"
+                            :alowNull="false"
+                            :refProp="refInputProp"
+                            :ref="refInputProp"
                         ></MNumberInput>
                     </div>
                     <div class="add-delete">
@@ -49,6 +57,8 @@ export default {
         change: Boolean,
         isEmpty: Boolean,
         code: Boolean,
+        refComboboxProp: String,
+        refInputProp: String,
     },
     components: {
         MCombobox, MNumberInput

@@ -49,7 +49,7 @@
             class="warning"
             v-if="isEqualZero"
         >
-            Cần phải nhập thông tin {{ label }} 
+            Dữ liệu {{ label }} phải lớn hơn 0 
         </div>
 
     </div>

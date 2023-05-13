@@ -4,7 +4,8 @@ import {createRouter, createWebHistory} from 'vue-router'
 import AssetView from './views/AssetView/AssetView.vue'
 import TheContent from './layouts/TheContent/TheContent.vue'
 import clickOutSide from '@/directive/clickOutSide'
-import esc from '@/directive/esc'
+import {save, insert, esc} from '@/directive/multipleKeydown'
+
 
 const routers = [
     {path: "/", component: TheContent},
@@ -21,4 +22,6 @@ createApp(App)
 .use(router)
 .directive('outside', clickOutSide)
 .directive('esc', esc)
+.directive('save', save)
+.directive('insert', insert)
 .mount('#app')

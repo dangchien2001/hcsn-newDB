@@ -197,7 +197,7 @@ var resource = {
             style: "text-align: right; width: 170px"
         },
         {
-            colName: "Hao mòn năm",
+            colName: "HM/KH lũy kế	",
             style: "text-align: right; width: 170px"
         },
         {
@@ -228,7 +228,7 @@ var resource = {
             style: "text-align: right; min-width: 100px"
         },
         {
-            colName: "Hao mòn năm",
+            colName: "HM/KH lũy kế	",
             style: "text-align: right; min-width: 150px"
         },
         {

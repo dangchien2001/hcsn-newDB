@@ -16,8 +16,9 @@
             @input="emitValue"
             :value="modelValue"
             :style="'text-align:' + textAlign"     
-            ref='focusMe'    
+            :ref="refProp"   
             @blur="unForcus"
+            :maxlength="maxlength"
         >
         <div 
             class="warning"
@@ -40,16 +41,13 @@ export default {
         isEmpty: Boolean,
         textAlign: String,
         code: Boolean,
-    },
-    mounted() {
-        if(this.code) {
-            this.$refs.focusMe.focus();
-        }
+        maxlength: Number,
+        refProp: String,
     },
     methods: {
         /**
          * làm cho biến được truyền vào từ bên ngoài qua prop code thành false
-         * Created by: NDCHIEN(10/5/2023)
+         * Created by: NDCHIEN(10/5/2023)   
          */
         unForcus() {
             this.$emit("unForcus");

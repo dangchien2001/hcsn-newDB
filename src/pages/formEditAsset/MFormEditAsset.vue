@@ -27,7 +27,7 @@
                 <div class="budget-place">{{resource.formEditAsset.budgetPlace}}</div>
                 <div class="value">{{resource.formEditAsset.value}}</div>
             </div>
-            <div class="buget-list" :key="key">
+            <div class="buget-list" :key="key" v-show="true">
                 <MRowEditAsset 
                     v-for="(item, index) in listBudget" 
                     :key="index"
@@ -42,15 +42,22 @@
                     }"
                     :budgetPlaceIdProp="item.budget_place_id" 
                     :change="change"   
-                    :isEmpty="rowError == index"   
-                    :code="index == 0 ? true : false"          
+                    :isEmpty="rowError == index"                         
+                    :refComboboxProp="'refCombobox' + index"  
+                    :refInputProp="'refInput' + index"  
+                    :ref="el => arrayRef.push(el)"                                        
                 ></MRowEditAsset>
             </div>   
-            <div class="total-container">
+            <div 
+                class="total-container" 
+                v-for="(item, index) in listBudget" 
+                :key="index"
+                ref="test"
+            >
                 <div class="left-input">
                     <MInput
                         :alowDisabled = "true"
-                        :modelValue="resource.formEditAsset.totalCost"
+                        :modelValue="resource.formEditAsset.totalCost"                       
                     ></MInput>
                 </div>
                 <div class="right-input">
@@ -111,7 +118,11 @@ export default {
             deep: true
         }
     },
-    methods: {
+    mounted() {
+        console.log(this.arrayRef);
+        console.log(this.$refs.test);
+    },
+    methods: {        
         /**
          * Hàm validate trùng nguồn chi phí
          * Created by: NDCHIEN(6/5/2023)
@@ -244,6 +255,8 @@ export default {
             listBudgetAfterUpdateOnce: [],
             totalCostNotChange: 0,
             rowError: -1,
+
+            arrayRef: [],
         }
     }
 }

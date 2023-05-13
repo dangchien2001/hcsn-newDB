@@ -7,6 +7,7 @@
                     this.$emit('exitForm')
                 } 
             }"
+            v-save="handleSaveByKeyBoard"
         >
             <div class="form-header-voucher-detail">
                 <div class="form-title-voucher-detail">{{ titleForm }}</div>
@@ -33,6 +34,9 @@
                                 :isEmpty="isNullVoucherCode" 
                                 :code="isForcusVoucherCode"
                                 @unForcus="() => {isForcusVoucherCode = false}"
+                                :maxlength="20"
+                                :refProp="'focusMe'"
+                                ref="focusMe"
                             ></MInput>
                         </div>
                         <div class="form-input-voucher-detail">
@@ -196,8 +200,12 @@ export default {
         }       
     },
 
+    /**
+     * forcus input đầu tiên trong form
+     * Created by: NDCHIEN(12/5/2023)
+     */
     mounted() {
-        
+        this.$refs.focusMe.$refs.focusMe.focus();
     },
     
     /**
@@ -209,6 +217,15 @@ export default {
         this.$emit("assetForNoActive", []);   
     },
     methods: {
+        /**
+         * Hàm xử lý lưu bằng ctrl + s
+         * Created by: NDCHIEN(12/5/2023)
+         */
+        handleSaveByKeyBoard() {
+            if(this.isShowFormEditAsset == false) {
+                this.handleSubmit();
+            }
+        },
         /**
          * Hàm sửa chứng từ thành ban đầu sau khi phát hiện sự thay đổi rồi bấm hủy
          * Created by: NDCHIEN(6/5/2023)
@@ -470,7 +487,7 @@ export default {
         validate() {
             // mã chứng từ không được để trống
             if(this.voucher.voucher.voucher_code.length < 1) {
-                this.isForcusVoucherCode = true;
+                this.$refs.focusMe.$refs.focusMe.focus();
                 // this.$emit('showPopupError', {UserMsg: this.formDetail.validate.emptyCode});
                 return false;
             }

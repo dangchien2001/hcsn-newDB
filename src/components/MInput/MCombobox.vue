@@ -23,7 +23,7 @@
             :value="modelValue"
             @input="filterItem"
             @blur="hideDropDown"
-            ref="input"
+            :ref="refProp"
         >
 
         <!-- nút mở combobox -->
@@ -86,6 +86,7 @@ export default {
         positionAbsolute: Boolean,
         msg: String,
         code: Boolean,
+        refProp: String
     },
     watch: {
         /**

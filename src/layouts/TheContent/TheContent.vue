@@ -108,6 +108,7 @@
                 :allowFunctionCol="true"
                 :allowCheckBox = "true"
                 @listRowForEmit="validateActive"
+                :dataAvailable="[]"
             ></MTable>
         </div>
         

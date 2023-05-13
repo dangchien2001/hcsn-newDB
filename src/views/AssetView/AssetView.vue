@@ -1,5 +1,8 @@
 <template>
-    <div class="content-container content-container-v2">
+    <div 
+        class="content-container content-container-v2"
+        v-insert="handleInsertByKeyBoard"
+    >
         <div class="asset-header">
             <div class="title-asset">{{ assetView.title }}</div>
             <div class="header-asset-blank"></div>
@@ -240,6 +243,14 @@ export default {
         this.getVoucherDetail(this.dataVoucherFirst);
     },
     methods: {
+        /**
+         * Hàm mở form thêm mới bằng bàn phím
+         * Created by: NDCHIEN(12/5/2023)
+         */
+        handleInsertByKeyBoard() {
+            this.isShowForm = true; 
+            this.typeOfForm = this.assetView.typeOfForm.addForm;
+        },
         /**
          * Hàm xử lí sau khi chuyển trang
          * Created by: NDCHIEN(7/5/2023)

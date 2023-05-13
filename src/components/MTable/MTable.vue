@@ -54,7 +54,7 @@
             :class="[activeRow == index ? 'row-active' : 'table-body-row', {'table-body-row-active' : rows[index]}]"
             v-for="(item, index) in datas"
             :key="index"
-            @dblclick="editProduct(item.asset_id)"
+            @dblclick="editProduct(item.asset_id, dataAvailable[index][properties[1].name])"
             @click="() => {
                 this.$emit('objectAfterClickRow', item);                
             }"
@@ -113,7 +113,7 @@
             >
                 <div 
                     class="edit-icon"
-                    @click="() => {this.$emit('edit', dataAvailable[index][properties[1].name])}"
+                    @click="editProduct('', dataAvailable[index][properties[1].name])"
                 >
                     <MTooltip
                         class="edit-tooltip" 
@@ -738,10 +738,13 @@ export default {
          * Hàm sửa tài sản
          * Created by: NDCHIEN(2/3/2023)
          */
-        editProduct(item) {
-            if(item != null || item != undefined) {
+        editProduct(item, code) {
+            if((item != null || item != undefined) && item.length == 36) {
                 this.data = item;
                 this.isShowForm = true;
+            }
+            if(code != null && code != undefined) {
+                this.$emit('edit', code);
             }
         },
 
