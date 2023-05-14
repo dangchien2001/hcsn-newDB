@@ -96,7 +96,6 @@ export default {
         code: function(newValue) {
             if(newValue == true) {
                 this.$refs.input.focus();
-                this.$refs.input.select();
             }
         },
 
@@ -149,11 +148,11 @@ export default {
         toogleComboboxList(action) {
             if(action == "open") {
                 this.isOpen = true;      
-                this.$refs.input.focus();         
+                this.$refs[this.refProp].focus();         
             }
             if(action == "close") {
                 this.isOpen = false;
-                this.$refs.input.focus();
+                this.$refs[this.refProp].focus();
             }
         },
 

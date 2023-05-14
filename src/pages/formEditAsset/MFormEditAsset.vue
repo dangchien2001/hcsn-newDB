@@ -27,7 +27,7 @@
                 <div class="budget-place">{{resource.formEditAsset.budgetPlace}}</div>
                 <div class="value">{{resource.formEditAsset.value}}</div>
             </div>
-            <div class="buget-list" :key="key" v-show="true">
+            <div class="buget-list" :key="key">
                 <MRowEditAsset 
                     v-for="(item, index) in listBudget" 
                     :key="index"
@@ -43,18 +43,13 @@
                     :budgetPlaceIdProp="item.budget_place_id" 
                     :change="change"   
                     :isEmpty="rowError == index"                         
-                    :refComboboxProp="'refCombobox' + index"  
-                    :refInputProp="'refInput' + index"  
-                    :ref="el => arrayRef.push(el)"                                        
+                    :refComboboxProp="'refCombobox'"  
+                    :refInputProp="'refInput'"  
+                    :ref="setItemRef"                                     
                 ></MRowEditAsset>
             </div>   
-            <div 
-                class="total-container" 
-                v-for="(item, index) in listBudget" 
-                :key="index"
-                ref="test"
-            >
-                <div class="left-input">
+            <div class="total-container">
+                <div class="left-input"> 
                     <MInput
                         :alowDisabled = "true"
                         :modelValue="resource.formEditAsset.totalCost"                       
@@ -116,13 +111,37 @@ export default {
                 this.calcTotalCost();
             },
             deep: true
-        }
+        },
     },
-    mounted() {
-        console.log(this.arrayRef);
-        console.log(this.$refs.test);
+    beforeUpdate() {
+        this.arrayRef = [];
     },
-    methods: {        
+    /**
+     * Hàm giúp forcus dòng đầu tiên khi vào component
+     * Created by: NDCHIEN(13/5/2023)
+     */
+    updated() {
+        if(this.focusFirst == true) {
+            this.focusDefault();
+            this.focusFirst = false;
+        }       
+    },
+
+    methods: {
+        /**
+         * Hàm focus mặc định
+         * Created by: NDCHIEN(13/5/2023) */   
+        focusDefault() {
+            this.arrayRef[0].$refs['refCombobox'].$refs.refCombobox.focus();
+        },
+        /**
+         * Hàm đặt ref cho từng dòng dữ liệu
+         * Created by: NDCHIEN(13/5/2023) */ 
+        setItemRef(el) {
+            if (el) {               
+                this.arrayRef.push(el);                
+            }
+        },
         /**
          * Hàm validate trùng nguồn chi phí
          * Created by: NDCHIEN(6/5/2023)
@@ -137,6 +156,7 @@ export default {
                     test = newListBudget.filter(item => item == newListBudgetReverse[i]);               
                     if(test.length > 1) {
                         this.rowError = newListBudgetReverse.length - i - 1;
+                        this.arrayRef[this.rowError].$refs[`refCombobox`].$refs[`refCombobox`].select();
                         return false;
                     }
                 } 
@@ -255,8 +275,10 @@ export default {
             listBudgetAfterUpdateOnce: [],
             totalCostNotChange: 0,
             rowError: -1,
-
+            // biến lưu mảng chứa ref
             arrayRef: [],
+            // biến dùng để ngăn ko cho gọi hàm focus đầu nhiều lần
+            focusFirst: true,
         }
     }
 }
