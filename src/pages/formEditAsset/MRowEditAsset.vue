@@ -16,7 +16,7 @@
                             }"
                             :positionAbsolute="false"
                             :isEmpty="isEmpty"
-                            :msg="'Nguồn kinh phí đã tồn tại'"
+                            :msg="msg"
                             :code="code"
                             :refProp="refComboboxProp"
                             :ref="refComboboxProp"
@@ -32,7 +32,8 @@
                                 budget_place_name: this.budgetPlace.budgetPlaceName,
                                 value: this.budgetPlace.value.toString()
                             })}"
-                            :isEqualZero="false"
+                            :isEqualZero="isEqualZero"
+                            :msg="msgInput"
                             :alowNull="false"
                             :refProp="refInputProp"
                             :ref="refInputProp"
@@ -59,6 +60,9 @@ export default {
         code: Boolean,
         refComboboxProp: String,
         refInputProp: String,
+        msg: String,
+        isEqualZero: Boolean,
+        msgInput: String,
     },
     components: {
         MCombobox, MNumberInput

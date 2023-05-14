@@ -22,6 +22,7 @@
             :disabled="isDisable"
             @input="handleInput"
             @keypress="onlyNumberKey($event)"
+            :ref="refProp"
         >
 
         <!-- thẻ chứa hai mũi tên lên xuống -->
@@ -49,7 +50,8 @@
             class="warning"
             v-if="isEqualZero"
         >
-            Dữ liệu {{ label }} phải lớn hơn 0 
+            <span v-if="msg == undefined">Dữ liệu {{ label }} phải lớn hơn 0 </span>
+            <span v-if="msg != undefined">{{msg}}</span>
         </div>
 
     </div>
@@ -68,6 +70,8 @@ export default {
         alowNull: Boolean,
         modelValue: String,
         isEqualZero: Boolean,
+        msg: String,
+        refProp: String,
     },
     methods: {
 

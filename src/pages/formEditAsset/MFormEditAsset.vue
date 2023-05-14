@@ -42,7 +42,10 @@
                     }"
                     :budgetPlaceIdProp="item.budget_place_id" 
                     :change="change"   
-                    :isEmpty="rowError == index"                         
+                    :isEmpty="rowError == index"
+                    :msg="msgCbb"        
+                    :isEqualZero="rowInputError == index"
+                    :msgInput="msgInput"            
                     :refComboboxProp="'refCombobox'"  
                     :refInputProp="'refInput'"  
                     :ref="setItemRef"                                     
@@ -156,6 +159,7 @@ export default {
                     test = newListBudget.filter(item => item == newListBudgetReverse[i]);               
                     if(test.length > 1) {
                         this.rowError = newListBudgetReverse.length - i - 1;
+                        this.msgCbb = "Nguồn kinh phí đã tồn tại";
                         this.arrayRef[this.rowError].$refs[`refCombobox`].$refs[`refCombobox`].select();
                         return false;
                     }
@@ -165,11 +169,65 @@ export default {
             return true;   
         },
         /**
+         * Hàm check trống nguồn chi phí
+         * Created by: NDCHIEN(14/5/2023)
+         */
+        checkNullBudgetPlace() {
+            var checkConst = 0;
+
+            if(this.listBudgetAfterUpdateOnce.length > 0) {
+                this.rowError = -1;
+                
+                this.listBudgetAfterUpdateOnce.forEach((item, index) => {
+                    if(item.budget_place_name == "") {
+                        this.rowError = index;
+                        this.msgCbb = "Nguồn kinh phí không được bỏ trống!";
+                        this.arrayRef[this.rowError].$refs[`refCombobox`].$refs[`refCombobox`].select();
+                        checkConst ++;
+                    }
+                })
+            }
+            
+            if(checkConst > 0) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        },
+        /**
+         * Check kinh phí bằng 0
+         * Created by: NDCHIEN(14/5/2023)
+         */
+        checkEqualZeroBudgetPlace() {
+            var checkConst = 0;
+
+            if(this.listBudgetAfterUpdateOnce.length > 0) {
+                this.rowError = -1;
+                
+                this.listBudgetAfterUpdateOnce.forEach((item, index) => {
+                    if(item.value <= 0) {
+                        this.rowInputError = index;
+                        this.msgInput = "Kinh phí không được bằng 0!";
+                        this.arrayRef[this.rowInputError].$refs[`refInput`].$refs[`refInput`].select();
+                        checkConst ++;
+                    }
+                })
+            }
+            
+            if(checkConst > 0) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        },
+        /**
          * Hàm gọi sau khi bấm đồng ý
          * Created by: NDCHIEN(4/5/2023)
          */
         handleSaveAsset() {
-            if(this.validateDupplicateBudgetPlace()) {            
+            if(this.checkNullBudgetPlace() && this.validateDupplicateBudgetPlace() && this.checkEqualZeroBudgetPlace()) {            
                 if(this.listBudgetAfterUpdateOnce.length < 1) {
                     this.listBudgetAfterUpdateOnce = [...this.listBudget];
                 }
@@ -274,11 +332,18 @@ export default {
             change: true,
             listBudgetAfterUpdateOnce: [],
             totalCostNotChange: 0,
+            // biến lưu vị trí dòng lỗi của cbb
             rowError: -1,
             // biến lưu mảng chứa ref
             arrayRef: [],
             // biến dùng để ngăn ko cho gọi hàm focus đầu nhiều lần
             focusFirst: true,
+            // biến lưu msg lỗi cbb
+            msgCbb: "",
+            // biến lưu vị trí dòng lỗi của input
+            rowInputError: -1,
+            // biến lưu msg lỗi cbb
+            msgInput: "",
         }
     }
 }
