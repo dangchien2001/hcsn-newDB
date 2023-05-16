@@ -68,6 +68,17 @@ td {
 .table-select-box-col,
 .table-header-col {
     border-top: 1px solid rgba(0, 0, 0, .16);
+    position: relative;
+}
+
+.table-header-col:hover .tooltip-table {
+    display: block;
+}
+
+.tooltip-table {
+    position: absolute; 
+    top: 80%;
+    display: none;
 }
 
 .function-col {

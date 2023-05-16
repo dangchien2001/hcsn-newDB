@@ -19,6 +19,7 @@
             :ref="refProp"   
             @blur="unForcus"
             :maxlength="maxlength"
+            :tabindex="tabindex"
         >
         <div 
             class="warning"
@@ -43,6 +44,7 @@ export default {
         code: Boolean,
         maxlength: Number,
         refProp: String,
+        tabindex: Number,
     },
     methods: {
         /**

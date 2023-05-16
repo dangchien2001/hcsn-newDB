@@ -59,12 +59,16 @@
                     type="outline-button"
                     @click="() => {this.$emit('exitListAsset')}"
                 ></MButton>
-                <MButton
-                    :text="listAssetNoActive.buttonText.accept"
-                    type="button-container"
-                    style="width: 100px; justify-content: center;margin-right: 17px;"
-                    @click="selectAssetForEmit"
-                ></MButton>
+                <div class="save-asset-btn-container">
+                    <MButton
+                        :text="listAssetNoActive.buttonText.accept"
+                        type="button-container"
+                        style="width: 100px; justify-content: center;margin-right: 17px;"
+                        @click="selectAssetForEmit"
+                    ></MButton>
+                    <MTooltip text="Ctrl + s" class="save-asset-btn-tooltip"></MTooltip>
+                </div>
+                
             </div>
         </div>
 

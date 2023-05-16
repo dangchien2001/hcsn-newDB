@@ -27,16 +27,7 @@
       @hideToast="isShowToast = false"
     ></MToast>
 
-    <MPopup
-      type="warning"
-      v-if="isShowPopUp"
-      :content="contentPopup"
-      typeButton="closeOption"
-      @exitPopup="exitPopup"
-      :title="titlePopUp"
-      :listContent="listContentPopup"
-      :forcus="true"
-    ></MPopup>
+    
     
   </div>
 </template>
@@ -47,40 +38,16 @@ import TheHeader from "./layouts/TheHeader/TheHeader.vue"
 // import TheContent from "./layouts/TheContent/TheContent.vue"  
 import MLoading from "./components/MLoading/MLoading.vue"
 import MToast from "./components/MToast/MToast.vue"
-import MPopup from "./components/MPopup/MPopup.vue"
 
 export default {
   name: 'App',
   components: {
     TheSidebar, TheHeader, 
     // TheContent, 
-    MLoading, MToast, MPopup
+    MLoading, MToast
   },
   methods: {
-    /**
-     * Hàm gọi sau khi bấm đóng popup
-     * Created by: NDCHIEN(10/5/2023)
-     */
-    exitPopup() {
-      this.isShowPopUp = false;
-    },
-    /**
-     * Hàm xử lí nội dung popup sau khi thêm chứng từ
-     * Created by: NDCHIEN(25/4/2023)
-     * Modified by: NDCHIEN(26/4/2023)
-     */
-    handleContentPopupAfterInsertVoucher(res) {  
-      this.contentPopup = res.UserMsg;
-      if(res.MoreInfo != null) {
-        this.titlePopUp = "Thông tin chứng từ không hợp lệ: ";
-        this.listContentPopup = res.MoreInfo;
-      }
-      else {
-        this.titlePopUp = "";
-        this.listContentPopup = null;
-      }
-      this.isShowPopUp = true;
-    }
+    
   },
   data() {
     return {
@@ -90,7 +57,7 @@ export default {
       contentPopup: "",
       titlePopUp: "",
       listContentPopup: [],
-      contentToast: ""
+      contentToast: "",
     }
   }
 }

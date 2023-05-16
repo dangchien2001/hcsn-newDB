@@ -35,6 +35,9 @@
                         :isEmpty="isProductCodeEmpty"
                         @result="CheckEmployeeCodeEmpty"
                         :code="true"
+                        :tabindex="1"
+                        ref="assetCode"
+                        :refProp="'assetCode'"
                     ></MInput>
 
                     <!-- combobox chứa mã bộ phận sử dụng -->
@@ -53,6 +56,7 @@
                         @dataEmit="autoSelect($event, 'https://localhost:7210/api/Departments/', 'DepartmentName', 'DepartmentId', 'department_name')"
                         :positionAbsolute = "true"
                         :msg="'Cần phải nhập thông tin'"
+                        :tabindex="3"
                     ></MCombobox>
 
                     <!-- combobox chứa mã loại tài sản -->
@@ -71,6 +75,7 @@
                         @dataEmit="autoSelect($event, 'https://localhost:7210/api/AssetCategories/', 'AssetCategoryName', 'TypeProductId', 'asset_category_name')"
                         :positionAbsolute = "true"
                         :msg="'Cần phải nhập thông tin'"
+                        :tabindex="4"
                     ></MCombobox>
 
                     <!-- input chứa số lượng -->
@@ -84,6 +89,7 @@
                         v-model="ProductInfo.Quantity"
                         :isEqualZero="isQuantityEqualZero"
                         @result="CheckQuantityEqualZero"
+                        :tabindex="5"
                     ></MNumberInput>
 
                     <!-- input chứa tỉ lệ hao mòn -->
@@ -113,6 +119,7 @@
                         :alowNull="false"
                         v-model="this.ProductInfo.PurchaseDate"
                         :key="componentKey"
+                        :tabindex="8"
                     ></MDatetime>
 
                 </div>
@@ -139,6 +146,7 @@
                         :important="true"   
                         :isEmpty="isProductNameEmpty" 
                         @result="CheckEmployeeNameEmpty"  
+                        :tabindex="2"
                     ></MInput>
 
                     <!-- input tên bộ phận sử dụng (không thể chỉnh sửa) -->
@@ -172,7 +180,8 @@
                                 :important="true"
                                 :alowNull="false"
                                 v-model="ProductInfo.Price"
-                                :isEqualZero="isPriceEqualZero" 
+                                :isEqualZero="isPriceEqualZero"
+                                :tabindex="6" 
                                 @result="CheckPriceEqualZero"
                             ></MNumberInput>
 
@@ -190,7 +199,8 @@
                                 :alowNull="false"
                                 v-model="ProductInfo.UseYear"
                                 :isEqualZero="isUseYearEqualZero" 
-                                @result="CheckUseYearEqualZero"   
+                                @result="CheckUseYearEqualZero"  
+                                :tabindex="7" 
                             ></MNumberInput>
 
                         </div>
@@ -247,6 +257,7 @@
                             :alowNull="true"
                             v-model="this.ProductInfo.DayStartedUsing"
                             :key="componentKey"
+                            :tabindex="11"
                         ></MDatetime>
 
                     </div>
@@ -267,6 +278,7 @@
                     class="cancel-button"
                     type="outline-button"
                     @click="handleCancel()"
+                    :tabindex="14"
                 ></MButton>
 
                 <!-- nút lưu -->
@@ -276,7 +288,14 @@
                     type="button-container"
                     @click="handleSaveProduct()"
                     @keyup.enter="handleSaveProduct()"
+                    :tabindex="15"                   
                 ></MButton>
+
+                <!-- thẻ div dùng để thực hiện return tab -->
+                <div
+                    :tabindex="16"
+                    @focus="returnFocus"
+                ></div>
 
             </div>
 
@@ -388,8 +407,20 @@ export default {
         MInput, MCombobox, MDatetime, MButton, MNumberInput, MPopup, MTooltip, MNumberRateInput
     },
     methods: {
-
-        
+        /**
+         * Hàm return focus sau khi tab hết
+         * Created by: NDCHIEN(15/5/2023)
+         */
+        returnFocus() {
+            this.focusDefault();
+        },
+        /**
+         * Forcus mặc định
+         * Created by: NDCHIEN(15/5/2023)
+         */
+        focusDefault() {
+            this.$refs.assetCode.$refs.assetCode.focus();
+        },
 
         /**
          * Hàm dùng để xử lý khi bấm hủy tài sản
@@ -846,7 +877,7 @@ export default {
         
     },
     mounted() {
-        
+        this.focusDefault();
     },
     created() {
         /**

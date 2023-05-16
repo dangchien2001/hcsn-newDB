@@ -161,3 +161,17 @@
     text-align: center;
     display: none;
 }
+
+.accept-btn-container {
+    position: relative;
+}
+
+.accept-btn-container:hover .accept-btn-tooltip {
+    display: block;
+}
+
+.accept-btn-tooltip {
+    position: absolute;
+    bottom: 100%;
+    display: none;
+}

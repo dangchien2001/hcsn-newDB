@@ -2,12 +2,6 @@
     <div class="layer-voucher-detail">
         <div 
             class="form-voucher-detail" 
-            v-esc="() => {
-                if(isShowFormEditAsset == false) {
-                    this.$emit('exitForm')
-                } 
-            }"
-            v-save="handleSaveByKeyBoard"
         >
             <div class="form-header-voucher-detail">
                 <div class="form-title-voucher-detail">{{ titleForm }}</div>
@@ -37,6 +31,7 @@
                                 :maxlength="20"
                                 :refProp="'focusMe'"
                                 ref="focusMe"
+                                :tabindex="1"
                             ></MInput>
                         </div>
                         <div class="form-input-voucher-detail">
@@ -45,6 +40,11 @@
                                 v-model="voucher.voucher.voucher_date"
                                 :key="componentKey"
                                 :bottom="true"
+                                v-outside="() => {
+                                    this.$refs.datetime.hideDateSelectBox()
+                                }"
+                                ref="datetime"
+                                :tabindex="2"
                             ></MDatetime>
                         </div>
                         <div class="form-input-voucher-detail">
@@ -53,6 +53,11 @@
                                 v-model="voucher.voucher.increment_date"
                                 :key="componentKey"
                                 :bottom="true"
+                                v-outside="() => {
+                                    this.$refs.datetime2.hideDateSelectBox()
+                                }"
+                                ref="datetime2"
+                                :tabindex="5"
                             ></MDatetime>
                         </div>
                     </div>
@@ -62,6 +67,7 @@
                             <MInput
                                 :fieldLabel="voucherForm.inputLabel.note"
                                 v-model="voucher.voucher.description"
+                                :tabindex="8"
                             ></MInput>
                         </div>
                     </div>
@@ -74,6 +80,7 @@
                                 :placeholder="voucherForm.placeholderText.searchPlaceholderText"
                                 @keyup.enter="filterAsset"
                                 v-model="keyWord"
+                                :tabindex="11"
                             >
                                 <div class="icon-search"></div>
                             </MInputWithIcon>
@@ -84,6 +91,7 @@
                             type="outline-button"
                             style="width: 130px"
                             @click="() => {this.$emit('openAssetList')}"
+                            :tabindex="12"
                         ></MButton>
                     </div>
                     <div class="table-voucher-detail">
@@ -115,25 +123,39 @@
                     :text="voucherForm.buttonText.cancelForm"
                     type="outline-button"
                     @click="cancelAfterFindChange"
+                    :tabindex="13"
                 ></MButton>
-                <MButton
-                    :text="voucherForm.buttonText.accept"
-                    type="button-container"
-                    style="width: 100px; justify-content: center;margin-right: 17px;"
-                    @click="handleSubmit"
-                ></MButton>
+                <div class="accept-btn-container">
+                    <MButton
+                        :text="voucherForm.buttonText.accept"
+                        type="button-container"
+                        style="width: 100px; justify-content: center;margin-right: 17px;"
+                        @click="handleSubmit"
+                        :tabindex="14"
+                    ></MButton>
+                    <MTooltip class="accept-btn-tooltip" text="Ctrl + s"></MTooltip>
+                </div>
+
+                <div 
+                    :tabindex="15"
+                    @focus="focusDefault"
+                ></div>               
             </div>           
         </div>
 
         <div class="layer-voucher-detail" v-if="isShowFormEditAsset">
             <MFormEditAsset            
-                @closeEditAssetForm = "isShowFormEditAsset = false"
+                @closeEditAssetForm="() => {isShowFormEditAsset = false; focusDefault();}"
                 :assetCode="assetCodeForEdit"
                 @editSuccess="handleAfterEditAssetSuccess"
                 :voucherCost="arrayTotal[0]"
                 :idVoucher="voucher.voucher.voucher_id"
                 :assetObject="assetObject"
                 @editAssetInAddVoucher="handleAfterEditAssetInAddVoucher"
+                v-esc="() => {
+                    isShowFormEditAsset = false;
+                    focusDefault();
+                }"
             ></MFormEditAsset>
         </div>
 
@@ -174,7 +196,6 @@ export default {
         typeOfForm: Number,
         // biến lưu mã chứng từ
         voucherCode: String,
-
         
     },
     /**
@@ -200,12 +221,8 @@ export default {
         }       
     },
 
-    /**
-     * forcus input đầu tiên trong form
-     * Created by: NDCHIEN(12/5/2023)
-     */
     mounted() {
-        this.$refs.focusMe.$refs.focusMe.focus();
+        this.focusDefault();
     },
     
     /**
@@ -217,6 +234,13 @@ export default {
         this.$emit("assetForNoActive", []);   
     },
     methods: {
+        /**
+         * Hàm focus mặc định
+         * Created by: NDCHIEN(15/5/2023)
+         */
+        focusDefault() {
+            this.$refs.focusMe.$refs.focusMe.focus();
+        },
         /**
          * Hàm xử lý lưu bằng ctrl + s
          * Created by: NDCHIEN(12/5/2023)
@@ -232,10 +256,10 @@ export default {
          */
         cancelAfterFindChange() {
             var isEqual = this.shallowObjectEqual(this.voucher, this.voucherClone);
-            if(isEqual) {
+            if(isEqual && this.voucherCodeClone == this.voucher.voucher.voucher_code && this.incrementDateClone == this.voucher.voucher.increment_date && this.voucherDateClone == this.voucher.voucher.voucher_date) {
                 this.$emit('exitForm');
             }
-            if(!isEqual) {
+            if(!isEqual || this.voucherCodeClone != this.voucher.voucher.voucher_code || this.incrementDateClone != this.voucher.voucher.increment_date || this.voucherDateClone != this.voucher.voucher.voucher_date) {
                 this.isChangeVoucher = true;
             }
             if(this.typeOfForm == this.voucherForm.typeOfForm.addForm) {
@@ -254,15 +278,15 @@ export default {
                     voucher: {
                         row_index: 0,
                         voucher_id: voucherClone.voucher.voucher_id,
-                        voucher_code: voucherClone.voucher.voucher_code,
-                        voucher_date: voucherClone.voucher.voucher_date,
-                        increment_date: voucherClone.voucher.increment_date,
+                        voucher_code: this.voucherCodeClone,
+                        voucher_date: this.voucherDateClone,
+                        increment_date: this.incrementDateClone,
                         description: voucherClone.voucher.description,
                         price: voucherClone.voucher.price,
                         created_by: "",
-                        created_date: "2023-04-28T01:43:40.564Z",
+                        created_date: new Date(),
                         modified_by: "",
-                        modified_date: "2023-04-28T01:43:40.564Z"
+                        modified_date: new Date()
                     },
                     asset_code_active: voucherClone.assetIds,
                     asset_code_no_active: this.assetForNoActive.map(item => item.asset_id),
@@ -359,9 +383,9 @@ export default {
                         description: this.voucher.voucher.description,
                         price: this.voucher.voucher.price,
                         created_by: "",
-                        created_date: "2023-04-28T01:43:40.564Z",
+                        created_date: new Date(),
                         modified_by: "",
-                        modified_date: "2023-04-28T01:43:40.564Z"
+                        modified_date: new Date()
                     },
                     asset_code_active: this.voucher.assetIds,
                     asset_code_no_active: this.assetForNoActive.map(item => item.asset_id),
@@ -488,7 +512,7 @@ export default {
             // mã chứng từ không được để trống
             if(this.voucher.voucher.voucher_code.length < 1) {
                 this.$refs.focusMe.$refs.focusMe.focus();
-                // this.$emit('showPopupError', {UserMsg: this.formDetail.validate.emptyCode});
+                this.$emit('showPopupError', {UserMsg: this.formDetail.validate.emptyCode});
                 return false;
             }
             // phải chọn ít nhất 1 tài sản trong 1 chứng từ
@@ -514,6 +538,7 @@ export default {
         },
     },
     watch: {
+        
         /**
          * Lấy dữ liệu mảng từ bảng chọn tài sản chưa active để tính tổng footer và format lại (chỉ lấy mảng chứa id)
          * Created by: NDCHIEN(19/4/2023)
@@ -524,6 +549,9 @@ export default {
             this.voucher.assetIds = newValue.map(item => item.asset_id);           
             if(this.index == 0) {
                 this.voucherClone = {...this.voucher};
+                this.voucherCodeClone = this.voucher.voucher.voucher_code;
+                this.incrementDateClone = this.voucher.voucher.increment_date;
+                this.voucherDateClone = this.voucher.voucher.voucher_date;
                 this.index ++;
             }
             this.totalValue(newValue);
@@ -617,9 +645,9 @@ export default {
                     description: "",
                     price: 0,
                     created_by: "",
-                    created_date: "2023-04-24T00:00:00",
+                    created_date: new Date(),
                     modified_by: "",
-                    modified_date: "2023-04-24T00:00:00"
+                    modified_date: new Date()
                 },
             },
             // mảng lưu data được truyền vào từ prop 
@@ -648,6 +676,10 @@ export default {
             assetIndex: 0,
             // biến lưu giá trị ban đầu của chứng từ trước khi sửa phục vụ backup
             voucherClone: {},
+
+            voucherCodeClone: "",
+            incrementDateClone: "",
+            voucherDateClone: "",
             // biến dùng để tạo điều kiện clone voucher 1 lần 
             index: 0,
             // biến ẩn hiện popup sau khi hủy sửa chứng từ

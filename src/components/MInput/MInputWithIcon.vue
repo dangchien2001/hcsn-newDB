@@ -9,6 +9,7 @@
             @input="emitValue"
             ref='focusMe'
             @blur="unForcus"
+            :tabindex="tabindex"
         >
 
         <!-- icon -->
@@ -25,6 +26,7 @@ export default {
         placeholder: String,
         modelValue: String,
         code: Boolean,
+        tabindex: Number,
     },
     methods: {
         /**

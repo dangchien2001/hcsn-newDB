@@ -32,6 +32,7 @@
                 :style="item.style"
             >
                 {{ item.colName }}
+                <MTooltip v-if="item.tooltipText != undefined" :text="item.tooltipText" :style="item.tooltipStyle" class="tooltip-table"></MTooltip>
             </th>
 
             <!-- tooltip cho trường HM/KH lũy kế -->
@@ -41,10 +42,10 @@
             ></MTooltip> -->
 
             <!-- tooltip cho trường STT -->
-            <MTooltip
+            <!-- <MTooltip
                 text="Số thứ tự"
                 class="table-header-tooltip-2"
-            ></MTooltip>
+            ></MTooltip> -->
 
         </tr>
 
@@ -58,8 +59,7 @@
             @click="() => {
                 this.$emit('objectAfterClickRow', item);                
             }"
-            @keyup.up="handleKeyUpDown(datas[index - 1])"
-            @keyup.down="handleKeyUpDown(datas[index + 1])"
+
         >
 
             <!-- checkbox col -->
@@ -534,6 +534,8 @@
         @cancelLoading="() => {this.$emit('cancelLoading')}"
         @returnActiveIndex="() => {this.activePage = 1; this.currentPage = 1}"
     ></MProductDetail>
+
+    
     
 </div>
 </template>
@@ -627,11 +629,20 @@ export default {
 
     methods: {
         /**
+         * Hàm xử lý context menu
+         * Created by: NDCHIEN(15/5/2023)
+         */
+        handleContextMenu() {
+
+        },
+        /**
          * Hàm thực hiện lên xuống bản ghi active khi bấm hai phím mũi tên
          * Created by: NDCHIEN(8/5/2023)
          */
-        handleKeyUpDown(item) {
-            this.$emit('objectAfterClickRow', item);   
+        handleKeyUpDown() {
+
+            
+            // this.$emit('objectAfterClickRow', item);   
         },
         /**
          * Hàm chuyển trang bằng mũi tên
@@ -1351,7 +1362,9 @@ export default {
             // mảng chứa các đối tượng được emit ra ngoài sau khi click vào các dòng
             listRowForEmit: [],
             // mảng dùng để lưu tất cả đối tượng được emit ra ngoài hoặc không một đối tượng nào
-            AllRowForEmit: []
+            AllRowForEmit: [],
+            // đối tượng lưu tọa độ context menu
+            contextMenuPosition: {},
         }
     }
 }

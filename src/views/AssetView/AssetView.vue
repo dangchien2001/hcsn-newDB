@@ -6,15 +6,19 @@
         <div class="asset-header">
             <div class="title-asset">{{ assetView.title }}</div>
             <div class="header-asset-blank"></div>
-            <MButton
-                text="Thêm"
-                type="button-container"
-                style="min-width: 100px; justify-content: center; margin-right: 17px;"
-                @click="() => {isShowForm = true; typeOfForm = assetView.typeOfForm.addForm}"
-            ></MButton>
+            <div class="add-btn-voucher-container">
+                <MButton
+                    text="Thêm"
+                    type="button-container"
+                    style="min-width: 100px; justify-content: center; margin-right: 17px;"
+                    @click="() => {isShowForm = true; typeOfForm = assetView.typeOfForm.addForm}"
+                ></MButton>
+                <MTooltip class="add-btn-voucher-tooltip" text="Ctrl + 1"></MTooltip>
+            </div>
+            
             <MIconButton
                 class="icon-btn-asset"
-                style="border-radius: 6px 0px 0px 6px;"
+                style="border-radius: 3px 0px 0px 3px;"
             >
                 <div class="icon-toggle-voucher-detail" v-if="isShowDetailTable == true"></div>
                 <div class="icon-toggle-voucher-detail-2" v-if="isShowDetailTable == false"></div>
@@ -24,7 +28,7 @@
             >
                 <MIconButton
                     class="icon-btn-asset"
-                    style="border-radius: 0px 6px 6px 0px;"
+                    style="border-radius: 0px 3px 3px 0px;"
                     @click="() => {isShowSelectBox = !isShowSelectBox}"
                 >
                     <div class="icon-arrow-down-header" v-if="!isShowSelectBox"></div>
@@ -33,11 +37,11 @@
                 <div class="select-toggle-detail" v-if="isShowSelectBox">
                     <div class="select-toggle-detail-row" @click="() => {isShowDetailTable = false; isShowSelectBox = false}">
                         <div class="open-detail-table"></div>
-                        <span class="select-toggle-detail-text" >Giao diện dọc</span>
+                        <span class="select-toggle-detail-text" >{{assetView.typeOfLayout.vertical}}</span>
                     </div>
                     <div class="select-toggle-detail-row" @click="() => {isShowDetailTable = true; isShowSelectBox = false}">
                         <div class="close-detail-table"></div>
-                        <span class="select-toggle-detail-text" >Giao diện ngang</span>
+                        <span class="select-toggle-detail-text" >{{assetView.typeOfLayout.horizontal}}</span>
                     </div>
                 </div>
             </div>            
@@ -169,24 +173,48 @@
             @closeForm="handleAfterInsertVoucher"
             @cancelLoading="() => {this.$emit('cancelLoading')}"
             @startLoading="() => {this.$emit('startLoading')}"
-            @showPopupError="(res) => {this.$emit('showPopupError', res)}"
+            @showPopupError="handleContentPopupAfterInsertVoucher"
             @dataForListAssetNoActive="(dataForTable) => {dataForListAssetNoActive = dataForTable;}"
             @dataForCountAvailable="(data) => {dataForFormDetail = data}"
             @assetForNoActive="(data) => {assetForNoActive = data}"
             :typeOfForm="typeOfForm"
             :voucherCode="voucherCode"
             @editSuccess="editSuccess"
+            v-save="() => {
+                if(isShowListAsset == false && $refs.formDetail.isShowFormEditAsset == false) {
+                    $refs.formDetail.handleSaveByKeyBoard();
+                }                
+            }"
+            v-esc="() => {
+                if(isShowListAsset == false && $refs.formDetail.isShowFormEditAsset == false) {
+                    $refs.formDetail.cancelAfterFindChange();
+                    this.$emit('cancelLoading');
+                    allowEsc = false;
+                }
+            }"
+            ref="formDetail"
         ></MFormDetail>
 
         <MListAssetNoActive 
             v-if="isShowListAsset"
-            @exitListAsset="() => {isShowListAsset = false}"
+            @exitListAsset="() => {isShowListAsset = false; $refs.formDetail.focusDefault();}"
             @cancelLoading="() => {this.$emit('cancelLoading')}"
             @startLoading="() => {this.$emit('startLoading')}"
             @assetForVoucher="handleDataForDetail"
             :dataAvailable="dataForListAssetNoActive"
             :assetForNoActive="assetForNoActive"        
-            
+            v-esc="() => {
+                isShowListAsset = false;
+                
+                if(isShowForm == true) {
+                    $refs.formDetail.focusDefault();
+                }
+                
+            }"
+            v-save="() => {
+                $refs.listAssetNoActive.selectAssetForEmit();
+            }"
+            ref="listAssetNoActive"
         ></MListAssetNoActive>
 
         <MPopup
@@ -211,6 +239,17 @@
             {{assetView.popupText.deleteOnce}} <span style="font-family: Roboto Bold;">{{ voucherCodeForDeleteOnce }}</span>?
         </MPopup>
 
+        <MPopup
+            type="warning"
+            v-if="isShowPopUp"
+            :content="contentPopup"
+            typeButton="closeOption"
+            @exitPopup="exitPopup"
+            :title="titlePopUp"
+            :listContent="listContentPopup"
+            :forcus="true"
+        ></MPopup>
+
     </div>
 </template>
 
@@ -232,6 +271,9 @@ import MTooltip from '@/components/MTooltip/MTooltip.vue'
 
 export default {
     name: 'AssetView',
+    props: {
+        
+    },
     components: {
         MButton, MIconButton, MInputWithIcon, Splitpanes, Pane, MTable, MFormDetail, MListAssetNoActive, MPopup, MLoadingTiny, MTooltip
     },
@@ -243,6 +285,31 @@ export default {
         this.getVoucherDetail(this.dataVoucherFirst);
     },
     methods: {
+        /**
+         * Hàm xử lí nội dung popup sau khi thêm chứng từ
+         * Created by: NDCHIEN(25/4/2023)
+         * Modified by: NDCHIEN(26/4/2023)
+         */
+        handleContentPopupAfterInsertVoucher(res) {  
+            this.contentPopup = res.UserMsg;
+            if(res.MoreInfo != null) {
+                this.titlePopUp = "Thông tin chứng từ không hợp lệ: ";
+                this.listContentPopup = res.MoreInfo;
+            }
+            else {
+                this.titlePopUp = "";
+                this.listContentPopup = null;
+            }
+            this.isShowPopUp = true;
+        },
+        /**
+         * Hàm gọi sau khi bấm đóng popup
+         * Created by: NDCHIEN(10/5/2023)
+         */
+        exitPopup() {
+            this.isShowPopUp = false;
+            this.$refs.formDetail.focusDefault();
+        },
         /**
          * Hàm mở form thêm mới bằng bàn phím
          * Created by: NDCHIEN(12/5/2023)
@@ -522,7 +589,13 @@ export default {
             // biến lưu trạng thái hộp ẩn hiện detail
             isShowSelectBox: false,
             // biến lưu nội dung tooltip zoom
-            textTooltipZoom: "Phóng to"
+            textTooltipZoom: "Phóng to",
+
+            isShowPopUp: false,
+            contentPopup: "",
+            titlePopUp: "",
+            listContentPopup: [],
+            
         }
     }
 }

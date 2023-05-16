@@ -8,10 +8,10 @@ export const save = {
                 binding.value()
             }
         };
-        document.addEventListener("keydown", el.clickEscEvent, true);
+        document.addEventListener("keydown", el.clickEscEvent);
     },
     unmounted: el => {
-        document.removeEventListener("keydown", el.clickEscEvent, true);
+        document.removeEventListener("keydown", el.clickEscEvent);
     },
 };
 export const insert = {
@@ -24,10 +24,10 @@ export const insert = {
                 binding.value()
             }
         };
-        document.addEventListener("keydown", el.clickEscEvent, true);
+        document.addEventListener("keydown", el.clickEscEvent);
     },
     unmounted: el => {
-        document.removeEventListener("keydown", el.clickEscEvent, true);
+        document.removeEventListener("keydown", el.clickEscEvent);
     },
 };
 export const esc = {
@@ -37,10 +37,37 @@ export const esc = {
                 binding.value()
             }
         };
-        document.addEventListener("keydown", el.clickEscEvent, true);
+        document.addEventListener("keydown", el.clickEscEvent);
     },
     unmounted: el => {
-        document.removeEventListener("keydown", el.clickEscEvent, true);
+        document.removeEventListener("keydown", el.clickEscEvent);
     },
 };
-
+export const up = {
+    beforeMount: (el, binding) => {
+        el.clickEscEvent = event => {
+            if(event.key === 'ArrowUp') {
+                event.preventDefault();
+                binding.value()
+            }
+        };
+        document.addEventListener("keydown", el.clickEscEvent);
+    },
+    unmounted: el => {
+        document.removeEventListener("keydown", el.clickEscEvent);
+    },
+};
+export const down = {
+    beforeMount: (el, binding) => {
+        el.clickEscEvent = event => {
+            if(event.key === 'ArrowDown') {
+                event.preventDefault();
+                binding.value()
+            }
+        };
+        document.addEventListener("keydown", el.clickEscEvent);
+    },
+    unmounted: el => {
+        document.removeEventListener("keydown", el.clickEscEvent);
+    },
+};

@@ -146,7 +146,9 @@ var resource = {
     voucherTh: [
         {
             colName: "STT",
-            style: "text-align: center; width: 49px"
+            style: "text-align: center; width: 49px",
+            tooltipText: "Số thứ tự",
+            tooltipStyle: "width: 100px; z-index: 1; left: -50%",
         },
         {
             colName: "Số chứng từ",
@@ -178,7 +180,9 @@ var resource = {
     voucherDetailTh: [
         {
             colName: "STT",
-            style: "text-align: center; width: 49px"
+            style: "text-align: center; width: 49px",
+            tooltipText: "Số thứ tự",
+            tooltipStyle: "width: 100px; z-index: 1;",
         },
         {
             colName: "Mã tài sản",
@@ -198,7 +202,9 @@ var resource = {
         },
         {
             colName: "HM/KH lũy kế	",
-            style: "text-align: right; width: 170px"
+            style: "text-align: right; width: 170px",
+            tooltipText: "Hao mòn/Khấu hao lũy kế",
+            tooltipStyle: "width: 150px; z-index: 1; text-align: center; left: 25%;",
         },
         {
             colName: "Giá trị còn lại",
@@ -209,7 +215,9 @@ var resource = {
     voucherDetailThForm: [
         {
             colName: "STT",
-            style: "text-align: center; min-width: 49px"
+            style: "text-align: center; min-width: 49px",
+            tooltipText: "Số thứ tự",
+            tooltipStyle: "width: 100px; z-index: 1;",
         },
         {
             colName: "Mã tài sản",
@@ -229,7 +237,9 @@ var resource = {
         },
         {
             colName: "HM/KH lũy kế	",
-            style: "text-align: right; min-width: 150px"
+            style: "text-align: right; min-width: 150px",
+            tooltipText: "Hao mòn/Khấu hao lũy kế",
+            tooltipStyle: "width: 150px; z-index: 1; text-align: center; left: 25%;",
         },
         {
             colName: "Giá trị còn lại",
@@ -378,7 +388,7 @@ var resource = {
         },
         {
             name: "description",
-            style: "text-align: left; padding-left: 20px;"
+            style: "text-align: left; padding-left: 20px; max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
         }
     ],
    
@@ -433,8 +443,8 @@ var resource = {
     },
 
     warning: {
-        channgeWarning: "Thông tin thay đổi sẽ không được cập nhật nếu bạn không lưu. Bạn có muốn lưu các thay đổi này ?",
-        cancelWarning: "Bạn có muốn hủy bỏ khai báo tài sản này ?"
+        channgeWarning: "Thông tin thay đổi sẽ không được cập nhật nếu bạn không lưu. Bạn có muốn lưu các thay đổi này?",
+        cancelWarning: "Bạn có muốn hủy bỏ khai báo tài sản này?"
     },
 
     placeholder: {
@@ -466,7 +476,7 @@ var resource = {
     },
 
     popup: {
-        deleteMore: "tài sản đã được chọn. Bạn có muốn xóa các tài sản này khỏi danh sách ?",
+        deleteMore: "tài sản đã được chọn. Bạn có muốn xóa các tài sản này khỏi danh sách?",
         deleteOne: "Bạn có muốn xóa tài sản",
         deleteZero: "Không có tài sản nào được chọn để xóa."
     },
@@ -526,7 +536,11 @@ var resource = {
         },
         emitText: {
             editSuccess: "Sửa tài sản thành công!",
-            deleteVoucherSuccess: "Xóa chứng từ thành công !"
+            deleteVoucherSuccess: "Xóa chứng từ thành công!"
+        },
+        typeOfLayout: {
+            horizontal: "Giao diện ngang",
+            vertical: "Giao diện dọc"
         }
     },
 
@@ -570,7 +584,13 @@ var resource = {
         buttonText: {
             cancel: "Hủy",
             accept: "Lưu"
-        }
+        },
+        error: {
+            duplicate: "Nguồn kinh phí đã tồn tại!",
+            null: "Nguồn kinh phí không được bỏ trống!",
+            equalZero: "Kinh phí không được bằng 0!",
+        },
+        warning: "Thông tin thay đổi sẽ không được cập nhật nếu bạn không lưu. Bạn có muốn lưu các thay đổi này?"
     },
 
     /**

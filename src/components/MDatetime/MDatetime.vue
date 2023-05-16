@@ -1,6 +1,6 @@
 <template>
     <div 
-        class="datetime-picker-container" 
+        class="datetime-picker-container"
     >
 
         <!-- input datetime picker -->
@@ -9,6 +9,7 @@
             class="input-datetime-picker"
             v-model="date"
             placeholder="DD"
+            :tabindex="tabindex"
         >
         <span>/</span>
         <input 
@@ -16,6 +17,7 @@
             class="input-datetime-picker"
             v-model="month"
             placeholder="MM"
+            :tabindex="tabindex + 1"
         >
         <span>/</span>
         <input 
@@ -24,6 +26,7 @@
             v-model="year"
             placeholder="YYYY"
             @blur="hideDateSelectBox"
+            :tabindex="tabindex + 2"
         >
 
         <!-- icon datetime picker -->
@@ -36,9 +39,7 @@
         <!-- hộp chọn ngày tháng -->
         <div 
             :class="[bottom ? 'datetime-picker-select-box-bottom' : 'datetime-picker-select-box']"
-            v-if="isHide"   
-            @mousedown="(event)=>{event.preventDefault()}"  
-            v-outside="() => {isHide = false}"       
+            v-if="isHide"                      
         >
 
             <!-- phần header của hộ chọn ngày tháng -->
@@ -130,6 +131,7 @@ export default {
         alowNull: Boolean,
         modelValue: String,
         bottom: Boolean,
+        tabindex: Number,
     },
     mounted() {
         /**

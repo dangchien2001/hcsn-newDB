@@ -23,6 +23,7 @@
             @input="handleInput"
             @keypress="onlyNumberKey($event)"
             :ref="refProp"
+            :tabindex="tabindex"
         >
 
         <!-- thẻ chứa hai mũi tên lên xuống -->
@@ -72,6 +73,7 @@ export default {
         isEqualZero: Boolean,
         msg: String,
         refProp: String,
+        tabindex: Number
     },
     methods: {
 

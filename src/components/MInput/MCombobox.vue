@@ -24,6 +24,7 @@
             @input="filterItem"
             @blur="hideDropDown"
             :ref="refProp"
+            :tabindex="tabindex"
         >
 
         <!-- nút mở combobox -->
@@ -86,7 +87,8 @@ export default {
         positionAbsolute: Boolean,
         msg: String,
         code: Boolean,
-        refProp: String
+        refProp: String,
+        tabindex: Number,
     },
     watch: {
         /**

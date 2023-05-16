@@ -92,17 +92,9 @@
     position: relative
 }
 
-.voucher-table-container::-webkit-scrollbar-button:end {
-    height: 39px;
-    background-color: rgb(236, 234, 234);
-    border-top: 1px solid rgba(0, 0, 0, .16);
-}
 
-.voucher-detail-table-container::-webkit-scrollbar-button:end {
-    height: 39px;
-    background-color: rgb(236, 234, 234);
-    border-top: 1px solid rgba(0, 0, 0, .16);
-}
+
+
 
 .icon-btn-asset {
     box-shadow: none;
@@ -216,4 +208,18 @@
 
 .zoom-detail-container:hover .zoom-tooltip {
     display: block;
+}
+
+.add-btn-voucher-container {
+    position: relative;
+}
+
+.add-btn-voucher-container:hover .add-btn-voucher-tooltip {
+    display: block;
+}
+
+.add-btn-voucher-tooltip {
+    position: absolute;
+    top: 100%;
+    display: none;
 }
