@@ -24,6 +24,7 @@
             @keypress="onlyNumberKey($event)"
             :ref="refProp"
             :tabindex="tabindex"
+            :maxlength="maxlength"
         >
 
         <!-- thẻ chứa hai mũi tên lên xuống -->
@@ -73,7 +74,8 @@ export default {
         isEqualZero: Boolean,
         msg: String,
         refProp: String,
-        tabindex: Number
+        tabindex: Number,
+        maxlength: Number,
     },
     methods: {
 

@@ -1,10 +1,10 @@
 <template>
 
 <div 
-    style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;" 
+    style="height: 100%; display: flex; flex-direction: column; justify-content: space-between;"
 >
     <!-- table -->
-    <table :class="typeTable">
+    <table :class="[typeTable, 'table']" id="table">
 
         <!-- header -->
         <tr
@@ -35,39 +35,32 @@
                 <MTooltip v-if="item.tooltipText != undefined" :text="item.tooltipText" :style="item.tooltipStyle" class="tooltip-table"></MTooltip>
             </th>
 
-            <!-- tooltip cho trường HM/KH lũy kế -->
-            <!-- <MTooltip
-                text="Hao mòn/ khấu hao lũy kế"
-                class="table-header-tooltip"
-            ></MTooltip> -->
-
-            <!-- tooltip cho trường STT -->
-            <!-- <MTooltip
-                text="Số thứ tự"
-                class="table-header-tooltip-2"
-            ></MTooltip> -->
-
         </tr>
 
         <!-- body -->
         
         <tr
-            :class="[activeRow == index ? 'row-active' : 'table-body-row', {'table-body-row-active' : rows[index]}]"
+            :class="[activeRow == index ? 'row-active' : 'table-body-row', {'table-body-row-active' : rows[index]}, 'row-index']"            
             v-for="(item, index) in datas"
             :key="index"
             @dblclick="editProduct(item.asset_id, dataAvailable[index][properties[1].name])"
             @click="() => {
                 this.$emit('objectAfterClickRow', item);                
             }"
-
+            @keydown.down="handleKeyUpDown($event, datas[index + 1], index + 1)" 
+            @keydown.up="handleKeyUpDown($event, datas[index - 1], index - 1)"
+            :tabindex = "index"
+            ref="row"
+            @keydown.ctrl.e="editProductByKey($event, item.asset_id, dataAvailable[index][properties[1].name])"
+            @keydown.enter="handleSelectRowByKey($event, item[entity], rows[index], item, index)"
         >
 
             <!-- checkbox col -->
             <td class="table-select-box-col-td" v-if="allowCheckBox">
                 <MCheckbox
                     v-model="rows[index]"
-                    @click="handleSelectRow(item[entity], rows[index], item)"
-                    
+                    @click="handleSelectRow(item[entity], rows[index], item)"  
+                    ref="check-box"                                     
                 ></MCheckbox>
             </td>
 
@@ -547,6 +540,7 @@ import MCheckbox from "../MCheckbox/MCheckbox.vue";
 import MTooltip from "../MTooltip/MTooltip.vue";
 import comon from "@/js/comon";
 import MProductDetail from "@/pages/productDetail/MProductDetail.vue";
+// import $ from 'jquery';
 
 export default {
     components: {
@@ -628,6 +622,22 @@ export default {
 
 
     methods: {
+        handleSelectRowByKey(event, entity, row, item, index) {
+            this.$refs['check-box'][index].handleCheckbox();
+            event.preventDefault();
+            this.handleSelectRow(entity, row, item);
+        },
+        /**
+         * Hàm hiện form sửa bằng phím tắt
+         * Created by: NDCHIEN(19/5/2023)
+         */
+        editProductByKey(event, asset_id, code) {
+            event.preventDefault();
+            this.editProduct(asset_id, code);
+        },
+        test() {
+            console.log('abc')
+        },
         /**
          * Hàm xử lý context menu
          * Created by: NDCHIEN(15/5/2023)
@@ -639,10 +649,14 @@ export default {
          * Hàm thực hiện lên xuống bản ghi active khi bấm hai phím mũi tên
          * Created by: NDCHIEN(8/5/2023)
          */
-        handleKeyUpDown() {
-
-            
-            // this.$emit('objectAfterClickRow', item);   
+        handleKeyUpDown(event, item, index) {    
+            if(index >= 0 && index < this.datas.length) {
+                event.preventDefault();
+                this.$emit('objectAfterClickRow', item);   
+                this.$refs.row[index].focus(); 
+                // this.$refs.row[index].scrollIntoView();
+                // $('tr.row-index:visible:last','#table').dblclick();
+            }                  
         },
         /**
          * Hàm chuyển trang bằng mũi tên
@@ -1230,118 +1244,7 @@ export default {
             isCheckboxHeaderSelect: false,
 
             // mảng dùng để lưu trạng thái của từng row tương ứng với tối đa 100 row
-            rows: [
-                // 10 biến
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                // 10 biến
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                // 10 biến
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                // 10 biến
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                // 10 biến
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                // 10 biến
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                // 10 biến
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                // 10 biến
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                // 10 biến
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                // 10 biến
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-            ],
+            rows: new Array(100).fill(false),
             // mảng dùng để lưu danh sách mã tài sản phục vụ chức năng xóa nhiều
             listAssetForDelete: [],
 

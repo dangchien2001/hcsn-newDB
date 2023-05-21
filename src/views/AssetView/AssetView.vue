@@ -293,7 +293,7 @@ export default {
         handleContentPopupAfterInsertVoucher(res) {  
             this.contentPopup = res.UserMsg;
             if(res.MoreInfo != null) {
-                this.titlePopUp = "Thông tin chứng từ không hợp lệ: ";
+                this.titlePopUp = this.assetView.warning;
                 this.listContentPopup = res.MoreInfo;
             }
             else {

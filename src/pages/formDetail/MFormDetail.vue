@@ -68,6 +68,7 @@
                                 :fieldLabel="voucherForm.inputLabel.note"
                                 v-model="voucher.voucher.description"
                                 :tabindex="8"
+                                :maxlength="255"
                             ></MInput>
                         </div>
                     </div>
@@ -204,6 +205,7 @@ export default {
      * Modified by: NDCHIEN(26/4/2023)
      */
     async created() {        
+        console.log('this.$parent: ', this.$parent)
         // gọi maxcode nếu là form thêm
         if(this.typeOfForm == this.voucherForm.typeOfForm.addForm) {
             this.titleForm = this.voucherForm.titleForm.addVoucherTitle;

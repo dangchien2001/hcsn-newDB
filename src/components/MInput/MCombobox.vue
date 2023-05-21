@@ -25,6 +25,7 @@
             @blur="hideDropDown"
             :ref="refProp"
             :tabindex="tabindex"
+            :maxlength="maxlength"
         >
 
         <!-- nút mở combobox -->
@@ -89,6 +90,7 @@ export default {
         code: Boolean,
         refProp: String,
         tabindex: Number,
+        maxlength: Number,
     },
     watch: {
         /**

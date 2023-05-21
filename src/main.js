@@ -12,6 +12,8 @@ const routers = [
     {path: "/asset", component: AssetView},
 ]
 
+window.$ = window.jQuery = require('jquery');
+
 const router = createRouter({
     history: createWebHistory(),
     routes: routers

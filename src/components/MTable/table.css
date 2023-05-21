@@ -167,6 +167,10 @@ td {
     style cho phân trang
 */
 
+tr {
+    outline: none;
+}
+
 .footer-content {
     height: 39px;
     position: sticky;
@@ -451,7 +455,7 @@ td {
 }
 
 .footer-table-v2 {
-    position: sticky; bottom: -1px; left: 0px; width: 100%; border-collapse: separate; border-spacing: 0;
+    position: sticky; bottom: 0px; left: 0px; width: 100%; border-collapse: separate; border-spacing: 0;
     background-color: #FFFFFF;
 }
 

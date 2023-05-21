@@ -21,7 +21,7 @@ export const insert = {
             keysPressed[event.key] = true;
             if(keysPressed['Control'] && event.key === '1') {
                 event.preventDefault();
-                binding.value()
+                binding.value();
             }
         };
         document.addEventListener("keydown", el.clickEscEvent);

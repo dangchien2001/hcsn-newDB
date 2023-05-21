@@ -1,6 +1,7 @@
 <template>
     <div 
         class="layer-form-product" 
+        
     >
 
         <!-- form -->
@@ -38,6 +39,7 @@
                         :tabindex="1"
                         ref="assetCode"
                         :refProp="'assetCode'"
+                        :maxlength="20"
                     ></MInput>
 
                     <!-- combobox chứa mã bộ phận sử dụng -->
@@ -57,6 +59,7 @@
                         :positionAbsolute = "true"
                         :msg="'Cần phải nhập thông tin'"
                         :tabindex="3"
+                        :maxlength="20"
                     ></MCombobox>
 
                     <!-- combobox chứa mã loại tài sản -->
@@ -76,6 +79,7 @@
                         :positionAbsolute = "true"
                         :msg="'Cần phải nhập thông tin'"
                         :tabindex="4"
+                        :maxlength="20"
                     ></MCombobox>
 
                     <!-- input chứa số lượng -->
@@ -90,6 +94,7 @@
                         :isEqualZero="isQuantityEqualZero"
                         @result="CheckQuantityEqualZero"
                         :tabindex="5"
+                        :maxlength="15"
                     ></MNumberInput>
 
                     <!-- input chứa tỉ lệ hao mòn -->
@@ -103,6 +108,7 @@
                         v-model="ProductInfo.WearRate"   
                         :isEqualZero="isWearRateEqualZero"  
                         @result="CheckWearRateEqualZero"   
+                        :maxlength="15"
                     ></MNumberRateInput>
 
                     <!-- datetime picker ngày mua -->
@@ -147,6 +153,7 @@
                         :isEmpty="isProductNameEmpty" 
                         @result="CheckEmployeeNameEmpty"  
                         :tabindex="2"
+                        :maxlength="100"
                     ></MInput>
 
                     <!-- input tên bộ phận sử dụng (không thể chỉnh sửa) -->
@@ -183,6 +190,7 @@
                                 :isEqualZero="isPriceEqualZero"
                                 :tabindex="6" 
                                 @result="CheckPriceEqualZero"
+                                :maxlength="15"
                             ></MNumberInput>
 
                         </div>
@@ -201,6 +209,7 @@
                                 :isEqualZero="isUseYearEqualZero" 
                                 @result="CheckUseYearEqualZero"  
                                 :tabindex="7" 
+                                :maxlength="15"
                             ></MNumberInput>
 
                         </div>
@@ -222,6 +231,7 @@
                                 v-model="ProductInfo.ResidualValue"
                                 :isEqualZero="isDepreciationValuePerYearEqualZero" 
                                 @result="CheckDepreciationValuePerYearEqualZero"
+                                :maxlength="15"
                             ></MNumberInput>
 
                         </div>

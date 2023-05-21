@@ -541,7 +541,8 @@ var resource = {
         typeOfLayout: {
             horizontal: "Giao diện ngang",
             vertical: "Giao diện dọc"
-        }
+        },
+        warning: "Thông tin chứng từ không hợp lệ:"
     },
 
     /**
