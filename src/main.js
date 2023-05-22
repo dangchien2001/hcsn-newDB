@@ -4,12 +4,14 @@ import {createRouter, createWebHistory} from 'vue-router'
 import AssetView from './views/AssetView/AssetView.vue'
 import TheContent from './layouts/TheContent/TheContent.vue'
 import clickOutSide from '@/directive/clickOutSide'
+import TheTest from './views/Test/TheTest.vue'
 import {save, insert, esc, up, down} from '@/directive/multipleKeydown'
 
 
 const routers = [
     {path: "/", component: TheContent},
     {path: "/asset", component: AssetView},
+    {path: "/ChangeInfomation", component: TheTest}
 ]
 
 window.$ = window.jQuery = require('jquery');
