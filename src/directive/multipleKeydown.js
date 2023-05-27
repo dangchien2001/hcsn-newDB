@@ -32,6 +32,7 @@ export const insert = {
 };
 export const esc = {
     beforeMount: (el, binding) => {
+        console.log(el)
         el.clickEscEvent = event => {
             if(event.key === 'Escape') {
                 binding.value()
@@ -71,3 +72,13 @@ export const down = {
         document.removeEventListener("keydown", el.clickEscEvent);
     },
 };
+export const move = {
+    mounted(el) {
+        window.onmousemove = function (e) {
+            var x = e.clientX,
+                y = e.clientY;
+            el.style.top = (y + 20) + 'px';
+            el.style.left = (x + 20) + 'px';
+        };
+    },
+}

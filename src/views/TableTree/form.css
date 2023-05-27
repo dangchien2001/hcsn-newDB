@@ -1,0 +1,134 @@
+.form-account-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0,0,0,.4);
+}
+
+.form-account {
+    background-color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.block-1-form-account {
+    padding: 25px;
+    position: relative;
+}
+
+.icon-block {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+}
+
+.question-icon {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -67px -67px;
+	width: 18px;
+	height: 18px;
+    cursor: pointer;
+}
+
+.question-icon:hover .tooltip-help {
+    display: block;
+}
+
+.tooltip-help {
+    display: none;
+    position: fixed;
+}
+
+.exit-icon-form-account {
+    background: url('../../assets/icons/qlts-icon.png') no-repeat -375px -287px;
+	width: 18px;
+	height: 18px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+.exit-icon-form-account:hover .tooltip-exit {
+    display: block;
+}
+
+.tooltip-exit {
+    display: none;
+    position: fixed;
+}
+
+.block-2-form-account {
+    padding: 25px;
+    width: 100%;
+    height: 46px;
+    border-top: 2px solid #f4f5f8;
+    display: flex;
+    align-items: center;
+}
+
+.title-form-account {
+    font-family: Roboto Medium;
+    font-size: 25px;
+}
+
+.block-form-account {
+    width: 23.5%;
+}
+
+.block-form-account-2 {
+    width: 49%;
+}
+
+.block-form-account-3 {
+    width: 100%;
+}
+
+.row-1-form-account {
+    display: flex;
+    margin-top: 10px;
+}
+
+.blank-form-account {
+    width: 2%;
+}
+
+.lable-form-account {
+    font-family: Roboto Medium;
+}
+
+.input-form-account {
+    height: 26px;
+    width: 100%;
+    outline: none;
+    padding: 0 10px;
+}
+
+.input-form-account-3 {
+    height: 50px;
+    width: 100%;
+    outline: none;
+    padding: 5px 10px;
+    resize: none;
+}
+
+.cancel-btn {
+    height: 28px;
+    width: 61px;
+    cursor: pointer;
+    border-radius: 3px;
+    background-color: white;
+    border: 1px solid #d2d3d6;
+}
+
+.cancel-add {
+    height: 28px;
+    width: 115px;
+    cursor: pointer;
+    border-radius: 3px;
+    background-color: #35bf22;
+    color: white;
+    border: 0px;
+    margin-left: 10px;
+}

@@ -2,26 +2,41 @@
   <div>
     <TheRow 
         :account="account"
-        @emitAccountCode="handleAccountCode"
+        @emitAccountId="handleAccountId"
+        @emitAccountIdForAdd="handleAccountIdForAdd"
     ></TheRow>
+    <TheForm 
+        :accountParentId="accountParentId"
+        :accountParentCode="accountParentCode"
+        @handleAfterAddSuccess="handleAccountId"
+        @cleanAccountParentCode="cleanAccountParentCode"
+    ></TheForm>
   </div>
 </template>
 
 <script>
 import axios from 'axios';
 import TheRow from './TheRow.vue';
+import TheForm from './TheForm.vue';
 
 export default {
     components: {
-        TheRow
+        TheRow, TheForm
     },
     created() {
-        // this.getAll();
+        this.getAll();
     },
     mounted() {
         this.$emit('cancelLoading');
     },
     methods: {
+        /**
+         * Làm rỗng biến accountParentCode(được truyền vào form thông qua props) sau khi add thành công
+         * Created by: NDCHIEN(24/5/2023)
+         */
+        cleanAccountParentCode(){
+            this.accountParentCode = "";
+        },
         /**
          * Gọi API lấy tất cả tài khoản cha
          * Created by: NDCHIEN(22/5/2023)
@@ -34,9 +49,14 @@ export default {
                 this.$emit('cancelLoading');
             })
         },
+        /**
+         * Hàm format lại dữ liệu được truyền từ API lên
+         * Created by: NDCHIEN(22/5/2023)
+         */
         mappingData(data) {
             return data.map(item => {
                 return {
+                    accountId: item.AccountId,
                     accountCode: item.AccountCode,
                     accountName: item.AccountName,
                     property: item.Property,
@@ -48,8 +68,42 @@ export default {
                 }
             })            
         },
-        handleAccountCode(accountCode) {
-            console.log(accountCode)
+        /**
+         * Hàm xử lý sau khi bấm button more trong component hoặc sau khi thêm thành công để lấy ra các phần tử con bằng id cha
+         * Created by: NDCHIEN(22/5/2023)
+         * @param {id tài sản cha} accountId
+         */
+        handleAccountId(accountId) {
+            axios
+            .get(`https://localhost:7210/api/AccountSystems/Detail/${accountId}`)
+            .then(res => {
+                this.addData(this.account, accountId, res.data)
+            })
+        },
+
+        /**
+         * Hàm xử lý sau khi nhấn nút thêm để gán data cho các biến dùng để truyền vào prop trong form
+         * Created by: NDCHIEN(22/5/2023)
+         */
+        handleAccountIdForAdd(accountId, accountCode) {
+            this.accountParentId = accountId;
+            this.accountParentCode = accountCode;
+        },
+
+        /**
+         * Hàm thêm data vào vị trí tương ứng với accountId được truyền vào
+         * Created by: NDCHIEN(22/5/2023)
+         */
+        addData(data, accountId, dataForPush) {
+            data.forEach(element => {
+                if(element.accountId == accountId) {
+                    element.listChildAccount = [];
+                    element.listChildAccount = [...this.mappingData(dataForPush)];
+                }
+                else {
+                    this.addData(element.listChildAccount, accountId, dataForPush);
+                }
+            });
         }
     },
     data() {
@@ -57,6 +111,7 @@ export default {
             account: 
             [
                 {
+                    accountId: '1',
                     accountCode: "001",
                     accountName: "master",
                     property: "",
@@ -65,6 +120,7 @@ export default {
                     state: "",
                     listChildAccount: [
                         {
+                            accountId: '11',
                             accountCode: "0011",
                             accountName: "detail1",
                             property: "",
@@ -73,6 +129,7 @@ export default {
                             state: "",
                             listChildAccount: [
                                 {
+                                    accountId: '111',
                                     accountCode: "00111",
                                     accountName: "detail2",
                                     property: "",
@@ -81,6 +138,7 @@ export default {
                                     state: "",
                                     listChildAccount: [
                                         {
+                                            accountId: '1111',
                                             accountCode: "001111",
                                             accountName: "detail3",
                                             property: "",
@@ -96,6 +154,7 @@ export default {
                             ]
                         },
                         {
+                            accountId: '2',
                             accountCode: "0012",
                             accountName: "detail12",
                             property: "",
@@ -119,7 +178,9 @@ export default {
 
                     ]
                 }
-            ]
+            ],
+            accountParentId: "",
+            accountParentCode: "",
         }
     }
 }

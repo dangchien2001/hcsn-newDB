@@ -5,13 +5,16 @@ import AssetView from './views/AssetView/AssetView.vue'
 import TheContent from './layouts/TheContent/TheContent.vue'
 import clickOutSide from '@/directive/clickOutSide'
 import TheTest from './views/Test/TheTest.vue'
-import {save, insert, esc, up, down} from '@/directive/multipleKeydown'
+// import TableTree from './views/TableTree/TableTree.vue'
+import AccountManage from './views/TableTree/AccountManage.vue'
+import {save, insert, esc, up, down, move} from '@/directive/multipleKeydown'
 
 
 const routers = [
     {path: "/", component: TheContent},
     {path: "/asset", component: AssetView},
-    {path: "/ChangeInfomation", component: TheTest}
+    {path: "/ChangeInfomation", component: TheTest},
+    {path: "/CheckAgain", component: AccountManage}
 ]
 
 window.$ = window.jQuery = require('jquery');
@@ -30,4 +33,5 @@ createApp(App)
 .directive('down', down)
 .directive('save', save)
 .directive('insert', insert)
+.directive('move', move)
 .mount('#app')
