@@ -11,6 +11,20 @@
         @handleAfterAddSuccess="handleAccountId"
         @cleanAccountParentCode="cleanAccountParentCode"
     ></TheForm>
+    <test-slot>
+        <template #slot-first="{ click, value }">
+            <div @click="click">
+                {{ value }}
+            </div>
+        </template>
+        <template #slot-second="{ click, array }">
+            <div v-for="(item, index) in array" :key="index">
+                {{ item }}
+            </div>
+            <button @click="click">changeArray</button>
+        </template>
+    </test-slot>
+    <vue-x></vue-x>
   </div>
 </template>
 
@@ -18,10 +32,12 @@
 import axios from 'axios';
 import TheRow from './TheRow.vue';
 import TheForm from './TheForm.vue';
+import testSlot from './testSlot.vue'
+import VueX from './VueX.vue';
 
 export default {
     components: {
-        TheRow, TheForm
+        TheRow, TheForm, testSlot, VueX
     },
     created() {
         this.getAll();
@@ -79,6 +95,7 @@ export default {
             .then(res => {
                 this.addData(this.account, accountId, res.data)
             })
+            this.$store.dispatch("fetchTraction", { id: accountId })
         },
 
         /**

@@ -8,6 +8,7 @@ import TheTest from './views/Test/TheTest.vue'
 // import TableTree from './views/TableTree/TableTree.vue'
 import AccountManage from './views/TableTree/AccountManage.vue'
 import {save, insert, esc, up, down, move} from '@/directive/multipleKeydown'
+import store from './js/store'
 
 
 const routers = [
@@ -27,6 +28,7 @@ const router = createRouter({
 
 createApp(App)
 .use(router)
+.use(store)
 .directive('outside', clickOutSide)
 .directive('esc', esc)
 .directive('up', up)
